@@ -4,9 +4,11 @@ The gem packages the same skill, installer, and Ruby helpers as the source check
 It adds no runtime gems and does not install a global agent profile. This is a local
 prerelease package; nothing has been published to RubyGems.org.
 
-From the trusted source checkout:
+Build from the trusted source directory; RubyGems reads package files relative
+to the working directory. With the source installation from the first-use guide:
 
 ```bash
+cd "$HOME/agent-tools/agent-workflows-v2"
 gem build agent-workflows-v2.gemspec
 ```
 
@@ -46,7 +48,8 @@ isolated packaging check above:
 GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" gem uninstall agent-workflows-v2 --all --executables
 ```
 
-The package test builds and installs the actual gem into a temporary home, runs
+A two-version artifact trial also confirmed explicit upgrade and rollback while
+preserving an existing skill link. The package test builds and installs the actual gem into a temporary home, runs
 the installed helper and installer from outside the source checkout, then removes
 the package. Existing installer tests cover repeat installation, collisions, and
 source updates. These checks validate the artifact; they do not establish host
