@@ -78,9 +78,12 @@ Record commands, results, and tested revision; fix
 failures and reverify changed heads. Use the seam's independent reviewer when
 policy, the user, or concrete risk requires review. Reuse an existing GitHub review
 (such as Claude); read its actual comments, inline threads, and completion evidence.
-A green job alone does not prove review ran. Follow [review handling](../../docs/review.md)
-for fixes, re-review, stale findings, or a failed reviewer; resolve consequential
-feedback before merging.
+State review status in the PR summary and final response, outside details: completed
+(with reviewer, revision, and result link), unavailable (reason), pending, or not
+requested (why). A green job alone proves no review. Required or user-requested
+review that is unavailable, failed, or stale blocks readiness/merge; never silently
+omit it or substitute a reviewer. Follow [review handling](../../docs/review.md)
+for findings and re-review; resolve consequential feedback before merging.
 
 Use trusted `gh` for authorized issue/PR reads and publication. Inspect check states,
 not only exit codes: `gh pr checks NUMBER --repo OWNER/REPO --required --json name,state,bucket,link`.
