@@ -11,6 +11,11 @@ change, verifies it, explains it on the PR, handles consequential review finding
 and reaches the requested merge or PR-handoff outcome. Installation and upgrade
 must be understandable without fleet infrastructure.
 
+Success means less developer attention and fewer tokens to deliver a better
+result. A smaller codebase is a means to that outcome. The maintainer has
+authorized merging reviewed, verified pilot PRs; another permission request is
+unnecessary. Public visibility remains a separate, unanswered decision.
+
 ### Requirements
 
 | ID | Requirement and acceptance |
@@ -25,6 +30,71 @@ must be understandable without fleet infrastructure.
 | R8 | Install the self-contained skill into an explicit isolated profile. Preserve existing skills and user files. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
 | R9 | GitHub is the code-delivery source of truth. A work item may live in another tracker; link it without requiring a shadow issue or bidirectional synchronization. |
 | R10 | Keep Ruby and instructions small and cohesive. Standard libraries and `gh` own general mechanics; tests exercise retained behavior and concrete failure cases. |
+| R11 | Each agentically generated commit is identifiable in the PR's usage report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
+| R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
+
+## Success evidence and commit attribution
+
+| Outcome | Existing evidence to use | Success criterion |
+| --- | --- | --- |
+| Developer time | Maintainer-reported active minutes and PR decisions/interventions; timestamps alone do not measure human work. | Less active attention and repeated decision-making for comparable accepted changes. |
+| Tokens | Native provider usage for implementation, planning, review, retries, and integration; distinguish cached input and output. | Lower total reported consumption per accepted change, including failed attempts; compare like coverage and model/caching mix. |
+| Quality | Behavior verified by tests and real use, consequential review findings, regressions/reverts, and maintainability. | A better accepted result with less corrective work; green tests or fewer lines alone do not prove this. |
+| Delivery time | Task start through accepted/merged outcome, with CI and human waiting identified where known. | Fewer elapsed days without transferring work back to the maintainer. |
+
+The next bounded product addition is a read-only usage report from existing host
+records. Keep it a small host adapter producing a PR table, not a telemetry
+service, dashboard, policy schema, or merge gate. The current pilot does not yet
+collect this report automatically. Token savings and complete historical costs
+remain UNKNOWN until measured; do not claim the pilot is adopted before this
+evidence and real-use acceptance exist.
+
+The initial report should follow these rules:
+
+- Key rows by commit SHA and contribution (implementation, review, integration,
+  or shared planning), with model/provider, configured reasoning effort, input,
+  cached-input, output, and reasoning-output tokens where the host reports them.
+  Record actual routed model separately when available; a configured model is
+  not proof of every execution's model. Reasoning effort is a setting, not a
+  measurement of thought quality or a transcript of private reasoning.
+- Define the contributing run/turn interval. Count each provider response once.
+  Cached input is a subset of input; reasoning output is a subset of output.
+  Never sum cumulative snapshots or add subsets again to the total. Use the
+  provider's totals and document differing provider semantics.
+- Count subagents and failed attempts when their records are available. Report
+  missing external reviewer or tool-model usage as UNKNOWN, never zero. Forked
+  history and resumed sessions must not duplicate already counted responses.
+- A turn spanning several commits has shared cost unless a real boundary makes
+  its attribution exact. Record shared planning and later review once at PR
+  scope; list the affected commits. Do not divide by changed lines or invent
+  per-commit precision. Preserve the original commit mapping in the PR after a
+  squash merge and associate the final merged SHA without recounting the cost.
+- Publish only allowlisted aggregate metadata. Keep transcripts, prompts, tool
+  outputs, local paths, and private run identifiers out of public reports.
+  Retain private source references locally when needed to verify the aggregation.
+- Usage reporting must not prompt Justin to design an accounting system or
+  interrupt each commit. Human active time may be a short estimate at task end;
+  absent estimates stay UNKNOWN. Dollar cost is separate from tokens and is
+  unknown without applicable provider billing data; subscription quota is not
+  per-commit API spend.
+
+Verified feasibility: Codex 0.154.0's generated app-server protocol exposes
+`thread/tokenUsage/updated` with thread/turn IDs and token breakdowns. The current
+task's local records contain response IDs, usage records, and turn-context model
+and effort. Thread metadata explicitly describes its model/effort as current or
+latest configuration, not per-turn execution telemetry. The official
+[app-server documentation](https://developers.openai.com/codex/app-server)
+also documents usage updates and model-rerouting events. These are usable inputs;
+complete commit attribution and access to every contributor are still unproven.
+Prefer supported host APIs; any local-record adapter must name its tested host
+version and report UNKNOWN if its required record format is unavailable.
+
+Acceptance for that addition: report one ordinary commit and one change with
+review/rework or multiple contributors, demonstrate no double counting on
+resume/shared work, and retain explicit gaps. Use these real PRs plus available
+comparable V1 evidence to assess the four outcomes above. Do not rerun #700 or
+rebuild its fix as a benchmark. Start with a few comparable tasks; report the
+sample and uncertainty instead of manufacturing a precise savings percentage.
 
 ## Merge behavior
 
@@ -111,9 +181,9 @@ prepare exclusive files in parallel once interfaces are agreed. Publish the
 initial working kernel as one coherent PR: splitting its skill, reader, and
 merge command would leave incomplete intermediate instructions. Its initial
 documentation, tests, dependency lock, and CI make that first diff exceed 500
-lines; keep later changes bounded. Never merge implementation PRs without the
-maintainer's separate authority. Do not create one issue for every helper or
-review observation.
+lines; keep later changes bounded. The maintainer has authorized pilot PR merges
+after review and verification. Do not create one issue for every helper or review
+observation.
 
 ## Verification and exit criteria
 
@@ -123,22 +193,23 @@ review observation.
 - Exercise both modes on the same requirements: walkthrough publication is not
   approval; `ask` waits and `auto` avoids an unnecessary question.
 - Publish and read back a walkthrough on a real pilot implementation PR. Confirm
-  its native commit ID and links match that PR. No live merge is authorized yet.
+  its native commit ID and links match that PR, then use the existing merge authority.
 - Install into a temporary isolated skills directory, repeat installation,
   preserve a preexisting foreign skill, and verify trusted-source upgrade behavior.
 - Before calling the pilot adopted, use it for several ordinary real changes,
   including a small fix, review fixes, failed CI, and a changed PR head. Record
   evidence on those PRs. This later use is not fabricated by unit-test success.
 
-The first deliverable is tested code, a useful real-PR walkthrough, and a clear
-maintainer adoption/merge decision. End-to-end live merge and repeated consumer
-use remain UNKNOWN until authorized and observed.
+The first deliverable is tested code and a useful real-PR walkthrough, followed
+by its authorized merge. A normal maintainer-authorized bootstrap merge does not
+demonstrate the product's protected automatic-merge path. That demonstration and
+repeated consumer use remain UNKNOWN until observed.
 
 Observed hosting constraint: GitHub rejected the private pilot's ruleset read
 with HTTP 403 and a plan-upgrade/public-visibility requirement. No protection
 change was made. Keep native protection prerequisites intact. A live merge
-demonstration needs an eligible protected repository and separate merge authority;
-public visibility or a plan upgrade is a maintainer decision after code review.
+demonstration needs an eligible protected repository; merge authority is granted.
+Public visibility or a plan upgrade remains a maintainer decision.
 
 ## Scope, rollout, and rollback
 
@@ -148,7 +219,7 @@ broader consumer adoption follows real evidence. Runtime prerequisites are Ruby
 users; neither its backlog nor its advanced feature parity blocks this pilot.
 
 Excluded: fleet coordination, control towers, cross-host leases, automatic task
-replacement, telemetry, policy schemas, review reducers, release automation,
+replacement, telemetry services, policy schemas, review reducers, release automation,
 external tracker adapters, public distribution and global profile changes.
 Auto-merging ordinary PRs is included; rebuilding autonomous risk calibration is not.
 
@@ -159,4 +230,4 @@ Stop scope growth when a proposed mechanism does not serve an acceptance case.
 
 Rollback is removing the pilot skill symlink or using the prior trusted checkout
 revision. No issue state migration, production data change, or V1 replacement
-is required. Public publication and implementation-PR merges need separate authority.
+is required. Public publication still needs authority; pilot PR merges are authorized.

@@ -6,6 +6,12 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
+The goal is less developer attention and token use with better results and shorter
+delivery time. The next bounded addition is per-commit usage reporting from native
+agent records: contributing models, reasoning effort, and tokens, with shared costs
+and missing data labeled honestly. Automatic collection is not implemented yet;
+see the plan's success evidence and attribution rules.
+
 ## Two merge preferences
 
 - **Ask:** publish the walkthrough, wait for required checks/review, then request
