@@ -24,7 +24,7 @@ class PackageTest < Minitest::Test
     run_gem('install', '--local', '--no-document', archive)
     assert_includes run_executable('aw', '--help'), 'Usage: aw'
     source = install_skill
-    File.unlink(File.join(@directory, 'pilot skills', 'work-pr-v2'))
+    File.unlink(File.join(@directory, 'pilot skills', 'aw'))
     run_gem('uninstall', 'agent-workflows-v2', '--all', '--executables', '--ignore-dependencies')
     refute File.exist?(File.join(@home, 'bin', 'aw'))
     refute File.exist?(source)
@@ -35,7 +35,7 @@ class PackageTest < Minitest::Test
   def install_skill
     skills = File.join(@directory, 'pilot skills')
     run_executable('install-agent-workflows', '--skills-dir', skills)
-    source = File.realpath(File.join(skills, 'work-pr-v2'))
+    source = File.realpath(File.join(skills, 'aw'))
     assert source.start_with?("#{File.realpath(@home)}/gems/"), source
     assert File.file?(File.join(source, 'SKILL.md'))
     assert File.file?(File.join(source, 'scripts', 'aw'))

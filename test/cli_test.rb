@@ -3,7 +3,7 @@
 require_relative 'test_helper'
 
 class CliTest < Minitest::Test
-  COMMAND = File.expand_path('../skills/work-pr-v2/scripts/aw', __dir__)
+  COMMAND = File.expand_path('../skills/aw/scripts/aw', __dir__)
 
   def test_help_explains_the_three_operations
     output, error, status = Open3.capture3(COMMAND, '--help')

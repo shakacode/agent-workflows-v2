@@ -25,10 +25,10 @@ module WorkFixture
   private
 
   def copy_source
-    @source = File.join(@directory, 'trusted source', 'work-pr-v2')
+    @source = File.join(@directory, 'trusted source', 'aw')
     @command = File.join(@source, 'scripts', 'aw')
     FileUtils.mkdir_p(File.dirname(@source))
-    FileUtils.cp_r(File.expand_path('../skills/work-pr-v2', __dir__), @source)
+    FileUtils.cp_r(File.expand_path('../skills/aw', __dir__), @source)
   end
 
   def started(*)
@@ -150,7 +150,7 @@ class WorkBoundaryTest < Minitest::Test
   def test_refuses_an_installed_skill_link_inside_the_writable_target
     parent = File.join(@target, 'installed skills')
     FileUtils.mkdir_p(parent)
-    link = File.join(parent, 'work-pr-v2')
+    link = File.join(parent, 'aw')
     File.symlink(File.realpath(@source), link)
     _output, error, status = launch('Fix the test', command: File.join(link, 'scripts', 'aw'))
     refute status.success?

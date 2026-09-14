@@ -6,7 +6,13 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-After installation, start from your repository:
+After [installation](docs/getting-started.md#use-aw-in-the-codex-app), give Codex a task:
+
+```text
+$aw Fix the failing search test
+```
+
+For a fresh Codex terminal session, start from your repository:
 
 ```bash
 aw work "Fix the failing search test"
@@ -64,6 +70,8 @@ Updates lead with progress, a blocker, or a decision you need to make. The final
 message gives the outcome and PR link. Detailed checks and model/token records
 belong in expandable PR details; risks and required decisions remain visible.
 See [working with your agent](docs/working-with-your-agent.md) for examples.
+The agent uses your repo’s existing reviewer, handles demonstrated findings, and
+rechecks fixes; see [review handling](docs/review.md).
 
 Every task reports available model, reasoning-setting, and token evidence, with
 shared work and missing data labeled. The agent runs the native Codex
@@ -101,8 +109,8 @@ for the rollout and the differences that affect model and token reporting.
 
 Follow the [getting-started guide](docs/getting-started.md) for prerequisites,
 copyable install commands, a GitHub issue or Linear task, upgrades, and removal.
-It installs into a dedicated pilot directory and invokes the trusted skill by path;
-each repository keeps its own policy. Your global agent profile is unchanged.
+Choose the Codex app skill or a dedicated terminal installation; each repository
+keeps its own policy. Installation adds one skill and preserves existing settings.
 The helpers protect GitHub operations and merge requirements; your agent's
 permissions protect execution and credentials. The same baseline applies to
 public and private repos. See [what the helpers protect](docs/working-with-your-agent.md#what-the-helpers-protect).

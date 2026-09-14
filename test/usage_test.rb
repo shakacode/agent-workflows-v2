@@ -4,7 +4,7 @@ require_relative 'test_helper'
 require 'json'
 
 module UsageFixture
-  COMMAND = File.expand_path('../skills/work-pr-v2/scripts/aw', __dir__)
+  COMMAND = File.expand_path('../skills/aw/scripts/aw', __dir__)
   COMMIT = 'a' * 40
   THREAD = '00000000-0000-0000-0000-000000000001'
 

@@ -1,6 +1,6 @@
 # Install and complete your first task
 
-This guide uses Codex CLI and installs the skill into a dedicated pilot directory.
+This guide installs `$aw` in the Codex app or starts a fresh Codex CLI session.
 Claude Code and Cursor support remain planned. You do not need to know the previous
 workflow pack.
 
@@ -38,18 +38,41 @@ you want to change. If it already exists, use the upgrade instructions below.
 
 ## 3. Install outside your repositories
 
+### Use $aw in the Codex app
+
+After completing steps 1–2, install into Codex's user skills directory:
+
+```bash
+"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.agents/skills"
+```
+
+In your repository's Codex task, send:
+
+```text
+$aw Fix the failing search test
+```
+
+A task URL works too. The agent asks for anything missing, including merge
+preference when it is unset. The skill should appear on the next turn; if it does
+not, restart Codex. The app uses that task's existing permissions. Installing a
+skill does not change its sandbox; use the terminal launcher below when you want
+its tested startup boundary. Keep the trusted source outside the repository you
+are changing.
+
+### Use a fresh Codex terminal session
+
 Use a dedicated directory outside your repositories and global agent profile:
 
 ```bash
 "$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/agent-tools/agent-workflows-v2-pilot/skills"
 ```
 
-The installer creates a `work-pr-v2` link in that directory and refuses to overwrite
+The installer creates an `aw` link in that directory and refuses to overwrite
 another skill. Keep both link and source outside candidate repositories. It changes
 no global profile, authentication, hooks, or other skills.
 
-The launcher names the trusted workflow automatically. You do not need to find
-this pilot in Codex's `/skills` list or paste a startup prompt.
+This dedicated directory is for the terminal launcher; it does not register `$aw`
+in the Codex app. Choose the user-directory installation above for app discovery.
 
 If you used the earlier project-local instructions, remove that old link only if
 it is still a symlink. If Git replaced it with tracked files, do not delete those
@@ -65,12 +88,12 @@ you already run another workflow pack, use your host's settings to disable
 conflicting workflows for the pilot. A separate checkout alone is not a security
 sandbox or an isolated agent configuration.
 
-## 4. Start your task
+## 4. Start your terminal task
 
 For the source installation above, expose its command in this terminal:
 
 ```bash
-export PATH="$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/scripts:$PATH"
+export PATH="$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw/scripts:$PATH"
 ```
 
 Run from anywhere inside the repository you want to change:
@@ -156,12 +179,28 @@ git -C "$HOME/agent-tools/agent-workflows-v2" pull --ff-only
 
 Switching to `main` also resumes normal upgrades after a rollback to a detached
 commit. Preserve local edits; do not force a switch or discard changes.
-The existing link uses the updated source. To remove only this pilot skill link:
+The existing link uses the updated source. If you installed the earlier
+`work-pr-v2` pilot, remove that link only after confirming it points to this trusted
+source, then rerun the installer. Do not delete a directory or an unrelated link.
+The skill and its new link are named `aw`; old terminal PATH entries need updating.
+
+For the Codex app, remove only the installed link with:
 
 ```bash
-test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2"
+test -L "$HOME/.agents/skills/aw" && unlink "$HOME/.agents/skills/aw"
 ```
 
-For rollback without removal, point the trusted source checkout at a previously
-reviewed revision. Do not overwrite local edits. Other skills and application
+For the dedicated terminal installation:
+
+```bash
+test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw"
+```
+
+For rollback, switch the trusted source checkout to a previously reviewed revision
+without overwriting local edits. If that revision also uses `skills/aw`, the link
+continues to work. A revision before the rename needs reinstallation: remove only
+your verified `aw` symlink, run that revision's installer with the same `--skills-dir`,
+and use its `work-pr-v2` skill name and terminal PATH. Switching revisions alone
+would leave `aw` dangling. Returning to a newer revision likewise needs removal of
+the verified old link and reinstallation as `aw`. Other skills and application
 configuration are unaffected.
