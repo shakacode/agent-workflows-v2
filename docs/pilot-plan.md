@@ -27,12 +27,12 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | R5 | `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted, ordinary change when the same gates pass without another question. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. |
 | R6 | Readiness and merge use live GitHub facts and the exact expected head. Missing/unreadable required evidence, incomplete checks, stale heads, conflicts, disallowed merges, or unresolved consequential feedback block. Never bypass GitHub protection. |
 | R7 | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. |
-| R8 | Install the self-contained skill into an explicit isolated profile. Preserve existing skills and user files. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
+| R8 | Install the self-contained skill into an explicitly chosen skills directory. Preserve existing skills and user files. Test installation in isolation; a project-local install does not disable global instructions or create a sandbox. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
 | R9 | GitHub is the code-delivery source of truth. A work item may live in another tracker; link it without requiring a shadow issue or bidirectional synchronization. |
 | R10 | Keep Ruby and instructions small and cohesive. Keep execution-changing guidance in the skill, examples/rationale in user docs, and deterministic mechanics in code. Remove repetition when adding guidance. Standard libraries and `gh` own general mechanics; tests exercise behavior and concrete failure cases. |
-| R11 | Each agentically generated commit is identifiable in the PR's usage report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
+| R11 | Every task reports available usage; each agentically generated commit is identifiable in the PR report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Without a PR, use the final report. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
 | R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
-| R13 | One owner communicates outcomes, progress, blockers, and decisions in plain language. Supporting verification and usage records use expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, before or during work, with a recommendation. See [working with your agent](working-with-your-agent.md). |
+| R13 | One owner explains outcomes, reasons, blockers, and decisions using familiar terms and enough context for the first reading. Follow task/repo writing preferences without requiring a separate clarification skill. Supporting evidence uses expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, with a recommendation. See [working with your agent](working-with-your-agent.md). |
 
 ## Success evidence and commit attribution
 
@@ -302,6 +302,25 @@ bypass actors and blocks force-push and deletion. The required approving-review
 count is zero for the single-user pilot; the skill still handles consequential
 review and risk. Record protected automatic-merge evidence on the ordinary PR
 that exercises it rather than treating the ruleset's existence as proof.
+
+## Ruby packaging
+
+The root `Gemfile` and `Gemfile.lock` already manage Minitest and RuboCop for
+development. Runtime helpers use standard libraries. There is no gemspec, packaged
+executable, or published RubyGem today; users install the source skill through
+`bin/install`. The [getting-started guide](getting-started.md) covers that path.
+
+Recommendation: package the existing skill and helpers together after the first
+consumer installation proves the layout. Add a root gemspec and version, include
+the complete skill directory, and expose `aw` plus an explicit-directory installer
+through RubyGems executables. Keep one implementation, and use standard
+[RubyGems build/install tooling](https://guides.rubygems.org/make-your-own-gem/).
+Test a built gem in a temporary gem home for install, helper invocation, upgrade,
+and removal; do not install into application bundles by default. Establish the
+package name, license, version policy, and release authority before publication;
+these release decisions remain UNKNOWN. A gem must reduce installation work,
+not add a second required install alongside the skill. No release workflow,
+gemspec, or registry publication is added by this documentation change.
 
 ## Documentation website
 
