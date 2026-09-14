@@ -44,11 +44,10 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | Quality | Behavior verified by tests and real use, consequential review findings, regressions/reverts, and maintainability. | A better accepted result with less corrective work; green tests or fewer lines alone do not prove this. |
 | Delivery time | Task start through accepted/merged outcome, with CI and human waiting identified where known. | Fewer elapsed days without transferring work back to the maintainer. |
 
-The next bounded product addition is a read-only usage report from existing host
-records. Keep it a small host adapter producing a PR table, not a telemetry
-service, dashboard, policy schema, or merge gate. The current pilot does not yet
-collect this report automatically. Token savings and complete historical costs
-remain UNKNOWN until measured; do not claim the pilot is adopted before this
+The [read-only usage reader](usage-reporting.md) uses existing Codex host records
+and produces a PR table. The skill runs it as part of normal reporting; there is
+no telemetry service, dashboard, policy schema, or merge gate. Token savings and
+complete historical costs remain UNKNOWN until measured; do not claim the pilot is adopted before this
 evidence and real-use acceptance exist.
 
 The initial report should follow these rules:
@@ -141,7 +140,7 @@ not implied by a successful local install.
 
 | Host | Initial product commitment | Evidence and remaining work |
 | --- | --- | --- |
-| Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. Native usage/model evidence exists; the automatic report still needs implementation. |
+| Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. The native usage reader is implemented and tested against desktop records; stable CLI coverage remains unverified. |
 | Claude Code | Compatibility target; next workflow/usage trial. | Native skills and request metadata are documented. Actual V2 activation, complete PR delivery, and usage coverage remain UNKNOWN until tried. |
 | Cursor | Compatibility target; validate after Claude Code. | Native skills and session/model metadata are documented. Full V2 delivery and per-request token/effort coverage remain UNKNOWN; do not promise reporting parity from skill compatibility alone. |
 

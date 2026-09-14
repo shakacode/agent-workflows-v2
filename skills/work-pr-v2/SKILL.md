@@ -39,8 +39,10 @@ replacement skill or helper.
 Write plain English: explain the outcome and why, using established project terms.
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
-Report available commit/model/effort/token data on every task, including review
-and retries. Put supporting tables and checks in PR `<details>`; without a PR,
+Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
+for each task, choosing `implementation`, `review`, `integration`, or
+`shared-planning` to match the work. Include available retry/contributor records
+and label shared intervals (see `docs/usage-reporting.md` in the trusted source). Put supporting tables and checks in PR `<details>`; without a PR,
 include them in the final report. Link from chats that cannot collapse details.
 Avoid repeated status updates; label shared costs and UNKNOWN
 fields. Publish only aggregate metadata: no prompts, tool output, raw sessions,
