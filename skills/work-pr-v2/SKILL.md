@@ -32,7 +32,8 @@ Lead with progress, outcome, blocker, or decision; avoid unchanged status update
 Keep risks and material evidence gaps visible. Put supporting checks and requested
 commit/model/effort/token tables in PR `<details>`; link there from unsupported
 chat renderers. Count available review/retry usage, label shared costs and UNKNOWN
-fields, and exclude raw sessions and secrets. Missing usage is not a merge gate.
+fields. Publish only aggregate metadata: no prompts, tool output, raw sessions,
+local paths, private run IDs, or secrets. Missing usage is not a merge gate.
 Store useful evidence once and retrieve it as needed; collapsing does not save tokens.
 
 Read context before asking. Ask early for consequential unknowns, including discoveries
