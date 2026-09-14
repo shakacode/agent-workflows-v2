@@ -85,7 +85,7 @@ for the rollout and the differences that affect model and token reporting.
 
 Follow the [getting-started guide](docs/getting-started.md) for prerequisites,
 copyable install commands, a GitHub issue or Linear task, upgrades, and removal.
-It installs into one chosen repo without changing your global agent configuration.
+It installs one user skill outside your repositories; each repo keeps its own policy.
 The helpers protect GitHub operations and merge requirements; your agent's
 permissions protect execution and credentials. The same baseline applies to
 public and private repos. See [what the helpers protect](docs/working-with-your-agent.md#what-the-helpers-protect).

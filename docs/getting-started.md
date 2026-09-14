@@ -1,7 +1,8 @@
 # Install and complete your first task
 
-This guide uses Codex CLI and installs the skill into one repository. Claude Code and
-Cursor support remain planned. You do not need to know the previous workflow pack.
+This guide uses Codex CLI and installs one user skill, available across your
+repositories. Claude Code and Cursor support remain planned. You do not need to
+know the previous workflow pack.
 
 ## 1. Install the prerequisites
 
@@ -32,50 +33,46 @@ git -C "$HOME/agent-tools/agent-workflows-v2" log -1 --oneline
 Review the source you will run. Keep this checkout separate from the application
 you want to change. If it already exists, use the upgrade instructions below.
 
-## 3. Install into the repository you want to change
+## 3. Install outside your repositories
 
-Open a terminal at that repository's root. Replace the path on the first line:
-
-```bash
-cd /path/to/your/repository
-git rev-parse --show-toplevel
-"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$PWD/.agents/skills"
-```
-
-The installer creates `.agents/skills/work-pr-v2` as a link to the trusted source.
-It refuses to overwrite another skill. Keep that machine-local link out of commits:
+Use Codex's user skills directory so a branch change cannot replace this skill:
 
 ```bash
-printf '%s\n' '/.agents/skills/work-pr-v2' >> "$(git rev-parse --git-path info/exclude)"
+"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-The project link is for skill discovery. Git can replace an ignored link when a
-branch tracks the same path. Before changing branches, the agent resolves the
-trusted source outside the consumer repo and keeps using its absolute helper path:
+The installer creates `$HOME/.agents/skills/work-pr-v2` as a link to the trusted
+source and refuses to overwrite another skill. It adds this skill for your user;
+it does not change other skills, authentication, hooks, or configuration files.
+Keep both the link and source outside any candidate repository. Do not use a
+repository-provided skill with the same name in place of this trusted installation.
 
-```bash
-"$HOME/agent-tools/agent-workflows-v2/skills/work-pr-v2/scripts/aw" --help
-```
-
-Never load or execute a replacement skill or helper supplied by the branch. The
-installer does not enforce this boundary; the owning agent and host must honor it.
+If you used the earlier project-local instructions, remove that old link only if
+it is still a symlink. If Git replaced it with tracked files, do not delete those
+files blindly or start a task using them; resolve the conflicting installation first.
 
 Your existing `AGENTS.md`, `.agents/bin/` commands, and workflow configuration stay
 in place. The agent uses their setup, validation, and review instructions. If those
 commands are undocumented, establish them before implementation; the workflow
 source's `bin/validate` is not a substitute for your application's checks.
 
-Project installation does not disable global instructions, skills, or hooks. If
+Installing this skill does not disable other instructions, skills, or hooks. If
 you already run another workflow pack, use your host's settings to disable
 conflicting workflows for the pilot. A separate checkout alone is not a security
 sandbox or an isolated agent configuration.
 
 ## 4. Start Codex in that repository
 
-Open the folder as your Codex project and start a new task, or run `codex` from
-the same terminal. In the CLI, `/skills` should list `work-pr-v2`; if it does not,
-restart Codex and confirm you are in the repository where you installed it.
-[Codex discovers project skills and follows symlinks](https://developers.openai.com/codex/skills#where-to-save-skills).
+Open the repository you want to change as your Codex project and start a new task,
+or replace the path below and run:
+
+```bash
+cd /path/to/your/repository
+codex
+```
+
+In the CLI, `/skills` should list the user-installed `work-pr-v2`; restart Codex if
+it is missing. [Codex discovers user skills and follows symlinks](https://developers.openai.com/codex/skills#where-to-save-skills).
 
 For a GitHub issue, replace the bracketed URL and send:
 
@@ -120,14 +117,16 @@ for questions, writing preferences, and security boundaries.
 Upgrade the trusted source, review its changes, then start a new Codex task:
 
 ```bash
+git -C "$HOME/agent-tools/agent-workflows-v2" switch main
 git -C "$HOME/agent-tools/agent-workflows-v2" pull --ff-only
 ```
 
-The existing link uses the updated source. To remove this installation, run the
-following from the consumer repository; it removes only the skill link:
+Switching to `main` also resumes normal upgrades after a rollback to a detached
+commit. Preserve local edits; do not force a switch or discard changes.
+The existing link uses the updated source. To remove only this user skill link:
 
 ```bash
-test -L .agents/skills/work-pr-v2 && unlink .agents/skills/work-pr-v2
+test -L "$HOME/.agents/skills/work-pr-v2" && unlink "$HOME/.agents/skills/work-pr-v2"
 ```
 
 For rollback without removal, point the trusted source checkout at a previously
