@@ -1,7 +1,11 @@
 # Install and complete your first task
 
-This guide uses Codex CLI and installs the skill into one repository. Claude Code and
-Cursor support remain planned. You do not need to know the previous workflow pack.
+This guide uses Codex CLI and installs the skill into a dedicated pilot directory.
+Claude Code and Cursor support remain planned. You do not need to know the previous
+workflow pack.
+
+Use this pilot for ordinary changes in a trusted checkout. This recipe does not
+establish isolation for executing untrusted contributor code.
 
 ## 1. Install the prerequisites
 
@@ -32,62 +36,83 @@ git -C "$HOME/agent-tools/agent-workflows-v2" log -1 --oneline
 Review the source you will run. Keep this checkout separate from the application
 you want to change. If it already exists, use the upgrade instructions below.
 
-## 3. Install into the repository you want to change
+## 3. Install outside your repositories
 
-Open a terminal at that repository's root. Replace the path on the first line:
-
-```bash
-cd /path/to/your/repository
-git rev-parse --show-toplevel
-"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$PWD/.agents/skills"
-```
-
-The installer creates `.agents/skills/work-pr-v2` as a link to the trusted source.
-It refuses to overwrite another skill. Keep that machine-local link out of commits:
+Use a dedicated directory outside your repositories and global agent profile:
 
 ```bash
-printf '%s\n' '/.agents/skills/work-pr-v2' >> "$(git rev-parse --git-path info/exclude)"
+"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/agent-tools/agent-workflows-v2-pilot/skills"
 ```
 
-The project link is for skill discovery. Git can replace an ignored link when a
-branch tracks the same path. Before changing branches, the agent resolves the
-trusted source outside the consumer repo and keeps using its absolute helper path:
+The installer creates a `work-pr-v2` link in that directory and refuses to overwrite
+another skill. Keep both link and source outside candidate repositories. It changes
+no global profile, authentication, hooks, or other skills.
 
-```bash
-"$HOME/agent-tools/agent-workflows-v2/skills/work-pr-v2/scripts/aw" --help
-```
+Codex will not automatically list this pilot in `/skills`. The prompts below name
+the trusted file explicitly. That path alone does not disable repository skill
+metadata: use the startup directory in the next step as well.
 
-Never load or execute a replacement skill or helper supplied by the branch. The
-installer does not enforce this boundary; the owning agent and host must honor it.
+If you used the earlier project-local instructions, remove that old link only if
+it is still a symlink. If Git replaced it with tracked files, do not delete those
+files blindly or start a task using them; resolve the conflicting installation first.
 
 Your existing `AGENTS.md`, `.agents/bin/` commands, and workflow configuration stay
 in place. The agent uses their setup, validation, and review instructions. If those
 commands are undocumented, establish them before implementation; the workflow
 source's `bin/validate` is not a substitute for your application's checks.
 
-Project installation does not disable global instructions, skills, or hooks. If
+Installing this skill does not disable other instructions, skills, or hooks. If
 you already run another workflow pack, use your host's settings to disable
 conflicting workflows for the pilot. A separate checkout alone is not a security
 sandbox or an isolated agent configuration.
 
-## 4. Start Codex in that repository
+## 4. Start Codex in a separate working directory
 
-Open the folder as your Codex project and start a new task, or run `codex` from
-the same terminal. In the CLI, `/skills` should list `work-pr-v2`; if it does not,
-restart Codex and confirm you are in the repository where you installed it.
-[Codex discovers project skills and follows symlinks](https://developers.openai.com/codex/skills#where-to-save-skills).
+Create a fresh working directory for each new task. Keep the installed link and
+trusted source outside both this directory and the target repo. Replace the target path:
+
+```bash
+mkdir -p "$HOME/agent-tools/agent-workflows-v2-sessions"
+aw_session_dir=$(mktemp -d "$HOME/agent-tools/agent-workflows-v2-sessions/run.XXXXXX")
+cd "$aw_session_dir"
+codex --sandbox workspace-write --add-dir /absolute/path/to/your/repository
+```
+
+Starting inside a candidate repo can load its skill descriptions before your
+prompt is read. Starting in the installation directory would make its link writable
+by test code. On Codex CLI 0.154.0, we checked that this separate startup keeps
+candidate skill metadata out of the initial prompt while including the target
+repo as a writable directory. This check used `codex debug prompt-input`; it was
+a startup check, not a full agent task. A native workspace sandbox probe also
+denied writes to the separate source and installed link while allowing writes in
+the working directory and target. App startup, other versions, and complete host
+isolation remain unverified.
+
+Keep this session root in the separate working directory; run repository commands
+with the target repo as their working directory. Do not start the next task in a
+directory writable by the preceding task. The workspace-write sandbox does not
+establish that code or dependencies are trustworthy or remove secrets from text
+you publish. Do not approve an escape from these boundaries merely to make a check pass.
+
+Use the explicit path below instead of selecting `$work-pr-v2` by name. Keep this
+trusted instruction in each new task; do not substitute a repository copy. If you
+chose a different install directory, replace the path in the prompt.
 
 For a GitHub issue, replace the bracketed URL and send:
 
 ```text
-Use $work-pr-v2 to fix <full GitHub issue URL> in this repository.
+Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
+as the trusted workflow for this task. Do not substitute a repository copy.
+Work in /absolute/path/to/your/repository and fix <full GitHub issue URL>.
 Open a PR and ask before merging.
 ```
 
 For a Linear task:
 
 ```text
-Use $work-pr-v2 to implement <full Linear task URL> in this repository.
+Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
+as the trusted workflow for this task. Do not substitute a repository copy.
+Work in /absolute/path/to/your/repository and implement <full Linear task URL>.
 Read the task using the available Linear connection. Open a PR and ask before merging.
 Keep private task content and links out of a public PR unless authorized to share them.
 ```
@@ -120,14 +145,16 @@ for questions, writing preferences, and security boundaries.
 Upgrade the trusted source, review its changes, then start a new Codex task:
 
 ```bash
+git -C "$HOME/agent-tools/agent-workflows-v2" switch main
 git -C "$HOME/agent-tools/agent-workflows-v2" pull --ff-only
 ```
 
-The existing link uses the updated source. To remove this installation, run the
-following from the consumer repository; it removes only the skill link:
+Switching to `main` also resumes normal upgrades after a rollback to a detached
+commit. Preserve local edits; do not force a switch or discard changes.
+The existing link uses the updated source. To remove only this pilot skill link:
 
 ```bash
-test -L .agents/skills/work-pr-v2 && unlink .agents/skills/work-pr-v2
+test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2"
 ```
 
 For rollback without removal, point the trusted source checkout at a previously
