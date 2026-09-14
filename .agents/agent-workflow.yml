@@ -1,0 +1,4 @@
+trusted_actions:
+  - actions/checkout
+  - anthropics/claude-code-action
+  - ruby/setup-ruby
