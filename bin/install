@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+require 'optparse'
+
+skills_dir = nil
+parser = OptionParser.new do |options|
+  options.banner = 'Usage: bin/install --skills-dir DIR'
+  options.on('--skills-dir DIR', 'Explicit destination for the isolated skill') { |value| skills_dir = value }
+  options.on('-h', '--help', 'Show this help') do
+    puts options
+    exit
+  end
+end
+
+begin
+  parser.parse!
+  raise OptionParser::MissingArgument, '--skills-dir DIR' if skills_dir.nil?
+  raise OptionParser::InvalidArgument, 'DIR must not be empty' if skills_dir.strip.empty?
+  raise OptionParser::InvalidArgument, ARGV.join(' ') unless ARGV.empty?
+
+  source = File.realpath('../skills/work-pr-v2', __dir__)
+  destination = File.join(File.expand_path(skills_dir), 'work-pr-v2')
+  if File.symlink?(destination) && File.readlink(destination) == source
+    puts "Already installed: #{destination}"
+  elsif File.exist?(destination) || File.symlink?(destination)
+    abort "Refusing existing destination: #{destination}"
+  else
+    FileUtils.mkdir_p(File.dirname(destination))
+    File.symlink(source, destination)
+    puts "Installed: #{destination} -> #{source}"
+  end
+rescue OptionParser::ParseError, SystemCallError => e
+  warn e.message
+  exit 1
+end
