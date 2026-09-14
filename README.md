@@ -2,7 +2,7 @@
 
 A small, portable workflow for one agent and one pull request. Public pilot.
 
-For larger work, see [splitting tasks and GitHub stacks](docs/working-with-your-agent.md#when-a-task-needs-several-prs).
+For larger work, see [splitting tasks into focused PRs](docs/working-with-your-agent.md#when-a-task-needs-several-prs).
 
 Give the agent a task or PR link. It implements the change, runs the repository's
 checks, explains the code on the PR, handles review, and reaches your requested

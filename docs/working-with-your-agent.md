@@ -53,39 +53,10 @@ is required. Report shared planning/review usage once and link the commit mappin
 For example: “I recommend two PRs: first add and test the date parser, then wire
 it into the import screen with its UI tests. The second depends on the first.”
 
-Prefer ordinary PRs against the repository's base when they are independent.
-For dependent work, merging the first slice before starting the next keeps the
-existing Ask/Auto path simple. A native GitHub stack is useful when dependent
-changes need to be prepared or reviewed before the lower PR merges: each upper
-PR targets the branch below it and shows only its additional change.
-
-**Current V2 limitation:** native stacks can be prepared and reviewed with GitHub's
-tools, but `aw merge` cannot merge them. Explain this before choosing a stack;
-prefer sequential ordinary PRs when automatic delivery through V2 is needed now.
-If a native stack is chosen, stop at a reviewed handoff. Do not substitute a merge
-through the website, `gh stack`, or an API for V2's unsupported stack merge path,
-or change the stack's structure to make the ordinary helper work.
-
-GitHub's [stacked PR feature](https://docs.github.com/en/pull-requests/get-started/about-stacked-prs)
-is in public preview. Use its website or the documented
-[`gh stack` extension](https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-stacked-pull-requests)
-for preparation and review, including branch relationships and cascading rebases;
-verify availability before use.
-All branches must be in the same repository. Keep a walkthrough, relevant tests,
-review, and the stack's final base branch requirements for every PR. These checks
-and approvals come from that base, not the intermediate branch below a PR.
-After a lower PR or the base changes, inspect the updated dependent diffs and
-refresh affected verification, reviews, and walkthroughs for the resulting heads.
-Do not repeat unchanged evidence or treat a rebased head as already verified.
-
-Merging an upper PR also merges every unmerged PR below it. Authority for one PR
-does not authorize that larger group. At handoff, recommend the lowest ready PR;
-identify the whole group and its authority if proposing a broader merge. GitHub currently
-does not support delayed auto-merge for stacks, and its
-[stack merge API](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks)
-is asynchronous. V2's immediate single-head merge helper is not compatible.
-A tested native stack merge path is separate work; creating a stack alone does
-not establish that support. GitHub owns stack state; V2 keeps one delivery owner.
+Use ordinary PRs against the repository's base for independent work. For dependent
+work, merge the first slice before starting the next; each uses the existing
+Ask/Auto workflow. Native stacked PRs are deferred until a real pilot demonstrates
+that need. This pilot does not create or merge native stacks.
 
 ## A short message, with evidence available
 
@@ -95,28 +66,39 @@ answers: what happened, where are the PRs, and is a decision still needed?
 Keep a short validation result visible. Required decisions, important risks, and
 limitations that change the conclusion must also stay visible.
 
-The following is an illustrative PR summary, not a report of an actual change:
+### Identify AI-authored posts
 
-> The import now identifies invalid dates and accepts the remaining valid rows.
-> Focused tests and required CI pass. Ready for your merge decision.
-> Complete token usage is UNKNOWN because external reviewer usage is unavailable.
+Start GitHub descriptions, comments, and reviews with a short attribution line,
+including when posting through a maintainer's account. For example:
 
-<details>
-<summary>Example: verification and usage details</summary>
+> 🤖 Codex · OpenAI · gpt-6-astra · xhigh (configured)
 
-The PR would record the tested commit, actual commands and results, and links to
-CI. Its code walkthrough would explain the change and important code choices.
-Model and usage rows would identify the contributing commits, configured model
-and effort, available native token counts, shared work, and missing contributors.
-These are supporting records; opening this block is not an extra approval step.
+Use the actual agent/provider and known model/effort; label unavailable values
+UNKNOWN. The line identifies the writer, not every contributing reviewer. Detailed
+contributor usage belongs in the usage record. Preserve human text when editing;
+label a mixed contribution as AI-edited rather than claiming authorship of it all.
 
-</details>
+### Make the PR description useful first
 
-Use descriptive labels such as “Verification” and “Model and token usage.” Keep
-the walkthrough's main explanation outside the collapsed evidence. In a chat
-that does not render collapsible blocks, link to the PR's details instead of
-pasting its logs. A failure or changed risk should appear in the next update,
-even if the supporting command output is collapsed.
+Use short headings for the change and its user impact. When discussing a workflow,
+name it (such as “the `$aw` PR skill”) instead of saying “the skill” without context.
+Link to the current code walkthrough
+and review result; do not repeat their complete contents. Show decisions, blockers,
+and missing required review prominently. Put supporting validation, optional review
+history, routine rollback, and usage in clearly labeled details.
+
+### Keep one current walkthrough
+
+Update the existing walkthrough for wording changes at the same revision. A new
+commit needs a walkthrough attached to that commit. After publishing and confirming
+its link, edit your older walkthroughs: show “Superseded — read the current
+walkthrough” with that link, then preserve the old body inside `<details>` labeled
+with its original revision. Update the PR description's link. Do not relabel old
+verification as current or overwrite human edits. Leave independent reviewers'
+reports intact.
+
+In chat, link to supporting records instead of reproducing them. A changed risk or
+missing required evidence belongs in the next visible update.
 
 Collapsed content remains readable and public wherever the PR is public. It is
 not private storage. Keep prompts, raw sessions, private identifiers, and secrets
