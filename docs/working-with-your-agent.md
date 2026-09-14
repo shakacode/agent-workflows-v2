@@ -61,21 +61,23 @@ PR targets the branch below it and shows only its additional change.
 **Current V2 limitation:** native stacks can be prepared and reviewed with GitHub's
 tools, but `aw merge` cannot merge them. Explain this before choosing a stack;
 prefer sequential ordinary PRs when automatic delivery through V2 is needed now.
-If a native stack is chosen, report its merge handoff explicitly. Do not silently
-change its structure or bypass checks to make the ordinary merge helper work.
+If a native stack is chosen, stop at a reviewed handoff. Do not substitute a merge
+through the website, `gh stack`, or an API for V2's unsupported stack merge path,
+or change the stack's structure to make the ordinary helper work.
 
 GitHub's [stacked PR feature](https://docs.github.com/en/pull-requests/get-started/about-stacked-prs)
 is in public preview. Use its website or the official `gh stack` extension for
 branch relationships and cascading rebases; verify availability before use.
 All branches must be in the same repository. Keep a walkthrough, relevant tests,
-review, and the destination branch's required checks/approvals for every PR.
+review, and the stack's final base branch requirements for every PR. These checks
+and approvals come from that base, not the intermediate branch below a PR.
 After a lower PR or the base changes, inspect the updated dependent diffs and
 refresh affected verification, reviews, and walkthroughs for the resulting heads.
 Do not repeat unchanged evidence or treat a rebased head as already verified.
 
 Merging an upper PR also merges every unmerged PR below it. Authority for one PR
-does not authorize that larger group. Default to the lowest ready PR; verify the
-entire proposed group and its authority before any broader merge. GitHub currently
+does not authorize that larger group. At handoff, recommend the lowest ready PR;
+identify the whole group and its authority if proposing a broader merge. GitHub currently
 does not support delayed auto-merge for stacks, and its
 [stack merge API](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks)
 is asynchronous. V2's immediate single-head merge helper is not compatible.

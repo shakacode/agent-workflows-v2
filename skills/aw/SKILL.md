@@ -17,7 +17,8 @@ sharing is authorized.
 Default to one PR. For a larger task, recommend the smallest useful split, retain
 one owner, and follow [task splitting](../../docs/working-with-your-agent.md#when-a-task-needs-several-prs).
 Keep tests with their behavior. Apply verification, review, and authority to each
-PR. Native stacks need separate merge support: do not pass them to `aw merge`.
+PR. Native stacks end at a reviewed handoff; do not merge them through `aw merge`
+or substitute another tool for its unsupported stack merge path.
 
 ## Use the repository seam
 
