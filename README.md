@@ -102,11 +102,11 @@ claimed. See the [seam boundary](docs/pilot-plan.md#repository-seam).
 
 Codex is the first reference host. Keep one shared skill and GitHub workflow;
 validate Claude Code next, then Cursor, before claiming full support for them.
-Claude Code remains a compatibility target. Cursor has an
-[app install recipe](docs/getting-started.md#use-aw-in-cursor); complete
-delivery and usage reporting remain unverified. The Codex usage reader names its
-tested record formats and reports gaps; Claude and Cursor reporting remain
-unverified.
+Claude Code remains a compatibility target. Cursor has a
+[user-skills install path](docs/getting-started.md#use-aw-in-cursor); Agent-chat
+discovery after that install, complete delivery, and usage reporting remain
+unverified. The Codex usage reader names its tested record formats and reports
+gaps; Claude and Cursor reporting remain unverified.
 See [tested host support](docs/host-support.md) and the
 [host boundary](docs/pilot-plan.md#host-boundary)
 for the rollout and the differences that affect model and token reporting.

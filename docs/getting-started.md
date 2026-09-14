@@ -1,9 +1,10 @@
 # Install and complete your first task
 
 This guide installs `$aw` in the Codex app, starts a fresh Codex CLI session, or
-installs `$aw` for Cursor Agent chat. Claude Code support remains planned.
-Cursor has an app install recipe; complete delivery, isolation, and usage
-reporting remain unverified. You do not need to know the previous workflow pack.
+installs the `aw` link for Cursor. Claude Code support remains planned.
+Cursor has a user-skills install path; Agent-chat discovery after that install,
+complete delivery, isolation, and usage reporting remain unverified. You do not
+need to know the previous workflow pack.
 
 Use this pilot for ordinary changes in a trusted checkout. This recipe does not
 establish isolation for executing untrusted contributor code.
@@ -78,14 +79,21 @@ same trusted link into Cursor's user skills directory:
 "$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.cursor/skills"
 ```
 
-In a Cursor Agent chat for the repository you want to change, send:
+A successful installer message only means the symlink exists. It does not mean
+Cursor loaded the skill. Start a **new** Agent chat and confirm `/aw` appears
+in that chat's skill list before sending a task. If it does not appear, the
+install has not succeeded for that session.
+
+When `/aw` is listed, send:
 
 ```text
 $aw Fix the failing search test
 ```
 
-Typing `/aw` also attaches the skill. Pin it as a Custom Mode when you want it
-for the whole session. Start a new chat if the skill does not appear.
+You can also type `/aw`, or pin it as a Custom Mode for the whole session. A chat
+that started before the link existed will not pick it up. If you must continue
+that chat, read the trusted `SKILL.md` from the installed link and treat catalog
+discovery as still unconfirmed.
 
 `aw work` starts Codex and is not a Cursor launcher. Keep the trusted source
 outside the repository you are changing. Do not copy `aw` into a project
