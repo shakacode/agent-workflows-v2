@@ -4,6 +4,9 @@ This guide uses Codex CLI and installs the skill into a dedicated pilot director
 Claude Code and Cursor support remain planned. You do not need to know the previous
 workflow pack.
 
+Use this pilot for ordinary changes in a trusted checkout. This recipe does not
+establish isolation for executing untrusted contributor code.
+
 ## 1. Install the prerequisites
 
 Install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
@@ -63,27 +66,33 @@ you already run another workflow pack, use your host's settings to disable
 conflicting workflows for the pilot. A separate checkout alone is not a security
 sandbox or an isolated agent configuration.
 
-## 4. Start Codex from the trusted pilot directory
+## 4. Start Codex in a separate working directory
 
-Keep the session's root outside the candidate repository. Replace the target path:
+Create a fresh working directory for each new task. Keep the installed link and
+trusted source outside both this directory and the target repo. Replace the target path:
 
 ```bash
-cd "$HOME/agent-tools/agent-workflows-v2-pilot"
+mkdir -p "$HOME/agent-tools/agent-workflows-v2-sessions"
+aw_session_dir=$(mktemp -d "$HOME/agent-tools/agent-workflows-v2-sessions/run.XXXXXX")
+cd "$aw_session_dir"
 codex --sandbox workspace-write --add-dir /absolute/path/to/your/repository
 ```
 
 Starting inside a candidate repo can load its skill descriptions before your
-prompt is read. On Codex CLI 0.154.0, we checked that this external startup keeps
+prompt is read. Starting in the installation directory would make its link writable
+by test code. On Codex CLI 0.154.0, we checked that this separate startup keeps
 candidate skill metadata out of the initial prompt while including the target
 repo as a writable directory. This check used `codex debug prompt-input`; it was
-not a full agent task or proof of complete host security. App startup and other
-versions need their own verification before an equivalent claim.
+a startup check, not a full agent task. A native workspace sandbox probe also
+denied writes to the separate source and installed link while allowing writes in
+the working directory and target. App startup, other versions, and complete host
+isolation remain unverified.
 
-Keep this session root in the pilot directory; run repository commands with the
-target repo as their working directory. Do not restart or resume the pilot from
-the candidate repo without separately verified host isolation. The workspace-write
-sandbox is an execution boundary; it does not establish that code or dependencies
-are trustworthy or remove secrets from text you publish.
+Keep this session root in the separate working directory; run repository commands
+with the target repo as their working directory. Do not start the next task in a
+directory writable by the preceding task. The workspace-write sandbox does not
+establish that code or dependencies are trustworthy or remove secrets from text
+you publish. Do not approve an escape from these boundaries merely to make a check pass.
 
 Use the explicit path below instead of selecting `$work-pr-v2` by name. Keep this
 trusted instruction in each new task; do not substitute a repository copy. If you
