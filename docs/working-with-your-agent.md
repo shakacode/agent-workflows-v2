@@ -44,8 +44,9 @@ with its prerequisites, or wait until the combined change is safe.
 The agent recommends a short ordered list: what each PR delivers, its dependency,
 and how to verify it. It can make routine splits within the authorized task;
 changed product scope or consequential partial-release behavior needs a decision.
-Keep the same owner and task. Link the PRs from the existing work item when
-authorized, and state what remains; a partial merge does not finish the task or
+Keep the same owner and task. Record PR dependencies and remaining work in PR
+descriptions, keeping private context in its original tracker. Link the PRs from
+that work item when authorized. A partial merge does not finish the task or
 justify closing its issue. No new tracker, task per slice, or coordination service
 is required. Report shared planning/review usage once and link the commit mappings.
 
@@ -66,8 +67,10 @@ through the website, `gh stack`, or an API for V2's unsupported stack merge path
 or change the stack's structure to make the ordinary helper work.
 
 GitHub's [stacked PR feature](https://docs.github.com/en/pull-requests/get-started/about-stacked-prs)
-is in public preview. Use its website or the official `gh stack` extension for
-branch relationships and cascading rebases; verify availability before use.
+is in public preview. Use its website or the documented
+[`gh stack` extension](https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-stacked-pull-requests)
+for preparation and review, including branch relationships and cascading rebases;
+verify availability before use.
 All branches must be in the same repository. Keep a walkthrough, relevant tests,
 review, and the stack's final base branch requirements for every PR. These checks
 and approvals come from that base, not the intermediate branch below a PR.
@@ -88,7 +91,7 @@ not establish that support. GitHub owns stack state; V2 keeps one delivery owner
 
 One owner communicates with you even when bounded assistants help with the work.
 Updates explain meaningful progress or a change in direction. The final message
-answers: what happened, where is the PR, and is a decision still needed?
+answers: what happened, where are the PRs, and is a decision still needed?
 Keep a short validation result visible. Required decisions, important risks, and
 limitations that change the conclusion must also stay visible.
 

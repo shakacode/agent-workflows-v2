@@ -24,7 +24,7 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | R2 | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. |
 | R3 | The two merge preferences are `ask` and `auto`. If authority is unset, ask early which the user wants for this task; default to `ask` without an answer. Reuse established authority. A review-only or PR-only request stops there regardless of a broader merge preference. |
 | R4 | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. |
-| R5 | `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted, ordinary change when the same gates pass without another question. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. |
+| R5 | For ordinary PRs, `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted change when the same gates pass without another question. Native stacks follow R1's linked handoff guidance. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. |
 | R6 | Readiness and merge use live GitHub facts and the exact expected head. Missing/unreadable required evidence, incomplete checks, stale heads, conflicts, disallowed merges, or unresolved consequential feedback block. Never bypass GitHub protection. |
 | R7 | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. |
 | R8 | Install the self-contained skill into an explicitly chosen skills directory, with both link and source outside candidate-writable directories. Preserve existing skills and user files. Test installation in isolation; installation does not disable other instructions or create a sandbox. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
@@ -260,11 +260,8 @@ This plan and the README are explanatory, never runtime configuration.
 
 ## Delivery plan
 
-One PR is the default unit of delivery, not a ceiling on task scope. Use the
-[splitting guidance](working-with-your-agent.md#when-a-task-needs-several-prs)
-for larger work. Sequential ordinary PRs retain the existing merge path; native
-GitHub stack preparation/review is optional, with merge support still unverified
-and unsupported by `aw merge`. Do not add a stack scheduler or state store.
+Apply R1's [splitting guidance](working-with-your-agent.md#when-a-task-needs-several-prs)
+to larger work.
 
 The maintainer approved the next feature set on September 14: explicit TDD and
 visual evidence, native usage reporting, a real consumer first-use trial, gem

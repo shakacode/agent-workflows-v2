@@ -127,4 +127,5 @@ authority for changed scope. Never bypass protection or accept missing required 
 Leave queues and delayed auto-merge unchanged; this pilot merges immediately while
 the task is active. Explain pending gates; retry only after meaningful change and
 inspect live state after uncertain submission. Do not schedule background retries.
-Verify the result; report the PR link, outcome, brief validation, and remaining blocker.
+Verify each result; report every PR's link and outcome, brief validation, and
+remaining task work or blocker.
