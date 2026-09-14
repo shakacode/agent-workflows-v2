@@ -306,8 +306,10 @@ observation.
 
 The first deliverable is tested code and a useful real-PR walkthrough, followed
 by its authorized merge. A normal maintainer-authorized bootstrap merge does not
-demonstrate the product's protected automatic-merge path. That demonstration and
-repeated consumer use remain UNKNOWN until observed.
+demonstrate the product's protected automatic-merge path. That path was subsequently
+observed on [PR #3](https://github.com/shakacode/agent-workflows-v2/pull/3) and the
+later pilot PRs, with current-head walkthroughs and enforced native checks.
+Repeated consumer use remains required before claiming broader adoption.
 
 The private-hosting restriction was resolved by the authorized public visibility
 change on September 14. The active [main ruleset](https://github.com/shakacode/agent-workflows-v2/rules/23252676)

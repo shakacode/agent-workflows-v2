@@ -13,7 +13,8 @@ For example: **Adversarial review: unavailable — Claude CLI could not authenti
 Say **pending** while running, and **not requested** with the reason when review is
 not required. A skipped, failed, missing, or stale review is never a successful one.
 If the user or repository requires it, keep the PR unready for merge until that
-review completes or the maintainer explicitly changes the requirement. Do not
+review completes or the authority that set it explicitly changes the requirement:
+the requesting user controls their request; maintainers control repository policy. Do not
 silently substitute a different reviewer. Disclose optional gaps too.
 
 The GitHub action intentionally skips changes to its own workflow. Its job summary

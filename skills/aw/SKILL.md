@@ -40,7 +40,9 @@ Write plain English: explain the outcome and why, using established project term
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
 Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
-for each task, choosing `implementation`, `review`, `integration`, or
+for each task. Use `--all-turns` only when the selected session contains solely
+this task; otherwise retain earlier relevant turn reports alongside this one.
+Choose `implementation`, `review`, `integration`, or
 `shared-planning` to match the work. Include available retry/contributor records
 and label shared intervals (see `../../docs/usage-reporting.md` relative to the
 resolved skill directory). Put supporting tables and checks in PR `<details>`; without a PR,

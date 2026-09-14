@@ -8,12 +8,34 @@ module AgentWorkflows
   class CodexUsage
     attr_reader :responses, :versions, :gaps
 
-    def initialize(files, turns)
+    def initialize(files, turns, all_turns: false)
       @responses = {}
+      @all_turns = all_turns
       @versions = []
       @gaps = []
       files.each { |file| read(file, turns) }
     end
+
+    def self.discover
+      identity = ENV.fetch('CODEX_THREAD_ID', nil)
+      return [] unless identity&.match?(/\A[0-9a-f-]{36}\z/)
+
+      home = ENV.fetch('CODEX_HOME', File.expand_path('~/.codex'))
+      files = Dir.glob(File.join(home, 'sessions', '*', '*', '*', "*#{identity}.jsonl"))
+      return [] unless files.one?
+
+      metadata = JSON.parse(File.open(files.first, &:readline))
+      matching_source?(metadata, identity) ? files : []
+    rescue JSON::ParserError, SystemCallError, EOFError
+      []
+    end
+
+    def self.matching_source?(metadata, identity)
+      metadata.is_a?(Hash) && metadata['type'] == 'session_meta' &&
+        metadata['payload'].is_a?(Hash) && metadata['payload']['id'] == identity
+    end
+
+    private_class_method :matching_source?
 
     private
 
@@ -29,6 +51,7 @@ module AgentWorkflows
     end
 
     def selected_turns(turns)
+      turns = @records.map { |record| record['turn_id'] } if @all_turns
       selected = turns.empty? ? [@context['turn_id']] : turns
       selected.grep(String).reject { |turn| turn.strip.empty? }
     end
@@ -102,38 +125,45 @@ module AgentWorkflows
     def self.parser(options)
       OptionParser.new do |flags|
         flags.banner = 'Usage: aw usage --commit SHA[,SHA] --contribution NAME [options]'
-        flags.on('--file PATH', 'Native JSONL; repeat for contributors/resumes') { |v| options[:files] << v }
+        source_options(flags, options)
         flags.on('--commit SHA', 'Affected full commit SHAs, comma separated') { |v| options[:commit] = v }
         flags.on('--contribution NAME', 'Contribution category (see guide)') { |v| options[:contribution] = v }
-        flags.on('--turn ID', 'Select a native turn; repeat for a shared interval') { |v| options[:turns] << v }
         flags.on('-h', '--help') { options[:help] = true }
       end
     end
 
+    def self.source_options(flags, options)
+      flags.on('--file PATH', 'Native JSONL; repeat for contributors/resumes') { |v| options[:files] << v }
+      flags.on('--all-turns', 'Only for sources dedicated to this task') { options[:all_turns] = true }
+      flags.on('--turn ID', 'Select a native turn; repeat for a shared interval') { |v| options[:turns] << v }
+    end
+
     def self.valid_mapping?(options)
       commits = options[:commit].to_s.split(',')
-      !commits.empty? && commits.all? { |commit| commit.match?(/\A[0-9a-f]{40}\z/) } &&
+      !(options[:all_turns] && options[:turns].any?) &&
+        !commits.empty? && commits.all? { |commit| commit.match?(/\A[0-9a-f]{40}\z/) } &&
         %w[implementation review integration shared-planning].include?(options[:contribution])
     end
 
     def initialize(options)
       @options = options
       @inferred = options[:files].empty?
-      @options[:files] = discover if @inferred
-      @source = CodexUsage.new(@options[:files], @options[:turns])
+      @options[:files] = CodexUsage.discover if @inferred
+      @source = CodexUsage.new(@options[:files], @options[:turns], all_turns: options[:all_turns])
       @responses = @source.responses.values
     end
 
     def report
       <<~MARKDOWN
-        Native usage is PARTIAL. #{count}. External reviewer/tool-model usage: UNKNOWN. #{@source.gaps.uniq.join('; ')}
+        Native usage is PARTIAL. #{count}. Scope: #{turn_scope}.
+        External reviewer/tool-model usage: UNKNOWN. #{@source.gaps.uniq.join('; ')}
 
         <details>
         <summary>Native usage</summary>
 
         #{@options[:commit]} / #{@options[:contribution]}
         SHARED source interval: #{interval}. Snapshot through the last observed response.
-        Source selection: #{@inferred ? 'host context' : 'explicit files'}; latest turn unless selected explicitly.
+        Source selection: #{@inferred ? 'host context' : 'explicit files'}.
         Codex source versions: #{versions}.
 
         | Provider | Configured model | Routed model | Effort | Input | Cached input | Output | Reasoning output | Cache writes | Native total |
@@ -146,23 +176,10 @@ module AgentWorkflows
 
     private
 
-    def discover
-      identity = ENV.fetch('CODEX_THREAD_ID', nil)
-      return [] unless identity&.match?(/\A[0-9a-f-]{36}\z/)
+    def turn_scope
+      return 'all turns in selected sources' if @options[:all_turns]
 
-      home = ENV.fetch('CODEX_HOME', File.expand_path('~/.codex'))
-      files = Dir.glob(File.join(home, 'sessions', '*', '*', '*', "*#{identity}.jsonl"))
-      return [] unless files.one?
-
-      metadata = JSON.parse(File.open(files.first, &:readline))
-      matching_source?(metadata, identity) ? files : []
-    rescue JSON::ParserError, SystemCallError, EOFError
-      []
-    end
-
-    def matching_source?(metadata, identity)
-      metadata.is_a?(Hash) && metadata['type'] == 'session_meta' &&
-        metadata['payload'].is_a?(Hash) && metadata['payload']['id'] == identity
+      @options[:turns].empty? ? 'latest turn only per source; earlier turns excluded' : 'explicitly selected turns'
     end
 
     def rows

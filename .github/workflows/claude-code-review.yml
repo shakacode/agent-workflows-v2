@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
 
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-review:
     if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
@@ -31,6 +35,8 @@ jobs:
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
+            HEAD SHA: ${{ github.event.pull_request.head.sha }}
+            CHECKOUT SHA: ${{ github.sha }}
 
             Please review this pull request with a focus on:
             - Code quality and best practices
@@ -38,7 +44,11 @@ jobs:
             - Security implications
             - Performance considerations
 
-            Note: The PR branch is already checked out in the current working directory.
+            The checkout is GitHub's integration commit for this PR head and base.
+            Inspect that checkout and label feedback with the supplied head SHA.
+            If the live PR head changes, report this review as stale.
+            Finish with one top-level comment identifying the head and checkout SHAs,
+            with a findings count or "no findings", even when there are no problems.
 
             Use `gh pr comment` for top-level feedback.
             Use `mcp__github_inline_comment__create_inline_comment` to highlight specific code issues.

@@ -44,7 +44,14 @@ time, and total historical consumption are not inferred from these tokens.
 When host discovery is unavailable or several turns/contributors belong to the
 work, the agent may supply repeated `--file PATH` and `--turn ID` options using
 its private source context. Without `--turn`, each file contributes its latest
-turn. Include available review, retries, and subagent records. The helper counts
+turn. For a session dedicated to one task, use `--all-turns` to include planning,
+implementation, user answers, and merge turns together. It cannot be combined with
+`--turn`. A fresh `aw work` session starts with one task; if it later contains
+unrelated work or inherited history, select relevant turns instead. Never include
+other tasks just to obtain a bigger total. The visible report states its scope;
+latest-turn output is not a whole-task total. Retain earlier non-overlapping task
+reports when continuing in an existing conversation; replace only overlapping
+snapshots. Include available review, retries, and subagent records. The helper counts
 each response ID once across all supplied files, including forked/resumed copies;
 it ignores cumulative snapshots. Conflicting counters, configuration, or interval metadata in response copies yield UNKNOWN.
 Replace an earlier overlapping report instead of adding its totals again.
