@@ -2,8 +2,9 @@
 
 Start with **Codex CLI**, the reference host for this pilot. Follow the
 [getting-started guide](getting-started.md) for installation and your first task.
-Claude Code and Cursor are compatibility targets; neither has a verified V2
-consumer workflow yet.
+Claude Code remains a compatibility target without a verified V2 consumer
+workflow. Cursor now has an app install recipe; complete delivery, isolation,
+and usage reporting remain unverified.
 
 The hosts share one `aw` skill and the same Ruby helpers for GitHub
 operations. Your repository keeps its existing `AGENTS.md`, commands, and policy.
@@ -18,7 +19,7 @@ establish complete usage attribution.
 
 | Capability | Codex CLI 0.154.0 | Claude Code 2.1.267 | Cursor CLI 2026.09.10-fd3934a |
 | --- | --- | --- | --- |
-| Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | CLI options inspected; V2 instruction activation unverified. | Dedicated CLI package version/help checked; V2 instruction activation unverified. |
+| Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | CLI options inspected; V2 instruction activation unverified. | Dedicated CLI package version/help checked. Isolated installer accepted `~/.cursor/skills`. Cursor Desktop 3.20.21 did not list `aw` from `~/.agents/skills` in one Agent session. |
 | OS write boundary | A native workspace sandbox denied writes to the separate trusted source, installed link, and link directory while allowing the session and target checkout. | Native V2 sandbox boundary unverified. | Native V2 sandbox boundary unverified. |
 | Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides through its repository seam; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
 | Usage | Reader matched 14 real CLI responses and repeated-source input without double counting; attribution remains partial. | Complete V2 usage reporting unverified. | Complete V2 token and effort reporting unverified. |
@@ -59,7 +60,15 @@ trusted instruction loading, the write boundary, and the repository's checks.
 The checked Cursor CLI exposes `--workspace`, `--add-dir`, `--sandbox`, and
 `--plugin-dir`. Its public help has no direct skill-file option. The native sandbox
 and V2 delivery have not been exercised, so these flags are not sufficient grounds
-for a supported launch recipe.
+for a supported launch recipe. A later signed-in Cursor Desktop 3.20.21 session
+used the same installer with `--skills-dir` pointed at a Cursor user-skills
+directory. Official Cursor skill discovery includes `~/.cursor/skills` and
+`~/.agents/skills`; that session's skill catalog omitted an already-installed
+`aw` link from `~/.agents/skills`. Use the Cursor user-skills path in
+[getting started](getting-started.md#use-aw-in-cursor). `aw work` remains the
+Codex terminal launcher. An older `cursor-agent` 2025.09.18 on the same machine
+also lacked a skill-file option; do not treat either CLI as a supported V2
+startup recipe.
 
 Inspect the targets in the [official Cursor installation instructions](https://cursor.com/docs/cli/installation)
 before installing. The inspected upstream installer creates both `agent` and

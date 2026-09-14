@@ -142,7 +142,7 @@ not implied by a successful local install.
 | --- | --- | --- |
 | Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. The native reader is tested against desktop and stable CLI records. A fresh CLI task implemented and verified the Astro website guides through the consumer seam. |
 | Claude Code | Compatibility target; next workflow/usage trial. | Native skills and request metadata are documented. Actual V2 activation, complete PR delivery, and usage coverage remain UNKNOWN until tried. |
-| Cursor | Compatibility target; validate after Claude Code. | Native skills and session/model metadata are documented. Full V2 delivery and per-request token/effort coverage remain UNKNOWN; do not promise reporting parity from skill compatibility alone. |
+| Cursor | Compatibility target; validate after Claude Code. | Native skills and session/model metadata are documented. Isolated installer accepted `~/.cursor/skills`. One Cursor Desktop 3.20.21 session did not list `aw` from `~/.agents/skills`. Full V2 delivery and per-request token/effort coverage remain UNKNOWN; do not promise reporting parity from skill compatibility alone. |
 
 The abstractions should follow existing differences:
 

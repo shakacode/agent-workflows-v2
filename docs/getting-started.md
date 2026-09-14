@@ -1,25 +1,29 @@
 # Install and complete your first task
 
-This guide installs `$aw` in the Codex app or starts a fresh Codex CLI session.
-Claude Code and Cursor support remain planned. You do not need to know the previous
-workflow pack.
+This guide installs `$aw` in the Codex app, starts a fresh Codex CLI session, or
+installs `$aw` for Cursor Agent chat. Claude Code support remains planned.
+Cursor has an app install recipe; complete delivery, isolation, and usage
+reporting remain unverified. You do not need to know the previous workflow pack.
 
 Use this pilot for ordinary changes in a trusted checkout. This recipe does not
 establish isolation for executing untrusted contributor code.
 
 ## 1. Install the prerequisites
 
-Install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
-[Git](https://git-scm.com/downloads), [Ruby 3.4](https://www.ruby-lang.org/en/documentation/installation/),
-and [GitHub CLI](https://cli.github.com/). Sign in to Codex and authorize GitHub CLI
-for the repository you will work in. Check your terminal:
+Install [Git](https://git-scm.com/downloads),
+[Ruby 3.4](https://www.ruby-lang.org/en/documentation/installation/),
+and [GitHub CLI](https://cli.github.com/). For the Codex entrances below, also
+install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started).
+For the Cursor entrance, use an existing signed-in Cursor desktop session.
+Authorize GitHub CLI for the repository you will work in. Check your terminal:
 
 ```bash
-codex --version
 git --version
 ruby --version
 gh auth status
 ```
+
+If you are using Codex, also run `codex --version`.
 
 If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ruby
 3.4 available; keep your application's own Ruby/toolchain settings unchanged.
@@ -62,6 +66,33 @@ not, restart Codex. The app uses that task's existing permissions. Installing a
 skill does not change its sandbox; use the terminal launcher below when you want
 its tested startup boundary. Keep the trusted source outside the repository you
 are changing.
+
+### Use $aw in Cursor
+
+Cursor documents user-level discovery from `~/.cursor/skills` and
+`~/.agents/skills`. A Cursor Desktop 3.20.21 Agent session on September 14, 2026
+did not list an already-installed `aw` skill from `~/.agents/skills`. Install the
+same trusted link into Cursor's user skills directory:
+
+```bash
+"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.cursor/skills"
+```
+
+In a Cursor Agent chat for the repository you want to change, send:
+
+```text
+$aw Fix the failing search test
+```
+
+Typing `/aw` also attaches the skill. Pin it as a Custom Mode when you want it
+for the whole session. Start a new chat if the skill does not appear.
+
+`aw work` starts Codex and is not a Cursor launcher. Keep the trusted source
+outside the repository you are changing. Do not copy `aw` into a project
+`.cursor/skills` directory inside a candidate checkout; a branch-provided skill
+is not the trusted workflow. Cursor usage reporting remains UNKNOWN. Missing
+usage is not a merge gate. This recipe does not establish a native write
+boundary or complete PR delivery.
 
 ### Use a fresh Codex terminal session
 
@@ -192,6 +223,12 @@ For the Codex app, remove only the installed link with:
 
 ```bash
 test -L "$HOME/.agents/skills/aw" && unlink "$HOME/.agents/skills/aw"
+```
+
+For Cursor, remove only the installed user-skill link with:
+
+```bash
+test -L "$HOME/.cursor/skills/aw" && unlink "$HOME/.cursor/skills/aw"
 ```
 
 For the dedicated terminal installation:
