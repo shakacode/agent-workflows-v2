@@ -331,7 +331,8 @@ The [packaging guide](packaging.md) explains local trials and the fact that a
 manually linked skill retains its selected gem version until explicitly relinked.
 Do not add the pilot to application bundles or export its test gem environment.
 
-No registry release or global profile installation has occurred. License and
+Registry release remains out of scope. Explicitly requested user skill installation
+uses the same installer without changing other settings. License and
 registry publication approval remain outstanding; packaging does not invent that
 authority. Keep source installation available until the complete packaged first-use
 experience is verified. Use standard RubyGems mechanics rather than a release framework.
@@ -409,7 +410,7 @@ users; neither its backlog nor its advanced feature parity blocks this pilot.
 
 Excluded: fleet coordination, control towers, cross-host leases, automatic task
 replacement, telemetry services, policy schemas, review reducers, release automation,
-external tracker adapters, registry distribution and global profile changes.
+external tracker adapters, registry distribution and unrelated global profile changes.
 Auto-merging ordinary PRs is included; rebuilding autonomous risk calibration is not.
 
 The planning budget is a three-working-day pilot, with a narrow beta estimated
@@ -420,4 +421,5 @@ Stop scope growth when a proposed mechanism does not serve an acceptance case.
 Rollback is removing the pilot skill symlink or using the prior trusted checkout
 revision. No issue state migration, production data change, or V1 replacement
 is required. Public source publication and reviewed, verified pilot PR merges
-are authorized. Registry releases and global profile installation remain out of scope.
+are authorized. The maintainer also requested `$aw` in the Codex app; installation
+of that one user skill is authorized. Registry releases remain out of scope.
