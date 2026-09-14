@@ -1,0 +1,103 @@
+# frozen_string_literal: true
+
+require_relative 'test_helper'
+require 'fileutils'
+require 'rbconfig'
+
+class InstallTest < Minitest::Test
+  def setup
+    @directory = Dir.mktmpdir('workflows-install')
+    @source = File.join(@directory, 'source', 'skills', 'work-pr-v2')
+    @installer = File.join(@directory, 'source', 'bin', 'install')
+    @skills_dir = File.join(@directory, 'isolated profile', 'skills')
+    @destination = File.join(@skills_dir, 'work-pr-v2')
+    FileUtils.mkdir_p([@source, File.dirname(@installer)])
+    FileUtils.cp(File.expand_path('../bin/install', __dir__), @installer)
+    File.write(File.join(@source, 'SKILL.md'), 'version one')
+  end
+
+  def teardown
+    FileUtils.remove_entry(@directory)
+  end
+
+  def test_installs_into_an_explicit_directory_with_spaces
+    output, status = install
+
+    assert status.success?, output
+    assert File.symlink?(@destination)
+    assert_equal File.realpath(@source), File.readlink(@destination)
+    assert_equal 'version one', File.read(File.join(@destination, 'SKILL.md'))
+  end
+
+  def test_repeat_install_keeps_the_same_link
+    install
+    original = File.lstat(@destination).ino
+    output, status = install
+
+    assert status.success?, output
+    assert_equal original, File.lstat(@destination).ino
+  end
+
+  def test_refuses_a_foreign_directory_and_preserves_its_contents
+    FileUtils.mkdir_p(@destination)
+    marker = File.join(@destination, 'keep')
+    File.write(marker, 'user content')
+
+    refute install.last.success?
+    assert_equal 'user content', File.read(marker)
+  end
+
+  def test_refuses_an_existing_file
+    FileUtils.mkdir_p(@skills_dir)
+    File.write(@destination, 'user file')
+
+    refute install.last.success?
+    assert_equal 'user file', File.read(@destination)
+  end
+
+  def test_refuses_a_foreign_symlink
+    foreign = File.join(@directory, 'foreign')
+    FileUtils.mkdir_p([foreign, @skills_dir])
+    File.symlink(foreign, @destination)
+
+    refute install.last.success?
+    assert_equal foreign, File.readlink(@destination)
+    assert File.directory?(foreign)
+  end
+
+  def test_refuses_a_broken_symlink
+    FileUtils.mkdir_p(@skills_dir)
+    missing = File.join(@directory, 'missing')
+    File.symlink(missing, @destination)
+
+    refute install.last.success?
+    assert_equal missing, File.readlink(@destination)
+    refute File.exist?(missing)
+  end
+
+  def test_rejects_invalid_arguments_without_installing
+    [[], ['--skills-dir'], ['--skills-dir', ''], ['--unknown'],
+     ['--skills-dir', @skills_dir, 'extra']].each do |arguments|
+      _output, status = run_installer(*arguments)
+      refute status.success?, arguments.inspect
+      refute File.exist?(@skills_dir)
+    end
+  end
+
+  def test_source_upgrade_is_visible_without_reinstalling
+    install
+    File.write(File.join(@source, 'SKILL.md'), 'version two')
+
+    assert_equal 'version two', File.read(File.join(@destination, 'SKILL.md'))
+  end
+
+  private
+
+  def install
+    run_installer('--skills-dir', @skills_dir)
+  end
+
+  def run_installer(*)
+    Open3.capture2e(RbConfig.ruby, @installer, *)
+  end
+end
