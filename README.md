@@ -1,6 +1,6 @@
 # Agent Workflows V2
 
-A small, portable workflow for one agent and one pull request. Private pilot.
+A small, portable workflow for one agent and one pull request. Public pilot.
 
 Give the agent a task or PR link. It implements the change, runs the repository's
 checks, explains the code on the PR, handles review, and reaches your requested
@@ -28,6 +28,14 @@ The pilot uses an immediate expected-head merge. It does not arm delayed native
 auto-merge or continue running after the owning task ends. Merge queues are not
 supported yet. Native checks must be configured and enforced on the acting user;
 missing evidence or bypass capability produces a clear blocker.
+
+## Host support
+
+Codex is the first reference host. Keep one shared skill and GitHub workflow;
+validate Claude Code next, then Cursor, before claiming full support for them.
+Both are compatibility targets today. Automated usage reporting is not yet
+implemented for any host. See the [host boundary](docs/pilot-plan.md#host-boundary)
+for the rollout and the differences that affect model and token reporting.
 
 ## Try the isolated pilot
 
