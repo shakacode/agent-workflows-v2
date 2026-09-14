@@ -32,12 +32,13 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | R10 | Keep Ruby and instructions small and cohesive. Standard libraries and `gh` own general mechanics; tests exercise retained behavior and concrete failure cases. |
 | R11 | Each agentically generated commit is identifiable in the PR's usage report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
 | R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
+| R13 | One owner communicates outcomes, progress, blockers, and decisions in plain language. Supporting verification and usage records use expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, before or during work, with a recommendation. See [working with your agent](working-with-your-agent.md). |
 
 ## Success evidence and commit attribution
 
 | Outcome | Existing evidence to use | Success criterion |
 | --- | --- | --- |
-| Developer time | Maintainer-reported active minutes and PR decisions/interventions; timestamps alone do not measure human work. | Less active attention and repeated decision-making for comparable accepted changes. |
+| Developer time | Maintainer-reported active minutes and existing task/PR discussion: reading burden, repeated questions, decisions, late clarification, and corrective work. Timestamps alone do not measure human work. | Less active attention, avoidable waiting, and repeated explanation for comparable accepted changes; decisions and outcomes understandable without opening detailed evidence. |
 | Tokens | Native provider usage for implementation, planning, review, retries, and integration; distinguish cached input and output. | Lower total reported consumption per accepted change, including failed attempts; compare like coverage and model/caching mix. |
 | Quality | Behavior verified by tests and real use, consequential review findings, regressions/reverts, and maintainability. | A better accepted result with less corrective work; green tests or fewer lines alone do not prove this. |
 | Delivery time | Task start through accepted/merged outcome, with CI and human waiting identified where known. | Fewer elapsed days without transferring work back to the maintainer. |
@@ -73,6 +74,9 @@ The initial report should follow these rules:
 - Publish only allowlisted aggregate metadata. Keep transcripts, prompts, tool
   outputs, local paths, and private run identifiers out of public reports.
   Retain private source references locally when needed to verify the aggregation.
+  Put the detailed table in a labeled PR `<details>` block, with material coverage
+  gaps in the visible summary. Collapsing is a reading aid, not access control or
+  a reduction in tokens when the same content is loaded by an agent.
 - Usage reporting must not prompt Justin to design an accounting system or
   interrupt each commit. Human active time may be a short estimate at task end;
   absent estimates stay UNKNOWN. Dollar cost is separate from tokens and is
@@ -269,6 +273,69 @@ bypass actors and blocks force-push and deletion. The required approving-review
 count is zero for the single-user pilot; the skill still handles consequential
 review and risk. Record protected automatic-merge evidence on the ordinary PR
 that exercises it rather than treating the ruleset's existence as proof.
+
+## Documentation website
+
+Make the ordinary workflow understandable before asking users to learn its
+implementation. The README is the short entry point; user guides explain tasks
+and decisions; this plan remains a contributor document. The installed skill owns
+agent instructions. The website should render the user guides without becoming
+another source of workflow policy.
+
+Observed September 14, 2026: [agents.shakacode.com](https://agents.shakacode.com/)
+already has a [docs section](https://agents.shakacode.com/docs/). Its homepage says
+coordination is optional, but its main sequence still emphasizes planning,
+splitting work, review, and audit. The public
+[site repository](https://github.com/shakacode/agent-workflows-com) uses Astro and
+documents deployment to Cloudflare Pages. Current source paths include
+`src/pages/index.astro`, `src/pages/docs/`, `src/layouts/Doc.astro`, and
+`src/components/BatchLifecycle.astro`.
+
+[ShakaStack](https://shakastack.com/) presents products by the job they do and
+links to their documentation. [Shakapacker's docs](https://shakapacker.com/docs/)
+offer task navigation for installation, configuration, upgrades, and troubleshooting.
+Its [site repository](https://github.com/shakacode/shakapacker.com) uses Docusaurus
+and keeps canonical Markdown in the product repository. Adopt those user-facing
+conventions and source ownership; retain the existing Astro site for the first
+V2 pages. A framework migration is unnecessary for this content change.
+
+The intended reading path is:
+
+1. **Start here:** what the product does, pilot status, supported hosts, isolated
+   installation, and one copyable ordinary-task example.
+2. **Work one PR:** questions before/during work, progress updates, the walkthrough,
+   and Ask or Auto. Show a short conversation and expandable evidence.
+3. **Use and maintain it:** upgrade/rollback, common blockers with next actions,
+   and model/token reporting with its actual availability and gaps.
+4. **Advanced and V1:** existing multi-agent coordination, fleet tooling, and V1
+   docs, clearly labeled as separate from the V2 pilot.
+
+After the current README/communication improvement, keep website delivery to two
+bounded steps under existing issue #1; each should preferably stay below 500 lines:
+
+- **Publish a V2 entrance:** in `agent-workflows-com`, add a clearly labeled pilot
+  link and `/docs/v2/` entry using the existing doc layout. Lead the V2 journey
+  with “Give your agent a task. Get a verified PR and a clear explanation.” Show
+  task → implement and clarify → verify → explain → Ask/Auto; questions can occur
+  throughout. Keep V1 URLs working and label advanced links. Stop at a previewable
+  entrance and guide, without replacing the V1 installation instructions.
+- **Complete the task guides:** keep maintained user-guide Markdown in V2 `docs/`
+  and have the site build read an explicit set of those pages from a recorded V2
+  revision. Use the site's Markdown renderer; avoid hand-maintained copies or a
+  custom documentation framework. Add shared task navigation, readable mobile
+  layouts, accessible details blocks, and source/edit links. Use a maintained
+  search component if the guide collection needs search; do not build a search
+  service. The exact cross-repository build wiring remains UNKNOWN until inspected
+  during implementation. Stop when a new user can install, complete one PR,
+  understand a question or blocker, and find the relevant evidence.
+
+Verify website changes with its existing build/link checks and a browser walkthrough
+of that reading path, including keyboard access, collapsed content, and preserved
+V1 links. Update checks that enforce the old journey rather than pinning new prose.
+Preview before production publication. Rollback is reverting the site PR; product
+installation and existing V1 documentation remain usable. Website implementation
+and deployment have not happened in this documentation change. Adoption timing,
+measured reading-time savings, and broader host support remain UNKNOWN.
 
 ## Scope, rollout, and rollback
 

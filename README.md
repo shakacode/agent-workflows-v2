@@ -6,11 +6,10 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-The goal is less developer attention and token use with better results and shorter
-delivery time. The next bounded addition is per-commit usage reporting from native
-agent records: contributing models, reasoning effort, and tokens, with shared costs
-and missing data labeled honestly. Automatic collection is not implemented yet;
-see the plan's success evidence and attribution rules.
+The goal is better results with less developer time, fewer tokens, and shorter
+delivery time. Clear communication is part of that: see what changed, what matters,
+and whether the agent needs a decision. Supporting evidence stays available in
+expandable details.
 
 ## Two merge preferences
 
@@ -24,10 +23,36 @@ A request to review or publish a PR without merging is task scope. Both merge
 preferences respect it. Consequential risk or uncertain authority requires a
 human decision. A short diff alone does not make a change safe to auto-merge.
 
-The pilot uses an immediate expected-head merge. It does not arm delayed native
-auto-merge or continue running after the owning task ends. Merge queues are not
-supported yet. Native checks must be configured and enforced on the acting user;
-missing evidence or bypass capability produces a clear blocker.
+With **Auto**, the agent merges the version it verified while your task is active.
+If a check fails or a decision is needed, it explains what is blocking progress.
+Once the task ends, resume it to continue; no merge is left scheduled in the background.
+
+<details>
+<summary>Current merge requirements and limits</summary>
+
+GitHub must require checks and enforce them for the account doing the merge.
+If the helper cannot verify those requirements, or the account can bypass them,
+it stops and explains why. New commits need fresh verification before merging.
+The pilot does not support GitHub merge queues yet.
+
+</details>
+
+## Working with your agent
+
+The agent asks about unclear goals before work and raises consequential discoveries
+when they arise during implementation. It recommends an answer and explains the
+tradeoff. Routine, reversible choices stay with the agent; questions do not wait
+for a finished PR or become a mandatory interview.
+
+Updates lead with progress, a blocker, or a decision you need to make. The final
+message gives the outcome and PR link. Detailed checks and model/token records
+belong in expandable PR details; risks and required decisions remain visible.
+See [working with your agent](docs/working-with-your-agent.md) for examples.
+
+Per-commit usage reporting is planned: models, reasoning settings, and tokens,
+with shared work and missing data labeled. Automatic collection is not implemented
+yet; the [pilot plan](docs/pilot-plan.md#success-evidence-and-commit-attribution)
+defines the evidence needed before claiming savings.
 
 ## Host support
 
@@ -77,3 +102,7 @@ complexity limits. Executable logic lives in Ruby, not Markdown instructions.
 See [the pilot plan](docs/pilot-plan.md) for requirements, acceptance cases,
 rollout, and current scope. [Issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1)
 owns the pilot. No release or adoption claim follows from tests alone.
+
+The planned V2 guide will live on [agents.shakacode.com](https://agents.shakacode.com),
+which currently documents V1. See the [website plan](docs/pilot-plan.md#documentation-website)
+for the transition and ShakaStack documentation conventions.

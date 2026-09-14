@@ -29,6 +29,23 @@ chooses **auto**. Review-only and PR-only requests stop at their requested outco
 they are scope limits, not a third merge preference. Existing explicit merge
 authorization persists for its authorized scope.
 
+## Communicate and ask when it matters
+
+Keep one user-visible owner. Lead updates with an outcome, meaningful progress,
+blocker, or decision; avoid repeated unchanged status. Put supporting checks and
+usage tables in labeled `<details>` blocks on the PR. Keep decisions, consequential
+risks, and material evidence gaps visible. If chat cannot collapse details, link
+to the PR evidence. Collapsing text saves reading effort, not model tokens;
+retain useful evidence once and read it only when needed. Publish no raw sessions.
+
+Read existing context before asking. Ask early when the answer changes the outcome
+or safe scope, and during implementation when a consequential discovery needs a
+decision. Give a recommendation and its tradeoff; batch related questions without
+making an interview mandatory. Handle routine reversible choices within scope.
+While a required answer is pending, pause dependent work and continue independent
+work where useful. Silence is not approval. Record consequential answers in the
+existing task or PR so they are not asked again; honor private discussion boundaries.
+
 ## Deliver and verify
 
 Implement the bounded change on a feature branch, preserving user work. Use the
@@ -39,7 +56,7 @@ when repository policy or concrete risk requires it, and resolve consequential
 feedback. Publish only to the verified destination within the user's authority.
 
 When usage reporting is requested, include available model, reasoning effort,
-and native token counts in a compact PR table keyed by commit. Include review
+and native token counts in a compact PR details table keyed by commit. Include review
 and failed-attempt costs when available. Label shared work and UNKNOWN data;
 never guess exact per-commit costs or expose raw sessions, prompts, or credentials.
 Missing usage data is a reporting gap, not a new merge gate.
@@ -86,4 +103,5 @@ Never bypass protection or treat no reported required checks as success. The pil
 attempts an immediate merge; it does not arm delayed auto-merge for a future head.
 Retry only after a meaningful change. Report a pending gate clearly without adding
 a scheduler, heartbeat, or extra audit. Verify the resulting PR state and report
-the PR URL, outcome, validation, and any remaining blocker.
+the PR URL, outcome, a short validation summary, and any remaining blocker. Keep the
+walkthrough's explanation readable without opening the detailed evidence.
