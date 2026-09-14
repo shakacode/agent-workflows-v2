@@ -106,6 +106,20 @@ class UsageTest < Minitest::Test
     refute_includes report, '9900'
   end
 
+  def test_all_turns_counts_a_dedicated_task_once_and_discloses_scope
+    records = [context('old'), usage('old', 'old', 900), context('current'), usage('current', 'current', 100)]
+    report = run_report(records, '--all-turns', copies: 2)
+    assert_includes report, '| 1000 | 80 | 40 | 10 |'
+    assert_includes report.split('<details>').first, 'all turns'
+    refute_includes report, 'old-response'
+  end
+
+  def test_default_visibly_discloses_that_earlier_turns_are_excluded
+    report = run_report([context('old'), usage('old', 'old', 900),
+                         context('current'), usage('current', 'current', 100)], discover: true)
+    assert_includes report.split('<details>').first, 'latest turn only'
+  end
+
   def test_discovers_current_thread_from_host_context_and_uses_only_latest_turn
     report = run_report([context('old'), usage('old', 'old', 900),
                          context('current'), usage('current', 'current', 100)], discover: true)
@@ -118,6 +132,16 @@ end
 
 class UsageFailuresTest < Minitest::Test
   include UsageFixture
+
+  def test_all_turns_discloses_records_excluded_for_invalid_turn_identity
+    [nil, '', '  ', 42].each do |turn|
+      report = run_report([context('current'), usage('counted', 'current', 100),
+                           usage('unattributed', turn, 9900)], '--all-turns')
+      assert_includes report.split('<details>').first, 'Unreadable or unidentifiable records'
+      assert_includes report, '| 100 |'
+      refute_includes report, '9900'
+    end
+  end
 
   def test_missing_or_invalid_latest_turn_does_not_count_unattributed_responses
     [nil, '', 42].each do |turn|
@@ -199,7 +223,8 @@ class UsageFailuresTest < Minitest::Test
 
   def test_invalid_commit_or_contribution_is_rejected_without_echoing_private_arguments
     [['--commit', '/private/SENSITIVE', '--contribution', 'implementation'],
-     ['--commit', COMMIT, '--contribution', 'SENSITIVE'], []].each do |arguments|
+     ['--commit', COMMIT, '--contribution', 'SENSITIVE'],
+     ['--commit', COMMIT, '--contribution', 'implementation', '--all-turns', '--turn', 'old'], []].each do |arguments|
       output, error, status = Open3.capture3(COMMAND, 'usage', *arguments)
       refute status.success?
       assert_empty output

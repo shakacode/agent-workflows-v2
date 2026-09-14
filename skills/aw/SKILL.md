@@ -40,7 +40,9 @@ Write plain English: explain the outcome and why, using established project term
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
 Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
-for each task, choosing `implementation`, `review`, `integration`, or
+for each task. Use `--all-turns` only when the selected session contains solely
+this task; otherwise retain earlier relevant turn reports alongside this one.
+Choose `implementation`, `review`, `integration`, or
 `shared-planning` to match the work. Include available retry/contributor records
 and label shared intervals (see `../../docs/usage-reporting.md` relative to the
 resolved skill directory). Put supporting tables and checks in PR `<details>`; without a PR,
@@ -78,9 +80,12 @@ Record commands, results, and tested revision; fix
 failures and reverify changed heads. Use the seam's independent reviewer when
 policy, the user, or concrete risk requires review. Reuse an existing GitHub review
 (such as Claude); read its actual comments, inline threads, and completion evidence.
-A green job alone does not prove review ran. Follow [review handling](../../docs/review.md)
-for fixes, re-review, stale findings, or a failed reviewer; resolve consequential
-feedback before merging.
+State review status in the PR summary and final response, outside details: completed
+(with reviewer, revision, and result link), unavailable (reason), pending, or not
+requested (why). A green job alone proves no review. Required or user-requested
+review that is unavailable, failed, or stale blocks readiness/merge; never silently
+omit it or substitute a reviewer. Follow [review handling](../../docs/review.md)
+for findings and re-review; resolve consequential feedback before merging.
 
 Use trusted `gh` for authorized issue/PR reads and publication. Inspect check states,
 not only exit codes: `gh pr checks NUMBER --repo OWNER/REPO --required --json name,state,bucket,link`.

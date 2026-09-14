@@ -3,7 +3,27 @@
 Use the reviewer named in the repository's trusted `AGENTS.md` seam. An existing
 Claude GitHub workflow can supply independent review; do not routinely add a second
 local reviewer. The user can request a deeper Claude Code CLI review, or concrete
-risk can justify one. V2 does not install a GitHub Action or provide its credentials.
+risk can justify one. Installing the skill does not install a GitHub Action or its
+credentials. This V2 source repository now has its own Claude Code Review workflow;
+consumer repositories keep their own reviewer configuration.
+
+Always put review status in the PR summary and final response, outside collapsed
+evidence. Name the reviewer, reviewed revision, and result link when completed.
+For example: **Adversarial review: unavailable — Claude CLI could not authenticate.**
+Say **pending** while running, and **not requested** with the reason when review is
+not required. A skipped, failed, missing, or stale review is never a successful one.
+If the user or repository requires it, keep the PR unready for merge until that
+review completes or the authority that set it explicitly changes the requirement:
+the requesting user controls their request; maintainers control repository policy. Do not
+silently substitute a different reviewer. Disclose optional gaps too.
+
+The GitHub action intentionally skips changes to its own workflow. Its job summary
+must say **UNAVAILABLE**, with a warning; that runner result is not a completed
+review. Confirm the reason and use an authorized independent review if required.
+Failed or malformed execution evidence fails the job. A successful model run is
+**UNVERIFIED** until the owner reads a visible PR report for the reviewed revision.
+The owner then records the completed review and link in the PR summary and handles
+its findings. Runner success alone does not establish review or merge readiness.
 
 1. Identify the current PR commit and the review's tested commit. Read top-level
    comments, submitted reviews, and inline threads, following pagination. Confirm

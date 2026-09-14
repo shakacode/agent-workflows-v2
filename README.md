@@ -55,7 +55,8 @@ Once the task ends, resume it to continue; no merge is left scheduled in the bac
 GitHub must require checks and enforce them for the account doing the merge.
 If the helper cannot verify those requirements, or the account can bypass them,
 it stops and explains why. New commits need fresh verification before merging.
-The pilot does not support GitHub merge queues yet.
+The pilot uses squash merging, so the repository must allow it. GitHub merge
+queues are not supported yet.
 
 </details>
 

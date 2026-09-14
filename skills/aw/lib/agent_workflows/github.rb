@@ -62,7 +62,7 @@ module AgentWorkflows
       created = api(reviews_path, method: 'POST', fields: { event: 'COMMENT', commit_id: head, body: body })
       published = review(created['id'])
       verify_review(published, created['id'], head, body)
-      verify_head(head)
+      verify_head(head, review_id: created['id'])
       published
     end
 
@@ -94,13 +94,14 @@ module AgentWorkflows
       "repos/#{@repository}/pulls/#{@number}/reviews"
     end
 
-    def verify_head(head)
+    def verify_head(head, review_id: nil)
       raise Error, 'Expected a full commit SHA.' unless head.is_a?(String) && head.match?(/\A[0-9a-f]{40}\z/)
 
       pr = snapshot
       return if pr['state'] == 'OPEN' && pr['headRefOid'] == head
 
-      raise Error, 'Pull request is not open at the expected head.'
+      detail = review_id ? " Review #{review_id} was created; inspect the PR before retrying." : ''
+      raise Error, "Pull request is not open at the expected head.#{detail}"
     end
 
     def verify_review(review, id, head, body)

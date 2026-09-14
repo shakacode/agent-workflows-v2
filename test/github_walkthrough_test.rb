@@ -23,7 +23,8 @@ class GitHubWalkthroughTest < Minitest::Test
 
   def test_head_change_during_publication_is_reported
     github = client(snapshot_response, review_response, review_response, snapshot_response(head: 'b' * 40))
-    assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+    error = assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+    assert_includes error.message, '123'
     assert_equal 4, @calls.size
   end
 

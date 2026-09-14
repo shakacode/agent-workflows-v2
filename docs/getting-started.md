@@ -24,6 +24,10 @@ gh auth status
 If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ruby
 3.4 available; keep your application's own Ruby/toolchain settings unchanged.
 You do not need Bundler or this project's development gems to use the skill.
+If a version manager selects a different Ruby inside your app, launch from outside
+that checkout with `aw work --repo /path/to/app`, or invoke `scripts/aw` with the
+absolute path to your Ruby 3.4 executable. Do not change the application's Ruby
+version just to start the workflow.
 
 ## 2. Get the trusted workflow source
 
