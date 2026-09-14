@@ -1,8 +1,8 @@
 # Install and complete your first task
 
-This guide uses Codex CLI and installs one user skill, available across your
-repositories. Claude Code and Cursor support remain planned. You do not need to
-know the previous workflow pack.
+This guide uses Codex CLI and installs the skill into a dedicated pilot directory.
+Claude Code and Cursor support remain planned. You do not need to know the previous
+workflow pack.
 
 ## 1. Install the prerequisites
 
@@ -35,17 +35,19 @@ you want to change. If it already exists, use the upgrade instructions below.
 
 ## 3. Install outside your repositories
 
-Use Codex's user skills directory so a branch change cannot replace this skill:
+Use a dedicated directory outside your repositories and global agent profile:
 
 ```bash
-"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.agents/skills"
+"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/agent-tools/agent-workflows-v2-pilot/skills"
 ```
 
-The installer creates `$HOME/.agents/skills/work-pr-v2` as a link to the trusted
-source and refuses to overwrite another skill. It adds this skill for your user;
-it does not change other skills, authentication, hooks, or configuration files.
-Keep both the link and source outside any candidate repository. Do not use a
-repository-provided skill with the same name in place of this trusted installation.
+The installer creates a `work-pr-v2` link in that directory and refuses to overwrite
+another skill. Keep both link and source outside candidate repositories. It changes
+no global profile, authentication, hooks, or other skills.
+
+Codex will not automatically list this pilot in `/skills`. The prompts below name
+the trusted file explicitly, so a repository skill with the same name cannot be
+mistaken for this installation. The agent reads that file and uses its helpers.
 
 If you used the earlier project-local instructions, remove that old link only if
 it is still a symlink. If Git replaced it with tracked files, do not delete those
@@ -71,20 +73,25 @@ cd /path/to/your/repository
 codex
 ```
 
-In the CLI, `/skills` should list the user-installed `work-pr-v2`; restart Codex if
-it is missing. [Codex discovers user skills and follows symlinks](https://developers.openai.com/codex/skills#where-to-save-skills).
+Use the explicit path below instead of selecting `$work-pr-v2` by name. Keep this
+trusted instruction in each new task; do not substitute a repository copy. If you
+chose a different install directory, replace the path in the prompt.
 
 For a GitHub issue, replace the bracketed URL and send:
 
 ```text
-Use $work-pr-v2 to fix <full GitHub issue URL> in this repository.
+Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
+as the trusted workflow for this task. Do not substitute a repository copy.
+Fix <full GitHub issue URL> in this repository.
 Open a PR and ask before merging.
 ```
 
 For a Linear task:
 
 ```text
-Use $work-pr-v2 to implement <full Linear task URL> in this repository.
+Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
+as the trusted workflow for this task. Do not substitute a repository copy.
+Implement <full Linear task URL> in this repository.
 Read the task using the available Linear connection. Open a PR and ask before merging.
 Keep private task content and links out of a public PR unless authorized to share them.
 ```
@@ -123,10 +130,10 @@ git -C "$HOME/agent-tools/agent-workflows-v2" pull --ff-only
 
 Switching to `main` also resumes normal upgrades after a rollback to a detached
 commit. Preserve local edits; do not force a switch or discard changes.
-The existing link uses the updated source. To remove only this user skill link:
+The existing link uses the updated source. To remove only this pilot skill link:
 
 ```bash
-test -L "$HOME/.agents/skills/work-pr-v2" && unlink "$HOME/.agents/skills/work-pr-v2"
+test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2"
 ```
 
 For rollback without removal, point the trusted source checkout at a previously
