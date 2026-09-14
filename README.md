@@ -54,6 +54,21 @@ with shared work and missing data labeled. Automatic collection is not implement
 yet; the [pilot plan](docs/pilot-plan.md#success-evidence-and-commit-attribution)
 defines the evidence needed before claiming savings.
 
+## Each repository keeps its seam
+
+The shared skill supplies the workflow; your repository supplies its commands and
+policy. It reads `AGENTS.md` and the files that document points to. Existing
+`.agents/bin/` commands and `.agents/agent-workflow.yml` stay in place. Repos that
+declare commands directly in `AGENTS.md` can keep doing so.
+
+The seam supplies setup, validation, focused checks, base branch, review and
+changelog/release conventions, and merge authority. A Ruby repo, a Rails/React
+app, and an Astro site can share the skill while keeping their own commands.
+The pilot's `bin/validate` is its own development command, not a consumer default.
+GitHub still enforces required checks and approvals. V1 coordination and automation
+settings do not activate those features in V2; full V1 policy compatibility is not
+claimed. See the [seam boundary](docs/pilot-plan.md#repository-seam).
+
 ## Host support
 
 Codex is the first reference host. Keep one shared skill and GitHub workflow;
