@@ -45,7 +45,7 @@ work, the agent may supply repeated `--file PATH` and `--turn ID` options using
 its private source context. Without `--turn`, each file contributes its latest
 turn. Include available review, retries, and subagent records. The helper counts
 each response ID once across all supplied files, including forked/resumed copies;
-it ignores cumulative snapshots. Conflicting response copies yield UNKNOWN.
+it ignores cumulative snapshots. Conflicting counters, configuration, or interval metadata in response copies yield UNKNOWN.
 Replace an earlier overlapping report instead of adding its totals again.
 
 No report contains source paths, private turn/response IDs, prompts, transcripts,

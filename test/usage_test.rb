@@ -173,9 +173,21 @@ class UsageFailuresTest < Minitest::Test
 
   def test_conflicting_copies_of_a_response_mark_counts_unknown
     report = run_report([context('current'), usage('replayed', 'current', 100), usage('replayed', 'current', 200)])
-    assert_includes report, '| high | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |'
+    assert_includes report, '| UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |'
     assert_includes report, 'Conflicting response copies'
     refute_includes report, '| 100 |'
+  end
+
+  def test_duplicate_attribution_conflicts_are_unknown_in_either_source_order
+    original = context('current')
+    changed = context('current')
+    changed[:payload][:model] = 'other-model'
+    reports = [[original, changed], [changed, original]].map do |first, second|
+      run_report([first, usage('same', 'current', 100), second, usage('same', 'current', 100)])
+    end
+    assert_equal reports.first, reports.last
+    assert_includes reports.first, '| UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |'
+    assert_includes reports.first, 'Conflicting response copies'
   end
 
   def test_usage_without_matching_turn_context_does_not_inherit_another_turns_settings

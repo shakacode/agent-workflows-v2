@@ -60,8 +60,8 @@ module AgentWorkflows
       return @gaps << 'Unreadable or unidentifiable records' unless identity.is_a?(String) && !identity.empty?
 
       previous = @responses[identity]
-      if previous && previous['usage'] != record['usage']
-        previous['usage'] = {}
+      if previous && previous != record
+        previous.merge!('usage' => {}, 'configuration' => [nil] * 4, 'timestamp' => nil, 'turn_id' => nil)
         @gaps << 'Conflicting response copies'
       end
       @responses[identity] ||= record
