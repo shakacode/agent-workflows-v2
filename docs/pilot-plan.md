@@ -33,6 +33,7 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | R11 | Every task reports available usage; each agentically generated commit is identifiable in the PR report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Without a PR, use the final report. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
 | R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
 | R13 | One owner explains outcomes, reasons, blockers, and decisions using familiar terms and enough context for the first reading. Follow task/repo writing preferences without requiring a separate clarification skill. Supporting evidence uses expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, with a recommendation. See [working with your agent](working-with-your-agent.md). |
+| R14 | Behavior changes follow red-green-refactor using the repo's existing tests. Observe the relevant failure before the fix; document useful before/after verification when automation is impractical. Visible changes have inspected screenshots and short video when interaction or timing matters, with safe reviewer-accessible evidence tied to the tested revision. See [tests and visual evidence](verification.md). |
 
 ## Success evidence and commit attribution
 
@@ -259,6 +260,20 @@ are outside this immediate-merge pilot and are left unchanged.
 This plan and the README are explanatory, never runtime configuration.
 
 ## Delivery plan
+
+The maintainer approved the next feature set on September 14: explicit TDD and
+visual evidence, native usage reporting, a real consumer first-use trial, gem
+packaging and the V2 documentation website, then Claude Code and Cursor validation.
+Use the WIP V2 skill for this work. Deliver bounded PRs in that order, allowing
+independent preparation while one owner integrates and publishes. Existing issue
+#1 remains the implementation record; do not create a second feature tracker.
+
+Use the website as a proposed consumer trial so the work also delivers useful V2
+documentation. Verify the consumer's own setup and checks, and capture the rendered
+result. Host compatibility is claimed only to the extent actually exercised;
+unavailable access or unsupported isolation remains an explicit gap. Package and
+test locally before any registry release. Website production publication remains
+a separate decision after a reviewable preview.
 
 | Task | Requirements | Work and dependencies | Done |
 | --- | --- | --- | --- |

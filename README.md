@@ -13,6 +13,10 @@ expandable details.
 
 **[Start here: install and fix your first issue or Linear task](docs/getting-started.md).**
 
+Behavior changes follow test-driven development: reproduce the failure, make the
+test pass, then refactor. Visible changes include inspected screenshots, with short
+video when interaction matters. See [tests and visual evidence](docs/verification.md).
+
 ## Two merge preferences
 
 - **Ask:** publish the walkthrough, wait for required checks/review, then request

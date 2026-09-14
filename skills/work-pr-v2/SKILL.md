@@ -61,8 +61,17 @@ or take turns.
 
 ## Implement and explain
 
-Use a feature branch and preserve user work. Run the seam's validation entry point
-plus justified focused checks. Record commands, results, and tested revision; fix
+Use a feature branch and preserve user work. For behavior changes, observe one
+meaningful failing test, make it pass, then refactor while green. Test behavior,
+not implementation wording. If automation is impractical, explain why and capture
+before/after behavior. Use the repo's existing test and browser tools.
+
+For visible changes, inspect before/after screenshots; add a short video when
+interaction or timing matters. Publish safe, reviewer-accessible evidence labeled
+with its tested revision. Captures complement tests; they do not replace them.
+
+Run the seam's validation entry point plus justified focused checks.
+Record commands, results, and tested revision; fix
 failures and reverify changed heads. Obtain independent review when repo policy or
 concrete risk requires it, and resolve consequential feedback before merging.
 
