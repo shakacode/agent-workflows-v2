@@ -106,7 +106,8 @@ Each launch creates a private temporary session outside the consumer checkout,
 reads the trusted skill by its absolute source path, and directs repository
 commands to the checkout. It adds no skill link to that writable session. The
 launcher rejects canonical or lexical overlaps between writable paths and the
-trusted source or installed command/link parents.
+trusted source or installed command/link parents. If your `TMPDIR` is inside the
+target checkout, choose a temporary directory outside it before launching.
 
 The native shell sandbox permits writes in the session and target checkout,
 overrides extra writable roots, excludes ambient temporary directories, and uses

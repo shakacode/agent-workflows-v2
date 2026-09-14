@@ -139,6 +139,14 @@ class WorkBoundaryTest < Minitest::Test
     refute File.exist?(@capture)
   end
 
+  def test_refuses_session_scratch_inside_the_consumer_checkout
+    _output, error, status = launch('Fix the test', temporary: @target)
+    refute status.success?
+    assert_includes error, 'outside the target checkout'
+    refute File.exist?(@capture)
+    assert_empty Dir.glob(File.join(@target, 'aw-work-*'))
+  end
+
   def test_refuses_an_installed_skill_link_inside_the_writable_target
     parent = File.join(@target, 'installed skills')
     FileUtils.mkdir_p(parent)

@@ -41,7 +41,7 @@ module AgentWorkflows
     end
 
     def self.launch(target, task)
-      session = create_session
+      session = create_session(target)
       temporary = File.join(session, 'tmp')
       exec({ 'TMPDIR' => temporary, 'TMPPREFIX' => "#{temporary}/zsh" },
            'codex', '--cd', session, '--add-dir', target,
@@ -53,16 +53,25 @@ module AgentWorkflows
       raise
     end
 
-    def self.create_session
+    def self.create_session(target)
       session = Dir.mktmpdir('aw-work-')
-      check_boundary(session)
-      canonical = File.realpath(session)
-      check_boundary(canonical)
+      canonical = check_session(session, target)
       FileUtils.mkdir_p(File.join(canonical, 'tmp'), mode: 0o700)
       canonical
     rescue Error, SystemCallError
       FileUtils.remove_entry_secure(session) if session && File.directory?(session)
       raise
+    end
+
+    def self.check_session(session, target)
+      check_boundary(session)
+      canonical = File.realpath(session)
+      check_boundary(canonical)
+      if canonical == target || canonical.start_with?(File.join(target, ''))
+        raise Error, 'Session scratch must be outside the target checkout; choose a different TMPDIR'
+      end
+
+      canonical
     end
 
     def self.options(arguments)
