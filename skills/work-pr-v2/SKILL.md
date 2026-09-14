@@ -42,7 +42,8 @@ separate clarification skill. Keep decisions, risks, and evidence gaps visible.
 Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
 for each task, choosing `implementation`, `review`, `integration`, or
 `shared-planning` to match the work. Include available retry/contributor records
-and label shared intervals (see `docs/usage-reporting.md` in the trusted source). Put supporting tables and checks in PR `<details>`; without a PR,
+and label shared intervals (see `../../docs/usage-reporting.md` relative to the
+resolved skill directory). Put supporting tables and checks in PR `<details>`; without a PR,
 include them in the final report. Link from chats that cannot collapse details.
 Avoid repeated status updates; label shared costs and UNKNOWN
 fields. Publish only aggregate metadata: no prompts, tool output, raw sessions,

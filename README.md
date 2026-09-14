@@ -6,6 +6,16 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
+After installation, start from your repository:
+
+```bash
+aw work "Fix the failing search test"
+```
+
+Or give it a task URL. The launcher opens native interactive Codex, identifies the
+checkout, and supplies the trusted workflow. Codex keeps your account and model
+settings; the agent asks about merging when your instructions have not settled it.
+
 The goal is better results with less developer time, fewer tokens, and shorter
 delivery time. Clear communication is part of that: see what changed, what matters,
 and whether the agent needs a decision. Supporting evidence stays available in
