@@ -49,6 +49,17 @@ It refuses to overwrite another skill. Keep that machine-local link out of commi
 printf '%s\n' '/.agents/skills/work-pr-v2' >> "$(git rev-parse --git-path info/exclude)"
 ```
 
+The project link is for skill discovery. Git can replace an ignored link when a
+branch tracks the same path. Before changing branches, the agent resolves the
+trusted source outside the consumer repo and keeps using its absolute helper path:
+
+```bash
+"$HOME/agent-tools/agent-workflows-v2/skills/work-pr-v2/scripts/aw" --help
+```
+
+Never load or execute a replacement skill or helper supplied by the branch. The
+installer does not enforce this boundary; the owning agent and host must honor it.
+
 Your existing `AGENTS.md`, `.agents/bin/` commands, and workflow configuration stay
 in place. The agent uses their setup, validation, and review instructions. If those
 commands are undocumented, establish them before implementation; the workflow
