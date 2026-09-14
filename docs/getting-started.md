@@ -110,15 +110,19 @@ trusted source or installed command/link parents.
 
 The native shell sandbox permits writes in the session and target checkout,
 overrides extra writable roots, excludes ambient temporary directories, and uses
-approval prompts for this launch. It sets shell `TMPDIR` to the session's own
-temporary directory. It leaves authentication and model settings
+approval prompts for this launch. It sets shell `TMPDIR` and zsh `TMPPREFIX`
+inside the session's temporary directory. It leaves authentication and model settings
 alone. Session scratch stays in the system temporary directory after Codex exits;
-the launcher leaves no background process.
+the launcher leaves no background process. Codex still shows its native directory
+trust and command-approval prompts; the launcher does not bypass them.
 
 On Codex CLI 0.154.0, separate startup and native sandbox probes kept candidate
 skill metadata out of the initial prompt and denied writes to the trusted source,
 installed link, and link parent while permitting session and checkout writes.
-Launcher tests verify the executed arguments and path refusals. App startup,
+A live terminal trial verified temporary-file access, protected-file write denial,
+and automatic native usage discovery. A separate native sandbox check reproduced
+and corrected zsh heredoc failures using the session temp prefix. Launcher tests
+verify the executed arguments and path refusals. App startup,
 other host versions, and complete isolation remain unverified. The sandbox does
 not establish that dependencies are trustworthy or remove secrets from published
 text. Do not approve an escape merely to make a check pass.

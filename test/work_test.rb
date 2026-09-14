@@ -49,7 +49,7 @@ module WorkFixture
       #!/usr/bin/env ruby
       require 'json'
       File.write(ENV.fetch('WORK_CAPTURE'), JSON.generate(
-        argv: ARGV, cwd: Dir.pwd, tmpdir: ENV['TMPDIR']
+        argv: ARGV, cwd: Dir.pwd, tmpdir: ENV['TMPDIR'], tmpprefix: ENV['TMPPREFIX']
       ))
     RUBY
     FileUtils.chmod(0o755, executable)
@@ -65,21 +65,20 @@ class WorkTest < Minitest::Test
     session = argv[1]
     assert_equal 0o700, File.stat(session).mode & 0o777
     assert_equal session, capture['cwd']
-    assert_equal File.join(session, 'tmp'), capture['tmpdir']
+    assert_equal ["#{session}/tmp", "#{session}/tmp/zsh"], capture.values_at('tmpdir', 'tmpprefix')
     assert_includes argv.last, 'Fix the failing test'
   end
 
   def test_overrides_extra_writable_roots_and_unrestricted_host_defaults
-    _output, error, status = launch('Fix the test')
-    assert status.success?, error
-    argv = JSON.parse(File.read(@capture)).fetch('argv')
+    argv = started('Fix the test').fetch('argv')
     assert_equal ['--cd', argv[1], '--add-dir', File.realpath(@target),
                   '--sandbox', 'workspace-write', '--ask-for-approval', 'on-request',
                   '-c', 'sandbox_workspace_write.writable_roots=[]',
                   '-c', 'sandbox_workspace_write.exclude_slash_tmp=true',
                   '-c', 'sandbox_workspace_write.exclude_tmpdir_env_var=true',
                   '-c', 'sandbox_workspace_write.network_access=false',
-                  '-c', "shell_environment_policy.set.TMPDIR=#{JSON.generate(File.join(argv[1], 'tmp'))}"], argv[0...-1]
+                  '-c', "shell_environment_policy.set.TMPDIR=#{JSON.generate("#{argv[1]}/tmp")}",
+                  '-c', "shell_environment_policy.set.TMPPREFIX=#{JSON.generate("#{argv[1]}/tmp/zsh")}"], argv[0...-1]
   end
 
   def test_prompt_uses_absolute_trusted_skill_and_preserves_task_text_without_shell_expansion

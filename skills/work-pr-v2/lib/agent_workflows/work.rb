@@ -43,9 +43,10 @@ module AgentWorkflows
     def self.launch(target, task)
       session = create_session
       temporary = File.join(session, 'tmp')
-      FileUtils.mkdir_p(temporary, mode: 0o700)
-      exec({ 'TMPDIR' => temporary }, 'codex', '--cd', session, '--add-dir', target,
+      exec({ 'TMPDIR' => temporary, 'TMPPREFIX' => "#{temporary}/zsh" },
+           'codex', '--cd', session, '--add-dir', target,
            *SANDBOX, '-c', "shell_environment_policy.set.TMPDIR=#{JSON.generate(temporary)}",
+           '-c', "shell_environment_policy.set.TMPPREFIX=#{JSON.generate("#{temporary}/zsh")}",
            prompt(target, task), chdir: session)
     rescue Error, SystemCallError
       FileUtils.remove_entry_secure(session) if session && File.directory?(session)
@@ -57,6 +58,7 @@ module AgentWorkflows
       check_boundary(session)
       canonical = File.realpath(session)
       check_boundary(canonical)
+      FileUtils.mkdir_p(File.join(canonical, 'tmp'), mode: 0o700)
       canonical
     rescue Error, SystemCallError
       FileUtils.remove_entry_secure(session) if session && File.directory?(session)
