@@ -135,7 +135,8 @@ The agent resolves important questions, implements on a branch, runs your repo's
 checks, opens the PR, explains the change, and handles consequential review findings.
 You receive the outcome and PR link; supporting checks and available usage evidence
 are in expandable details. Usage is reported on every task, with missing data
-marked UNKNOWN. Automated collection is still being built.
+marked UNKNOWN. The [native usage reader](usage-reporting.md) collects available
+Codex records automatically; complete per-commit attribution remains unverified.
 
 Merging requires observable native GitHub checks enforced for the acting account.
 If that setup is missing, the agent can hand over the PR with the reason it cannot
