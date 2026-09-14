@@ -20,8 +20,8 @@ establish complete usage attribution.
 | --- | --- | --- | --- |
 | Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | CLI options inspected; V2 instruction activation unverified. | Dedicated CLI package version/help checked; V2 instruction activation unverified. |
 | OS write boundary | A native workspace sandbox denied writes to the separate trusted source, installed link, and link directory while allowing the session and target checkout. | Native V2 sandbox boundary unverified. | Native V2 sandbox boundary unverified. |
-| Real workflow | Real PR operations exercised in the V2 pilot repository. External consumer delivery remains unverified. | Consumer delivery unverified. | Consumer delivery unverified. |
-| Usage | Native token records available; attribution depends on the records and their coverage. | Complete V2 usage reporting unverified. | Complete V2 token and effort reporting unverified. |
+| Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides through its repository seam; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
+| Usage | Reader matched 14 real CLI responses and repeated-source input without double counting; attribution remains partial. | Complete V2 usage reporting unverified. | Complete V2 token and effort reporting unverified. |
 
 The Codex write test establishes that particular local boundary. It does not
 establish equivalent behavior in the desktop app, other versions, or other hosts.
@@ -32,8 +32,8 @@ stopping behavior, is still required before claiming broader adoption.
 
 Use the canonical [startup instructions](getting-started.md).
 Keep the trusted workflow source and installed link outside both the writable
-session directory and target checkout. Name the trusted skill file explicitly;
-do not add a discovery link inside the writable session.
+session directory and target checkout. The guided startup names the trusted skill for the agent; do not add a discovery
+link inside the writable session.
 
 The launcher or direct invocation must establish the intended permissions even
 when the user's existing configuration grants broader access. Temporary writable

@@ -33,9 +33,10 @@ local records do not establish the model that executed each response.
 
 ## Coverage and fallback
 
-This adapter was exercised against Codex `0.154.0-alpha.6.2` records. Unsupported
-or unreadable records and missing fields produce UNKNOWN. Stable Codex CLI
-`0.154.0` record compatibility remains unverified. Reports are PARTIAL
+This adapter was exercised against desktop `0.154.0-alpha.6.2` and stable Codex
+CLI `0.154.0` records. The fresh CLI consumer trial matched 14 responses to an
+independent aggregate; repeating its source left the report unchanged. Unsupported
+or unreadable records and missing fields produce UNKNOWN. Reports are PARTIAL
 snapshots: active work, external reviewers, tool-model calls, and other agents
 may add usage that is absent from the selected sources. Dollar cost, human active
 time, and total historical consumption are not inferred from these tokens.
