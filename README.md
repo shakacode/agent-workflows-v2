@@ -56,8 +56,8 @@ belong in expandable PR details; risks and required decisions remain visible.
 See [working with your agent](docs/working-with-your-agent.md) for examples.
 
 Every task reports available model, reasoning-setting, and token evidence, with
-shared work and missing data labeled. The automatic collector is not implemented
-yet, so reporting may contain UNKNOWN values. The
+shared work and missing data labeled. The agent runs the native Codex
+[usage reader](docs/usage-reporting.md); unavailable fields stay UNKNOWN. The
 [pilot plan](docs/pilot-plan.md#success-evidence-and-commit-attribution) defines
 the evidence needed before claiming savings. Writing preferences belong in your
 repo's existing `AGENTS.md`; see [communication and safety](docs/working-with-your-agent.md).
@@ -81,8 +81,8 @@ claimed. See the [seam boundary](docs/pilot-plan.md#repository-seam).
 
 Codex is the first reference host. Keep one shared skill and GitHub workflow;
 validate Claude Code next, then Cursor, before claiming full support for them.
-Both are compatibility targets today. Automated usage reporting is not yet
-implemented for any host. See the [host boundary](docs/pilot-plan.md#host-boundary)
+Both are compatibility targets today. The Codex usage reader names its tested
+record format and reports gaps; Claude and Cursor reporting remain unverified. See the [host boundary](docs/pilot-plan.md#host-boundary)
 for the rollout and the differences that affect model and token reporting.
 
 ## Install and use
