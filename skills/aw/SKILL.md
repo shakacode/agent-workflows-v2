@@ -1,5 +1,5 @@
 ---
-name: work-pr-v2
+name: aw
 description: Implement and verify one ordinary GitHub PR, publish its walkthrough, address review, and merge or hand off within authority.
 ---
 
@@ -75,8 +75,12 @@ with its tested revision. Captures complement tests; they do not replace them.
 
 Run the seam's validation entry point plus justified focused checks.
 Record commands, results, and tested revision; fix
-failures and reverify changed heads. Obtain independent review when repo policy or
-concrete risk requires it, and resolve consequential feedback before merging.
+failures and reverify changed heads. Use the seam's independent reviewer when
+policy, the user, or concrete risk requires review. Reuse an existing GitHub review
+(such as Claude); read its actual comments, inline threads, and completion evidence.
+A green job alone does not prove review ran. Follow [review handling](../../docs/review.md)
+for fixes, re-review, stale findings, or a failed reviewer; resolve consequential
+feedback before merging.
 
 Use trusted `gh` for authorized issue/PR reads and publication. Inspect check states,
 not only exit codes: `gh pr checks NUMBER --repo OWNER/REPO --required --json name,state,bucket,link`.

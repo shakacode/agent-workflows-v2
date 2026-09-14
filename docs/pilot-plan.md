@@ -227,7 +227,7 @@ are outside this immediate-merge pilot and are left unchanged.
 
 ## Design
 
-- **D1 (R1–R3, R9):** one concise `work-pr-v2` skill. Keep task requirements in
+- **D1 (R1–R3, R9):** one concise `aw` skill. Keep task requirements in
   their original user/issue record and code-delivery evidence on the PR. There is
   no project-wide local state database or canonical-target schema.
 - **D2 (R4–R7):** a small Ruby `aw` command invoked from the installed skill,
@@ -252,9 +252,9 @@ are outside this immediate-merge pilot and are left unchanged.
 
 ### Intended file boundaries
 
-`skills/work-pr-v2/SKILL.md` owns agent instructions;
-`skills/work-pr-v2/scripts/aw` owns CLI dispatch;
-`skills/work-pr-v2/lib/agent_workflows/` owns small GitHub/merge operations;
+`skills/aw/SKILL.md` owns agent instructions;
+`skills/aw/scripts/aw` owns CLI dispatch;
+`skills/aw/lib/agent_workflows/` owns small GitHub/merge operations;
 `test/` owns behavioral tests. Installation is `bin/install` plus focused tests.
 This plan and the README are explanatory, never runtime configuration.
 

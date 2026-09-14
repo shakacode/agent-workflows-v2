@@ -21,7 +21,7 @@ Keep company strategy and private operational data out of product artifacts.
 ## Structure
 
 - `docs/pilot-plan.md` owns product requirements, design, acceptance, and scope.
-- `skills/work-pr-v2/SKILL.md` is the portable, self-contained entry point.
+- `skills/aw/SKILL.md` is the portable, self-contained entry point.
 - Its `scripts/aw` command uses small Ruby modules under its `lib/` directory.
 - `bin/install` links only this skill into an explicitly supplied skills directory.
 - Markdown explains decisions and invokes commands. Put executable logic in code.
@@ -39,7 +39,7 @@ Dependencies: `bundle install`. Ruby: 3.4 for the initial pilot.
 Review: one visible independent review of meaningful implementation changes.
 Coordination: none; this controlled pilot has no independent same-target writer.
 Merge authority: auto for this pilot's reviewed, verified implementation PRs.
-Release: public source pilot; no registry publication or global install.
+Release: public source pilot; no registry publication; user skill installation on request.
 Native main protection: PRs and up-to-date GitHub Actions `validate` are required;
 no bypass actors, force-push, or deletion. Required approving review count is zero.
 

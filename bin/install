@@ -20,8 +20,8 @@ begin
   raise OptionParser::InvalidArgument, 'DIR must not be empty' if skills_dir.strip.empty?
   raise OptionParser::InvalidArgument, ARGV.join(' ') unless ARGV.empty?
 
-  source = File.realpath('../skills/work-pr-v2', __dir__)
-  destination = File.join(File.expand_path(skills_dir), 'work-pr-v2')
+  source = File.realpath('../skills/aw', __dir__)
+  destination = File.join(File.expand_path(skills_dir), 'aw')
   if File.symlink?(destination) && File.readlink(destination) == source
     puts "Already installed: #{destination}"
   elsif File.exist?(destination) || File.symlink?(destination)
