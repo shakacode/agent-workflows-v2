@@ -33,6 +33,55 @@ agent can use it later without asking again. A merge choice applies to this task
 unless you explicitly give it broader scope. Choosing **Ask** at the start leaves
 the actual merge decision until you can see the finished change.
 
+## When a task needs several PRs
+
+One PR is the default, not a limit on the task. Split when changes have useful
+separate outcomes, different risks, or a diff that is difficult to review.
+Around 500 changed lines is a prompt to reconsider scope, not a quota or a reason
+to separate tests from the behavior they verify. Each slice must be safe to land
+with its prerequisites, or wait until the combined change is safe.
+
+The agent recommends a short ordered list: what each PR delivers, its dependency,
+and how to verify it. It can make routine splits within the authorized task;
+changed product scope or consequential partial-release behavior needs a decision.
+Keep the same owner and task. Link the PRs from the existing work item when
+authorized, and state what remains; a partial merge does not finish the task or
+justify closing its issue. No new tracker, task per slice, or coordination service
+is required. Report shared planning/review usage once and link the commit mappings.
+
+For example: “I recommend two PRs: first add and test the date parser, then wire
+it into the import screen with its UI tests. The second depends on the first.”
+
+Prefer ordinary PRs against the repository's base when they are independent.
+For dependent work, merging the first slice before starting the next keeps the
+existing Ask/Auto path simple. A native GitHub stack is useful when dependent
+changes need to be prepared or reviewed before the lower PR merges: each upper
+PR targets the branch below it and shows only its additional change.
+
+**Current V2 limitation:** native stacks can be prepared and reviewed with GitHub's
+tools, but `aw merge` cannot merge them. Explain this before choosing a stack;
+prefer sequential ordinary PRs when automatic delivery through V2 is needed now.
+If a native stack is chosen, report its merge handoff explicitly. Do not silently
+change its structure or bypass checks to make the ordinary merge helper work.
+
+GitHub's [stacked PR feature](https://docs.github.com/en/pull-requests/get-started/about-stacked-prs)
+is in public preview. Use its website or the official `gh stack` extension for
+branch relationships and cascading rebases; verify availability before use.
+All branches must be in the same repository. Keep a walkthrough, relevant tests,
+review, and the destination branch's required checks/approvals for every PR.
+After a lower PR or the base changes, inspect the updated dependent diffs and
+refresh affected verification, reviews, and walkthroughs for the resulting heads.
+Do not repeat unchanged evidence or treat a rebased head as already verified.
+
+Merging an upper PR also merges every unmerged PR below it. Authority for one PR
+does not authorize that larger group. Default to the lowest ready PR; verify the
+entire proposed group and its authority before any broader merge. GitHub currently
+does not support delayed auto-merge for stacks, and its
+[stack merge API](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks)
+is asynchronous. V2's immediate single-head merge helper is not compatible.
+A tested native stack merge path is separate work; creating a stack alone does
+not establish that support. GitHub owns stack state; V2 keeps one delivery owner.
+
 ## A short message, with evidence available
 
 One owner communicates with you even when bounded assistants help with the work.

@@ -1,9 +1,9 @@
 ---
 name: aw
-description: Implement and verify one ordinary GitHub PR, publish its walkthrough, address review, and merge or hand off within authority.
+description: Deliver one ordinary task through verified GitHub PRs, splitting only when useful; publish walkthroughs, address review, and honor merge authority.
 ---
 
-# Work one PR
+# Work one task
 
 Own one task through its requested PR outcome. Read the supplied task text or URL
 using an available connection; if inaccessible, ask for its description and acceptance
@@ -13,6 +13,11 @@ tracker and delivery state on GitHub. Link the work item from the PR when sharin
 is authorized; do not create a duplicate issue. Reading a tracker does not authorize
 updating it. Keep private task content and links out of public artifacts unless
 sharing is authorized.
+
+Default to one PR. For a larger task, recommend the smallest useful split, retain
+one owner, and follow [task splitting](../../docs/working-with-your-agent.md#when-a-task-needs-several-prs).
+Keep tests with their behavior. Apply verification, review, and authority to each
+PR. Native stacks need separate merge support: do not pass them to `aw merge`.
 
 ## Use the repository seam
 

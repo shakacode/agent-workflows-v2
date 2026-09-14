@@ -20,7 +20,7 @@ unnecessary. The maintainer also approved public visibility on September 14.
 
 | ID | Requirement and acceptance |
 | --- | --- |
-| R1 | One owner handles one PR. No coordination service, ledger, synthetic worker handoff, or task-review package is needed by the product. |
+| R1 | One owner handles one task, normally through one PR. Split oversized work into the smallest useful PRs; keep dependencies and remaining scope on the existing work item/PRs. No coordination service, ledger, synthetic worker handoff, or task-review package is needed. See [task splitting](working-with-your-agent.md#when-a-task-needs-several-prs). |
 | R2 | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. |
 | R3 | The two merge preferences are `ask` and `auto`. If authority is unset, ask early which the user wants for this task; default to `ask` without an answer. Reuse established authority. A review-only or PR-only request stops there regardless of a broader merge preference. |
 | R4 | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. |
@@ -259,6 +259,12 @@ are outside this immediate-merge pilot and are left unchanged.
 This plan and the README are explanatory, never runtime configuration.
 
 ## Delivery plan
+
+One PR is the default unit of delivery, not a ceiling on task scope. Use the
+[splitting guidance](working-with-your-agent.md#when-a-task-needs-several-prs)
+for larger work. Sequential ordinary PRs retain the existing merge path; native
+GitHub stack preparation/review is optional, with merge support still unverified
+and unsupported by `aw merge`. Do not add a stack scheduler or state store.
 
 The maintainer approved the next feature set on September 14: explicit TDD and
 visual evidence, native usage reporting, a real consumer first-use trial, gem
