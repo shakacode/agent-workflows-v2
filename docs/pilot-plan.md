@@ -21,7 +21,7 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | ID | Requirement and acceptance |
 | --- | --- |
 | R1 | One owner handles one PR. No coordination service, ledger, synthetic worker handoff, or task-review package is needed by the product. |
-| R2 | The skill uses the repository's documented validation entry point. Actual failures block readiness; evidence for a different head cannot silently qualify the current change. |
+| R2 | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. |
 | R3 | The two merge preferences are `ask` and `auto`. Default to `ask` unless the user or trusted repository instruction chooses `auto`. A review-only or PR-only request stops there regardless of a broader merge preference. |
 | R4 | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. |
 | R5 | `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted, ordinary change when the same gates pass without another question. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. |
@@ -29,7 +29,7 @@ unnecessary. The maintainer also approved public visibility on September 14.
 | R7 | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. |
 | R8 | Install the self-contained skill into an explicit isolated profile. Preserve existing skills and user files. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
 | R9 | GitHub is the code-delivery source of truth. A work item may live in another tracker; link it without requiring a shadow issue or bidirectional synchronization. |
-| R10 | Keep Ruby and instructions small and cohesive. Standard libraries and `gh` own general mechanics; tests exercise retained behavior and concrete failure cases. |
+| R10 | Keep Ruby and instructions small and cohesive. Keep execution-changing guidance in the skill, examples/rationale in user docs, and deterministic mechanics in code. Remove repetition when adding guidance. Standard libraries and `gh` own general mechanics; tests exercise behavior and concrete failure cases. |
 | R11 | Each agentically generated commit is identifiable in the PR's usage report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
 | R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
 | R13 | One owner communicates outcomes, progress, blockers, and decisions in plain language. Supporting verification and usage records use expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, before or during work, with a recommendation. See [working with your agent](working-with-your-agent.md). |
@@ -100,6 +100,35 @@ resume/shared work, and retain explicit gaps. Use these real PRs plus available
 comparable V1 evidence to assess the four outcomes above. Do not rerun #700 or
 rebuild its fix as a benchmark. Start with a few comparable tasks; report the
 sample and uncertainty instead of manufacturing a precise savings percentage.
+
+## Repository seam
+
+Repository adaptation is part of the kernel. The host reads trusted `AGENTS.md`
+and follows its references to local commands and policy. Existing consumers can
+retain `.agents/bin/<name>` and `.agents/agent-workflow.yml`; repos with direct
+command declarations need no new files. Preserve setup, validation, focused
+checks, base branch, review, changelog/release conventions, and scoped merge
+authority. Do not copy the pilot's Ruby commands into other repositories.
+
+Resolve only the capabilities needed for the task. Missing optional capabilities
+are n/a; a missing required command or conflicting policy needs clarification.
+Candidate edits to the seam cannot lower this run's trusted requirements. Native
+GitHub checks, approvals, current-head verification, and explicit authority remain
+required regardless of what a candidate configuration says.
+
+This is agent-consumed configuration, not a new Ruby policy interpreter. V1's
+coordination and autonomous-control-plane fields do not activate those features
+in V2. No consumer migration, new schema, seam validator, or additional config
+layer is required by this change. Full V1 policy-key compatibility remains out
+of scope; incompatible required behavior should be explained before proceeding.
+
+Verified declaration examples: this pilot's `AGENTS.md` directly names
+`bin/validate` and `bundle install`; the public `agent-workflows-com` instructions
+point to `.agents/bin/` and `.agents/agent-workflow.yml`, whose validation script
+runs the site's npm build and adoption checks. Reading those declarations proves
+command discovery, not successful V2 delivery in that consumer. Real adoption
+must exercise unlike repositories and preserve their existing command/policy
+choices. Complete cross-repository compatibility remains UNKNOWN until tried.
 
 ## Host boundary
 
