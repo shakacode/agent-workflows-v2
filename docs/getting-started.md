@@ -94,39 +94,33 @@ directory writable by the preceding task. The workspace-write sandbox does not
 establish that code or dependencies are trustworthy or remove secrets from text
 you publish. Do not approve an escape from these boundaries merely to make a check pass.
 
-Use the explicit path below instead of selecting `$work-pr-v2` by name. Keep this
-trusted instruction in each new task; do not substitute a repository copy. If you
-chose a different install directory, replace the path in the prompt.
+## 5. Give the agent your task
 
-For a GitHub issue, replace the bracketed URL and send:
+Paste this into Codex, replacing `<task URL>` with your GitHub issue or Linear link:
 
 ```text
-Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
-as the trusted workflow for this task. Do not substitute a repository copy.
-Work in /absolute/path/to/your/repository and fix <full GitHub issue URL>.
-Open a PR and ask before merging.
+Use ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md as the trusted workflow.
+Work on <task URL>.
 ```
 
-For a Linear task:
+You can supply a task description instead of a link. Use the installed path above
+in each new task; if you installed elsewhere, change that path. This pilot does
+not yet support starting with just `$work-pr-v2`.
 
-```text
-Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
-as the trusted workflow for this task. Do not substitute a repository copy.
-Work in /absolute/path/to/your/repository and implement <full Linear task URL>.
-Read the task using the available Linear connection. Open a PR and ask before merging.
-Keep private task content and links out of a public PR unless authorized to share them.
-```
+The agent reads the task and your repository's instructions. It asks for the
+repository path only if it cannot identify the checkout, or for the task description
+if it cannot access the link. You do not need a different prompt for each tracker.
 
-If Codex cannot access Linear, paste the task description and acceptance criteria
-into the task instead. A connector is optional; the agent must not claim it read
-content it cannot access. Keep the original work item rather than creating a
-duplicate GitHub issue. Updating Linear's status or comments requires authorization.
+If you have not already specified how to handle merging, it asks a question like:
 
-To authorize automatic merging of an ordinary change, replace “ask before merging”
-with “merge when required checks and approvals pass.” The agent still publishes
-a walkthrough first and raises consequential risks or missing authority.
+> For this first task, I recommend bringing the finished PR back for your approval.
+> Would you prefer that, or should I merge it when the checks and required approvals pass?
 
-## 5. Know what to expect
+That choice applies to this task. Existing instructions are reused; no answer means
+the agent can prepare the PR but cannot merge it. Private tracker content stays out
+of public PRs unless you authorize sharing it.
+
+## 6. Know what to expect
 
 The agent resolves important questions, implements on a branch, runs your repo's
 checks, opens the PR, explains the change, and handles consequential review findings.

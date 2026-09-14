@@ -5,10 +5,14 @@ description: Implement and verify one ordinary GitHub PR, publish its walkthroug
 
 # Work one PR
 
-Own one task through its requested PR outcome. Keep requirements in the original
-issue or tracker and delivery state on GitHub. Link the work item from the PR when
-sharing is authorized; do not create a duplicate issue. If another agent edits the
-same change, take turns or agree who edits which files.
+Own one task through its requested PR outcome. Read the supplied task text or URL
+using an available connection; if inaccessible, ask for its description and acceptance
+criteria. Resolve the target checkout from host context and Git remotes; ask for its
+path only if missing or ambiguous, before editing. Keep requirements in the original
+tracker and delivery state on GitHub. Link the work item from the PR when sharing
+is authorized; do not create a duplicate issue. Reading a tracker does not authorize
+updating it. Keep private task content and links out of public artifacts unless
+sharing is authorized.
 
 ## Use the repository seam
 
@@ -43,11 +47,17 @@ fields. Publish only aggregate metadata: no prompts, tool output, raw sessions,
 local paths, private run IDs, or secrets. Missing usage is not a merge gate.
 Store useful evidence once and retrieve it as needed; collapsing does not save tokens.
 
-Read context before asking. Ask early for consequential unknowns, including discoveries
-during implementation; recommend an answer and explain the tradeoff. Choose routine,
-reversible approaches within scope. Await required answers before dependent work,
-continue independent work, and retain decisions in the task/PR within its privacy.
-Silence is not approval; do not ask again for already-authorized actions.
+After reading trusted instructions, if merge authority is unset and the task permits
+merging, ask early whether to merge when checks and required approvals pass or bring
+the ready PR back for approval. Recommend a choice for this task; default to **ask**
+without an answer. Existing authority needs no repeated question. Keep the answer
+scoped to this task unless the user explicitly chooses broader scope.
+
+Ask other consequential questions when needed, with a recommendation; choose routine,
+reversible approaches yourself. Await required answers before dependent work and
+continue independent work. Retain decisions in the task/PR within its privacy;
+silence is not approval. If another agent edits the change, agree on file ownership
+or take turns.
 
 ## Implement and explain
 

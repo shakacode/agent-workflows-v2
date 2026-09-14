@@ -11,6 +11,8 @@ before the answer becomes expensive to change, rather than waiting for PR review
 
 | Situation | What the agent does |
 | --- | --- |
+| The checkout or task is unavailable | Asks for the repository path or task description; does not make you rewrite the workflow prompt. |
+| Merge authority has not been specified | Asks early whether to merge after checks and required approvals pass or bring the finished PR back for approval. Reuses existing authority; without an answer, prepares the PR and asks before merging. |
 | The goal or acceptable behavior is unclear | Reads the existing context, then asks the smallest question needed to proceed. |
 | Several routine, reversible approaches fit the request | Chooses one and continues; mentions the assumption if it affects your expectations. |
 | Implementation reveals a product tradeoff, wider scope, or consequential risk | Explains the discovery, recommends a path, and asks before dependent work continues. |
@@ -27,7 +29,9 @@ The question makes the consequence understandable. It does not ask you to choose
 an internal parser, review a token log, or wait until the code is finished.
 Related questions can come together; a mandatory questionnaire is unnecessary.
 An answer remains part of the existing task or PR, subject to its privacy, so the
-agent can use it later without asking again.
+agent can use it later without asking again. A merge choice applies to this task
+unless you explicitly give it broader scope. Choosing **Ask** at the start leaves
+the actual merge decision until you can see the finished change.
 
 ## A short message, with evidence available
 
