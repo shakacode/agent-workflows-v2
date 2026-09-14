@@ -319,22 +319,22 @@ that exercises it rather than treating the ruleset's existence as proof.
 
 ## Ruby packaging
 
-The root `Gemfile` and `Gemfile.lock` already manage Minitest and RuboCop for
-development. Runtime helpers use standard libraries. There is no gemspec, packaged
-executable, or published RubyGem today; users install the source skill through
-`bin/install`. The [getting-started guide](getting-started.md) covers that path.
+The root `Gemfile` and `Gemfile.lock` manage development dependencies; runtime
+helpers use standard libraries. `agent-workflows-v2.gemspec` packages the complete
+skill and thin `aw` / `install-agent-workflows` executables that reuse the existing
+implementations. The provisional version is `0.1.0.pre.1`.
 
-Recommendation: package the existing skill and helpers together after the first
-consumer installation proves the layout. Add a root gemspec and version, include
-the complete skill directory, and expose `aw` plus an explicit-directory installer
-through RubyGems executables. Keep one implementation, and use standard
-[RubyGems build/install tooling](https://guides.rubygems.org/make-your-own-gem/).
-Test a built gem in a temporary gem home for install, helper invocation, upgrade,
-and removal; do not install into application bundles by default. Establish the
-package name, license, version policy, and release authority before publication;
-these release decisions remain UNKNOWN. A gem must reduce installation work,
-not add a second required install alongside the skill. No release workflow,
-gemspec, or registry publication is added by this documentation change.
+The package test builds and installs the actual artifact into a separate gem home,
+runs its helper and installer outside the source checkout, then removes it.
+Existing installer tests cover repeat installation, collisions, and source updates.
+The [packaging guide](packaging.md) explains local trials and the fact that a
+manually linked skill retains its selected gem version until explicitly relinked.
+Do not add the pilot to application bundles or export its test gem environment.
+
+No registry release or global profile installation has occurred. License and
+registry publication approval remain outstanding; packaging does not invent that
+authority. Keep source installation available until the complete packaged first-use
+experience is verified. Use standard RubyGems mechanics rather than a release framework.
 
 ## Documentation website
 

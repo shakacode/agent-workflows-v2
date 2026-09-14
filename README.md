@@ -105,7 +105,9 @@ bin/validate
 Tests cover command behavior and failures; RuboCop uses ordinary production
 complexity limits. Executable logic lives in Ruby, not Markdown instructions.
 The root [Gemfile](Gemfile) and lockfile manage development dependencies; runtime
-helpers use Ruby's standard library. There is no gemspec or published gem yet.
+helpers use Ruby's standard library. A local prerelease gem packages the same skill
+and helpers; see [build and test the gem](docs/packaging.md). Registry publication
+and the license decision remain outstanding.
 The [packaging plan](docs/pilot-plan.md#ruby-packaging) describes the path to one.
 See [the pilot plan](docs/pilot-plan.md) for requirements, acceptance cases,
 rollout, and current scope. [Issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1)

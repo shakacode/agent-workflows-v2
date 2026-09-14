@@ -1,0 +1,58 @@
+# Build and test the pilot gem
+
+The gem packages the same skill, installer, and Ruby helpers as the source checkout.
+It adds no runtime gems and does not install a global agent profile. This is a local
+prerelease package; nothing has been published to RubyGems.org.
+
+From the trusted source checkout:
+
+```bash
+gem build agent-workflows-v2.gemspec
+```
+
+To try the built package without changing your application bundle or normal gem
+installation, use a separate gem home. These environment values apply only to the
+individual commands:
+
+```bash
+aw_gem_home=$(mktemp -d)
+GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" gem install --local --no-document ./agent-workflows-v2-0.1.0.pre.1.gem
+GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" "$aw_gem_home/bin/aw" --help
+```
+
+Keep this temporary home for packaging checks only. A real pilot installation must
+keep its trusted source outside the agent's writable directories, including any
+temporary directories the host allows. Do not export the test gem environment into
+your application's shell or add the pilot to its Gemfile.
+
+The package also contains `install-agent-workflows --skills-dir DIR`, which calls
+the existing explicit-directory installer. Use it only when you want a link in a
+chosen skill directory. It preserves existing content and refuses to replace a
+different source. The [first-use guide](getting-started.md) explains the trusted
+source and host startup boundaries.
+
+## Upgrade, rollback, and removal
+
+RubyGems installs each version in its own directory. A manually installed skill
+link keeps pointing to its original version. To change that link, inspect its
+destination, remove only the known pilot symlink, then run the new version's
+installer. Do not remove a foreign directory or silently repoint another skill.
+You can retain the prior gem version and relink it for rollback.
+
+Remove a pilot skill link before uninstalling the version it points to. For the
+isolated packaging check above:
+
+```bash
+GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" gem uninstall agent-workflows-v2 --all --executables
+```
+
+The package test builds and installs the actual gem into a temporary home, runs
+the installed helper and installer from outside the source checkout, then removes
+the package. Existing installer tests cover repeat installation, collisions, and
+source updates. These checks validate the artifact; they do not establish host
+compatibility or authorize a registry release.
+
+The provisional name is `agent-workflows-v2`, with version `0.1.0.pre.1`. License
+and registry release approval remain outstanding. The gemspec does not invent a
+license grant, so RubyGems currently warns that a license is unspecified. Packaging
+uses [standard RubyGems tooling](https://guides.rubygems.org/make-your-own-gem/).
