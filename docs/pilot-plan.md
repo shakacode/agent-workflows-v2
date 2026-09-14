@@ -147,7 +147,7 @@ not implied by a successful local install.
 The abstractions should follow existing differences:
 
 - Keep one `SKILL.md`, installer, validation entry point, and GitHub/merge code.
-  Installation takes an explicit host-recognized directory; invocation and trusted
+  Installation takes an explicit trusted directory; invocation and trusted
   instruction discovery may need a short host-specific setup note. Do not fork
   the workflow or copy policy into three host-specific versions.
 - Keep usage reading separate from code delivery. Start with a small concrete

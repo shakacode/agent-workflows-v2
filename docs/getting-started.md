@@ -46,8 +46,8 @@ another skill. Keep both link and source outside candidate repositories. It chan
 no global profile, authentication, hooks, or other skills.
 
 Codex will not automatically list this pilot in `/skills`. The prompts below name
-the trusted file explicitly, so a repository skill with the same name cannot be
-mistaken for this installation. The agent reads that file and uses its helpers.
+the trusted file explicitly. That path alone does not disable repository skill
+metadata: use the startup directory in the next step as well.
 
 If you used the earlier project-local instructions, remove that old link only if
 it is still a symlink. If Git replaced it with tracked files, do not delete those
@@ -63,15 +63,27 @@ you already run another workflow pack, use your host's settings to disable
 conflicting workflows for the pilot. A separate checkout alone is not a security
 sandbox or an isolated agent configuration.
 
-## 4. Start Codex in that repository
+## 4. Start Codex from the trusted pilot directory
 
-Open the repository you want to change as your Codex project and start a new task,
-or replace the path below and run:
+Keep the session's root outside the candidate repository. Replace the target path:
 
 ```bash
-cd /path/to/your/repository
-codex
+cd "$HOME/agent-tools/agent-workflows-v2-pilot"
+codex --sandbox workspace-write --add-dir /absolute/path/to/your/repository
 ```
+
+Starting inside a candidate repo can load its skill descriptions before your
+prompt is read. On Codex CLI 0.154.0, we checked that this external startup keeps
+candidate skill metadata out of the initial prompt while including the target
+repo as a writable directory. This check used `codex debug prompt-input`; it was
+not a full agent task or proof of complete host security. App startup and other
+versions need their own verification before an equivalent claim.
+
+Keep this session root in the pilot directory; run repository commands with the
+target repo as their working directory. Do not restart or resume the pilot from
+the candidate repo without separately verified host isolation. The workspace-write
+sandbox is an execution boundary; it does not establish that code or dependencies
+are trustworthy or remove secrets from text you publish.
 
 Use the explicit path below instead of selecting `$work-pr-v2` by name. Keep this
 trusted instruction in each new task; do not substitute a repository copy. If you
@@ -82,7 +94,7 @@ For a GitHub issue, replace the bracketed URL and send:
 ```text
 Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
 as the trusted workflow for this task. Do not substitute a repository copy.
-Fix <full GitHub issue URL> in this repository.
+Work in /absolute/path/to/your/repository and fix <full GitHub issue URL>.
 Open a PR and ask before merging.
 ```
 
@@ -91,7 +103,7 @@ For a Linear task:
 ```text
 Read and follow ~/agent-tools/agent-workflows-v2-pilot/skills/work-pr-v2/SKILL.md
 as the trusted workflow for this task. Do not substitute a repository copy.
-Implement <full Linear task URL> in this repository.
+Work in /absolute/path/to/your/repository and implement <full Linear task URL>.
 Read the task using the available Linear connection. Open a PR and ask before merging.
 Keep private task content and links out of a public PR unless authorized to share them.
 ```
