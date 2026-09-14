@@ -196,6 +196,11 @@ For the dedicated terminal installation:
 test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw"
 ```
 
-For rollback without removal, point the trusted source checkout at a previously
-reviewed revision. Do not overwrite local edits. Other skills and application
+For rollback, switch the trusted source checkout to a previously reviewed revision
+without overwriting local edits. If that revision also uses `skills/aw`, the link
+continues to work. A revision before the rename needs reinstallation: remove only
+your verified `aw` symlink, run that revision's installer with the same `--skills-dir`,
+and use its `work-pr-v2` skill name and terminal PATH. Switching revisions alone
+would leave `aw` dangling. Returning to a newer revision likewise needs removal of
+the verified old link and reinstallation as `aw`. Other skills and application
 configuration are unaffected.
