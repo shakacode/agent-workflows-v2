@@ -119,6 +119,17 @@ end
 class UsageFailuresTest < Minitest::Test
   include UsageFixture
 
+  def test_missing_or_invalid_latest_turn_does_not_count_unattributed_responses
+    [nil, '', 42].each do |turn|
+      records = turn.nil? ? [] : [context(turn)]
+      response = usage('unattributed', turn, 100)
+      response[:payload].delete(:turn_id) if turn.nil?
+      report = run_report([*records, response])
+      assert_includes report, 'Responses: UNKNOWN'
+      refute_includes report, '| 100 |'
+    end
+  end
+
   def test_discovery_handles_unsupported_session_metadata_as_unknown
     [nil, [], { type: 'session_meta', payload: [] }].each do |metadata|
       report = run_report([context('current'), usage('current', 'current', 100)], discover: true, metadata: metadata)
@@ -168,8 +179,10 @@ class UsageFailuresTest < Minitest::Test
   end
 
   def test_usage_without_matching_turn_context_does_not_inherit_another_turns_settings
-    report = run_report([context('old'), usage('current', 'current', 100)], '--turn', 'current')
-    assert_includes report, '| openai | UNKNOWN | UNKNOWN | UNKNOWN | 100 |'
+    [[], [context('old')]].each do |records|
+      report = run_report([*records, usage('current', 'current', 100)], '--turn', 'current')
+      assert_includes report, '| openai | UNKNOWN | UNKNOWN | UNKNOWN | 100 |'
+    end
   end
 
   def test_invalid_commit_or_contribution_is_rejected_without_echoing_private_arguments

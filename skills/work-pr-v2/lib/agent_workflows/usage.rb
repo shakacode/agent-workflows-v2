@@ -22,10 +22,15 @@ module AgentWorkflows
       @provider = nil
       @records = []
       File.foreach(file) { |line| consume(parse(line)) }
-      selected = turns.empty? ? [@context['turn_id']] : turns
+      selected = selected_turns(turns)
       @records.select { |record| selected.include?(record['turn_id']) }.each { |record| count(record) }
     rescue SystemCallError
       @gaps << 'Unreadable or unidentifiable records'
+    end
+
+    def selected_turns(turns)
+      selected = turns.empty? ? [@context['turn_id']] : turns
+      selected.grep(String).reject { |turn| turn.strip.empty? }
     end
 
     def consume(record)
