@@ -1,0 +1,185 @@
+# frozen_string_literal: true
+
+require_relative 'test_helper'
+require 'json'
+
+module UsageFixture
+  COMMAND = File.expand_path('../skills/work-pr-v2/scripts/aw', __dir__)
+  COMMIT = 'a' * 40
+  THREAD = '00000000-0000-0000-0000-000000000001'
+
+  private
+
+  def context(turn)
+    { type: 'turn_context', payload: { turn_id: turn, model: 'gpt-test', effort: 'high' } }
+  end
+
+  def usage(response, turn, input)
+    { type: 'token_usage_record', timestamp: '2026-09-14T12:00:00Z',
+      payload: { response_id: response, turn_id: turn,
+                 usage: { input_tokens: input, cached_input_tokens: 40,
+                          output_tokens: 20, reasoning_output_tokens: 5 },
+                 thread_token_usage: { input_tokens: 9999 } } }
+  end
+
+  def run_report(records, *, **options)
+    Dir.mktmpdir do |directory|
+      file = write_records(directory, records, options)
+      environment = { 'CODEX_HOME' => directory, 'CODEX_THREAD_ID' => THREAD }
+      sources = options[:discover] ? [] : ['--file', file] * options.fetch(:copies, 1)
+      output, error, status = Open3.capture3(environment, COMMAND, 'usage', *sources,
+                                             '--commit', COMMIT, '--contribution', 'implementation', *)
+      assert status.success?, error
+      output
+    end
+  end
+
+  def write_records(directory, records, options)
+    folder = File.join(directory, 'sessions', '2026', '09', '14')
+    FileUtils.mkdir_p(folder)
+    file = File.join(folder, "rollout-#{THREAD}.jsonl")
+    metadata = { type: 'session_meta', payload: { id: options.fetch(:identity, THREAD), model_provider: 'openai',
+                                                  cli_version: '0.154.0-alpha.6.2' } }
+    metadata = options.fetch(:metadata, metadata)
+    File.write(file, "#{[metadata, *records].map { |record| JSON.generate(record) }.join("\n")}\n")
+    File.write(file, options.fetch(:raw_tail, ''), mode: 'a')
+    file
+  end
+end
+
+class UsageTest < Minitest::Test
+  include UsageFixture
+
+  def test_counts_each_response_once_in_latest_turn_without_adding_cumulative_snapshots
+    records = [context('old'), usage('old-response', 'old', 900), context('current'),
+               usage('response-1', 'current', 100), usage('response-1', 'current', 100),
+               usage('response-2', 'current', 200),
+               { type: 'event_msg', payload: { type: 'token_count', info: { total_tokens: 9999 } } }]
+    report = run_report(records)
+    assert_includes report, '| 300 | 80 | 40 | 10 |'
+    assert_includes report, 'gpt-test'
+    assert_includes report, 'high'
+    assert_includes report, '2 responses'
+    refute_includes report, '9999'
+  end
+
+  def test_explicit_turns_across_resumed_files_are_shared_without_recounting_responses
+    records = [context('old'), usage('first', 'old', 900), context('current'), usage('second', 'current', 100)]
+    report = run_report(records, '--turn', 'old', '--turn', 'current',
+                        '--commit', "#{COMMIT},#{'b' * 40}", copies: 2)
+    assert_includes report, '| 1000 | 80 | 40 | 10 |'
+    assert_includes report, 'SHARED'
+    assert_includes report, '2 responses'
+    assert_includes report, '2026-09-14T12:00:00Z'
+    assert_includes report, 'PARTIAL'
+    assert_includes report, 'External reviewer/tool-model usage: UNKNOWN'
+  end
+
+  def test_missing_fields_stay_unknown_and_each_turn_keeps_its_configured_model
+    incomplete = usage('first', 'old', 100)
+    incomplete[:payload][:usage].delete(:cached_input_tokens)
+    changed = context('current')
+    changed[:payload].merge!(model: 'gpt-other', effort: 'low')
+    records = [context('old'), incomplete, changed, usage('second', 'current', 200)]
+    report = run_report(records, '--turn', 'old', '--turn', 'current')
+    assert_includes report, '| openai | gpt-test | UNKNOWN | high | 100 | UNKNOWN | 20 | 5 |'
+    assert_includes report, '| openai | gpt-other | UNKNOWN | low | 200 | 40 | 20 | 5 |'
+    assert_includes report, '0.154.0-alpha.6.2'
+  end
+
+  def test_preserves_native_cache_writes_and_total_without_adding_subsets
+    response = usage('current', 'current', 100)
+    response[:payload][:usage].merge!(cache_write_input_tokens: 7, total_tokens: 120)
+    report = run_report([context('current'), response])
+    assert_includes report, '| 100 | 40 | 20 | 5 | 7 | 120 |'
+    assert_includes report, 'Native total'
+  end
+
+  def test_unidentifiable_or_truncated_records_cannot_inflate_usage_or_leak_private_content
+    unidentifiable = usage('unknown', 'current', 9900)
+    unidentifiable[:payload].delete(:response_id)
+    report = run_report([context('current'), usage('counted', 'current', 100), unidentifiable],
+                        raw_tail: '{"private-prompt": "SENSITIVE-INCOMPLETE')
+    assert_includes report, '| 100 | 40 | 20 | 5 |'
+    assert_includes report, 'Unreadable or unidentifiable records'
+    refute_includes report, 'SENSITIVE'
+    refute_includes report, '9900'
+  end
+
+  def test_discovers_current_thread_from_host_context_and_uses_only_latest_turn
+    report = run_report([context('old'), usage('old', 'old', 900),
+                         context('current'), usage('current', 'current', 100)], discover: true)
+    assert_includes report, '| 100 | 40 | 20 | 5 |'
+    assert_includes report, 'host context'
+    assert_includes report, 'SHARED'
+    refute_includes report, THREAD
+  end
+end
+
+class UsageFailuresTest < Minitest::Test
+  include UsageFixture
+
+  def test_discovery_handles_unsupported_session_metadata_as_unknown
+    [nil, [], { type: 'session_meta', payload: [] }].each do |metadata|
+      report = run_report([context('current'), usage('current', 'current', 100)], discover: true, metadata: metadata)
+      assert_includes report, 'Responses: UNKNOWN'
+    end
+  end
+
+  def test_malformed_token_payloads_stay_unknown_without_printing_the_bad_data
+    [nil, 42, [], 'SENSITIVE'].each do |bad_usage|
+      response = usage('current', 'current', 100)
+      response[:payload][:usage] = bad_usage
+      report = run_report([context('current'), response])
+      assert_includes report, '| high | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |'
+      refute_includes report, 'SENSITIVE'
+    end
+  end
+
+  def test_unavailable_native_records_and_unconfirmed_identity_report_unknown_instead_of_zero
+    unsupported = [{ type: 'event_msg', payload: { type: 'token_count', info: { total_tokens: 9999 } } }]
+    [run_report(unsupported),
+     run_report([context('current'), usage('wrong-owner', 'current', 100)],
+                discover: true, identity: 'different-thread')].each do |report|
+      assert_includes report, 'Responses: UNKNOWN'
+      refute_includes report, '0 responses'
+      refute_includes report, '| 100 |'
+    end
+  end
+
+  def test_public_report_rejects_unstructured_metadata_and_keeps_transcripts_private
+    setting = context('current')
+    setting[:payload].merge!(model: '<b>SENSITIVE-MODEL</b>', effort: "high\nSENSITIVE-EFFORT")
+    response = usage('current', 'current', 100)
+    response[:timestamp] = '/private/SENSITIVE-PATH'
+    report = run_report([setting, response,
+                         { type: 'response_item', payload: { content: 'SENSITIVE-PROMPT' } }])
+    assert_includes report, '| openai | UNKNOWN | UNKNOWN | UNKNOWN | 100 |'
+    assert_includes report, 'source interval: UNKNOWN'
+    refute_includes report, 'SENSITIVE'
+    refute_includes report, '/private/'
+  end
+
+  def test_conflicting_copies_of_a_response_mark_counts_unknown
+    report = run_report([context('current'), usage('replayed', 'current', 100), usage('replayed', 'current', 200)])
+    assert_includes report, '| high | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |'
+    assert_includes report, 'Conflicting response copies'
+    refute_includes report, '| 100 |'
+  end
+
+  def test_usage_without_matching_turn_context_does_not_inherit_another_turns_settings
+    report = run_report([context('old'), usage('current', 'current', 100)], '--turn', 'current')
+    assert_includes report, '| openai | UNKNOWN | UNKNOWN | UNKNOWN | 100 |'
+  end
+
+  def test_invalid_commit_or_contribution_is_rejected_without_echoing_private_arguments
+    [['--commit', '/private/SENSITIVE', '--contribution', 'implementation'],
+     ['--commit', COMMIT, '--contribution', 'SENSITIVE'], []].each do |arguments|
+      output, error, status = Open3.capture3(COMMAND, 'usage', *arguments)
+      refute status.success?
+      assert_empty output
+      assert_includes error, 'aw usage:'
+      refute_includes error, 'SENSITIVE'
+    end
+  end
+end
