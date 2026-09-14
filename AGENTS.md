@@ -1,6 +1,6 @@
 # Agent Workflows V2
 
-This private pilot implements the small product described in `docs/pilot-plan.md`.
+This public pilot implements the small product described in `docs/pilot-plan.md`.
 The maintainer authorized implementation, publication, and merging verified PRs.
 Keep company strategy and private operational data out of product artifacts.
 
@@ -26,6 +26,8 @@ Keep company strategy and private operational data out of product artifacts.
 - `bin/install` links only this skill into an explicitly supplied skills directory.
 - Markdown explains decisions and invokes commands. Put executable logic in code.
 - Prefer Ruby standard libraries and GitHub CLI. Runtime needs no new gem.
+- Keep the workflow portable. Codex is the first reference host; host-specific
+  installation and usage readers must not enter the GitHub/merge modules.
 - Tests verify behavior and failures, not exact instruction wording. Keep focused
   files and use normal RuboCop defaults; no baseline ratchet or global metrics disable.
 
@@ -37,7 +39,9 @@ Dependencies: `bundle install`. Ruby: 3.4 for the initial pilot.
 Review: one visible independent review of meaningful implementation changes.
 Coordination: none; this controlled pilot has no independent same-target writer.
 Merge authority: auto for this pilot's reviewed, verified implementation PRs.
-Release: private pilot, no public release, registry publication, or global install.
+Release: public source pilot; no registry publication or global install.
+Native main protection: PRs and up-to-date GitHub Actions `validate` are required;
+no bypass actors, force-push, or deletion. Required approving review count is zero.
 
 ## Completion
 

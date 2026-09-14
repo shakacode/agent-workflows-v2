@@ -14,7 +14,7 @@ must be understandable without fleet infrastructure.
 Success means less developer attention and fewer tokens to deliver a better
 result. A smaller codebase is a means to that outcome. The maintainer has
 authorized merging reviewed, verified pilot PRs; another permission request is
-unnecessary. Public visibility remains a separate, unanswered decision.
+unnecessary. The maintainer also approved public visibility on September 14.
 
 ### Requirements
 
@@ -58,9 +58,10 @@ The initial report should follow these rules:
   not proof of every execution's model. Reasoning effort is a setting, not a
   measurement of thought quality or a transcript of private reasoning.
 - Define the contributing run/turn interval. Count each provider response once.
-  Cached input is a subset of input; reasoning output is a subset of output.
-  Never sum cumulative snapshots or add subsets again to the total. Use the
-  provider's totals and document differing provider semantics.
+  In Codex's observed records, cached input and reasoning output are subsets of
+  input and output respectively. Other providers can report cache reads/writes
+  separately. Preserve native categories and their meanings; never sum cumulative
+  snapshots, add subsets again, or apply one provider's total formula to another.
 - Count subagents and failed attempts when their records are available. Report
   missing external reviewer or tool-model usage as UNKNOWN, never zero. Forked
   history and resumed sessions must not duplicate already counted responses.
@@ -95,6 +96,62 @@ resume/shared work, and retain explicit gaps. Use these real PRs plus available
 comparable V1 evidence to assess the four outcomes above. Do not rerun #700 or
 rebuild its fix as a benchmark. Start with a few comparable tasks; report the
 sample and uncertainty instead of manufacturing a precise savings percentage.
+
+## Host boundary
+
+Recommendation: one portable kernel from the start, with Codex as the first
+reference host. Validate Claude Code second and Cursor third. Supporting the
+skill format is distinct from demonstrating the complete workflow and complete
+usage attribution. Initial scope is local execution; cloud/remote packaging is
+not implied by a successful local install.
+
+| Host | Initial product commitment | Evidence and remaining work |
+| --- | --- | --- |
+| Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. Native usage/model evidence exists; the automatic report still needs implementation. |
+| Claude Code | Compatibility target; next workflow/usage trial. | Native skills and request metadata are documented. Actual V2 activation, complete PR delivery, and usage coverage remain UNKNOWN until tried. |
+| Cursor | Compatibility target; validate after Claude Code. | Native skills and session/model metadata are documented. Full V2 delivery and per-request token/effort coverage remain UNKNOWN; do not promise reporting parity from skill compatibility alone. |
+
+The abstractions should follow existing differences:
+
+- Keep one `SKILL.md`, installer, validation entry point, and GitHub/merge code.
+  Installation takes an explicit host-recognized directory; invocation and trusted
+  instruction discovery may need a short host-specific setup note. Do not fork
+  the workflow or copy policy into three host-specific versions.
+- Keep usage reading separate from code delivery. Start with a small concrete
+  Codex reader. Inspect a real Claude Code request sample before stabilizing the
+  report interface; extract shared aggregation only when the second reader is
+  implemented. No generic agent superclass, orchestration protocol, or plugin
+  registry is needed for the first reader.
+- Record host and version separately from provider and model: an editor/runner
+  name does not establish the model or billing provider. Preserve native reasoning
+  settings; `high` in two products is not an equivalent amount of computation.
+  Retain unavailable fields and data coverage explicitly rather than inventing
+  a universal effort scale or silently assigning zero tokens.
+- The same GitHub gates, current-head verification, walkthrough, and merge
+  authority apply on every host. Missing usage data remains a reporting gap.
+  A host only gains a tested-support claim after an isolated installation and
+  ordinary PR exercise, including failed checks, changed head, and ask/auto
+  stopping behavior. Report usage support separately, using real native records.
+
+Official evidence checked September 14: [Codex skills](https://developers.openai.com/codex/skills),
+[Claude Code skills](https://code.claude.com/docs/en/skills), and
+[Cursor skills](https://cursor.com/docs/skills) all use `SKILL.md`. Their documented
+local project roots include `.agents/skills`, `.claude/skills`, and
+`.cursor/skills` respectively; each host has additional discovery rules.
+[Claude Code request monitoring](https://code.claude.com/docs/en/monitoring-usage)
+documents model, effort, request IDs, and separate input/output/cache categories.
+[Anthropic caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+uses separate cache usage fields, so Codex's subset convention cannot be assumed.
+[Cursor CLI output](https://cursor.com/docs/cli/reference/output-format) and
+[hooks](https://cursor.com/docs/hooks) expose session/model metadata; these sources
+do not establish complete token/effort attribution to every V2 commit. These are
+documentation findings, not a claim that either host has been tested here.
+
+This sequence gives us a working product sooner and checks the second host early
+enough to catch Codex-specific assumptions. Full three-host support on day one
+would add installation, permission, session, and usage compatibility work before
+the ordinary flow has established its value. Keep that work in the existing pilot
+scope and admit it sequentially; no separate host backlog trackers are needed.
 
 ## Merge behavior
 
@@ -205,22 +262,25 @@ by its authorized merge. A normal maintainer-authorized bootstrap merge does not
 demonstrate the product's protected automatic-merge path. That demonstration and
 repeated consumer use remain UNKNOWN until observed.
 
-Observed hosting constraint: GitHub rejected the private pilot's ruleset read
-with HTTP 403 and a plan-upgrade/public-visibility requirement. No protection
-change was made. Keep native protection prerequisites intact. A live merge
-demonstration needs an eligible protected repository; merge authority is granted.
-Public visibility or a plan upgrade remains a maintainer decision.
+The private-hosting restriction was resolved by the authorized public visibility
+change on September 14. The active [main ruleset](https://github.com/shakacode/agent-workflows-v2/rules/23252676)
+requires PRs and an up-to-date `validate` check from GitHub Actions. It has no
+bypass actors and blocks force-push and deletion. The required approving-review
+count is zero for the single-user pilot; the skill still handles consequential
+review and risk. Record protected automatic-merge evidence on the ordinary PR
+that exercises it rather than treating the ruleset's existence as proof.
 
 ## Scope, rollout, and rollback
 
-Initial host: Codex. Initial development/consumer repository: this private pilot;
-broader consumer adoption follows real evidence. Runtime prerequisites are Ruby
+Initial reference host: Codex, followed by Claude Code and Cursor as described
+above. Initial development/consumer repository: this public pilot; broader
+consumer adoption follows real evidence. Runtime prerequisites are Ruby
 3.4, Git, authenticated GitHub CLI, and GitHub PRs. Keep V1 available for existing
 users; neither its backlog nor its advanced feature parity blocks this pilot.
 
 Excluded: fleet coordination, control towers, cross-host leases, automatic task
 replacement, telemetry services, policy schemas, review reducers, release automation,
-external tracker adapters, public distribution and global profile changes.
+external tracker adapters, registry distribution and global profile changes.
 Auto-merging ordinary PRs is included; rebuilding autonomous risk calibration is not.
 
 The planning budget is a three-working-day pilot, with a narrow beta estimated
@@ -230,4 +290,5 @@ Stop scope growth when a proposed mechanism does not serve an acceptance case.
 
 Rollback is removing the pilot skill symlink or using the prior trusted checkout
 revision. No issue state migration, production data change, or V1 replacement
-is required. Public publication still needs authority; pilot PR merges are authorized.
+is required. Public source publication and reviewed, verified pilot PR merges
+are authorized. Registry releases and global profile installation remain out of scope.
