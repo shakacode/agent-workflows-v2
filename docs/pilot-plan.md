@@ -265,8 +265,8 @@ The maintainer approved the next feature set on September 14: explicit TDD and
 visual evidence, native usage reporting, a real consumer first-use trial, gem
 packaging and the V2 documentation website, then Claude Code and Cursor validation.
 Use the WIP V2 skill for this work. Deliver bounded PRs in that order, allowing
-independent preparation while one owner integrates and publishes. Existing issue
-#1 remains the implementation record; do not create a second feature tracker.
+independent preparation while one owner integrates and publishes. Issue #1 remains
+the implementation record; do not create a second feature tracker.
 
 Use the website as a proposed consumer trial so the work also delivers useful V2
 documentation. Verify the consumer's own setup and checks, and capture the rendered
