@@ -140,7 +140,7 @@ not implied by a successful local install.
 
 | Host | Initial product commitment | Evidence and remaining work |
 | --- | --- | --- |
-| Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. The native usage reader is implemented and tested against desktop records; stable CLI coverage remains unverified. |
+| Codex | Reference pilot; first usage reader. | Installation, Ruby helpers, and real PR operations have been exercised. The native reader is tested against desktop and stable CLI records. A fresh CLI task implemented and verified the Astro website guides through the consumer seam. |
 | Claude Code | Compatibility target; next workflow/usage trial. | Native skills and request metadata are documented. Actual V2 activation, complete PR delivery, and usage coverage remain UNKNOWN until tried. |
 | Cursor | Compatibility target; validate after Claude Code. | Native skills and session/model metadata are documented. Full V2 delivery and per-request token/effort coverage remain UNKNOWN; do not promise reporting parity from skill compatibility alone. |
 
