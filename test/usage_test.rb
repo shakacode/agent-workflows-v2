@@ -133,6 +133,16 @@ end
 class UsageFailuresTest < Minitest::Test
   include UsageFixture
 
+  def test_all_turns_discloses_records_excluded_for_invalid_turn_identity
+    [nil, '', '  ', 42].each do |turn|
+      report = run_report([context('current'), usage('counted', 'current', 100),
+                           usage('unattributed', turn, 9900)], '--all-turns')
+      assert_includes report.split('<details>').first, 'Unreadable or unidentifiable records'
+      assert_includes report, '| 100 |'
+      refute_includes report, '9900'
+    end
+  end
+
   def test_missing_or_invalid_latest_turn_does_not_count_unattributed_responses
     [nil, '', 42].each do |turn|
       records = turn.nil? ? [] : [context(turn)]

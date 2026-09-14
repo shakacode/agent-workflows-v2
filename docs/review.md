@@ -20,8 +20,10 @@ silently substitute a different reviewer. Disclose optional gaps too.
 The GitHub action intentionally skips changes to its own workflow. Its job summary
 must say **UNAVAILABLE**, with a warning; that runner result is not a completed
 review. Confirm the reason and use an authorized independent review if required.
-Failed or malformed execution evidence fails the job. The owner still reads and
-addresses findings; a completed model run alone does not establish merge readiness.
+Failed or malformed execution evidence fails the job. A successful model run is
+**UNVERIFIED** until the owner reads a visible PR report for the reviewed revision.
+The owner then records the completed review and link in the PR summary and handles
+its findings. Runner success alone does not establish review or merge readiness.
 
 1. Identify the current PR commit and the review's tested commit. Read top-level
    comments, submitted reviews, and inline threads, following pagination. Confirm

@@ -43,11 +43,12 @@ class ReviewWorkflowTest < Minitest::Test
     end
   end
 
-  def test_completed_array_and_jsonl_record_the_reviewed_head
+  def test_successful_execution_stays_unverified_without_a_visible_review
     [[result], "#{JSON.generate(type: 'assistant')}\n#{JSON.generate(result)}\n"].each do |data|
       output, status, summary = run_result(data)
       assert status.success?, output
-      assert_includes summary, 'COMPLETED'
+      assert_includes summary, 'UNVERIFIED'
+      refute_includes summary, 'COMPLETED'
       assert_includes summary, 'a' * 40
       refute_includes summary, 'UNAVAILABLE'
     end

@@ -87,4 +87,4 @@ jobs:
             unavailable "Execution is missing, malformed, failed, or incomplete. Read the action output; do not count this as a completed review." error
             exit 1
           fi
-          printf '## Claude review\n\n**COMPLETED** for %s. Read and address the PR findings before merging; completion is not approval.\n' "$REVIEW_HEAD" >> "$GITHUB_STEP_SUMMARY"
+          printf '## Claude review\n\n**UNVERIFIED** for %s. Claude execution succeeded. The owner must verify a visible PR report for this revision and address its findings before marking review complete.\n' "$REVIEW_HEAD" >> "$GITHUB_STEP_SUMMARY"
