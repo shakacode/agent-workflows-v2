@@ -10,9 +10,9 @@ Gem::Specification.new do |spec|
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['rubygems_mfa_required'] = 'true'
   spec.metadata['documentation_uri'] = "#{spec.homepage}/blob/main/docs/getting-started.md"
-  spec.files = Dir['skills/*/SKILL.md', 'skills/aw/lib/**/*.rb',
-                   'skills/aw/scripts/*', 'bin/install', 'exe/*', 'docs/*.md', 'README.md']
+  spec.files = Dir['skills/sw/SKILL.md', 'skills/sw/lib/**/*.rb',
+                   'skills/sw/scripts/*', 'bin/install', 'exe/*', 'docs/*.md', 'README.md']
   spec.bindir = 'exe'
-  spec.executables = %w[sw aw install-agent-workflows]
-  spec.require_paths = ['skills/aw/lib']
+  spec.executables = %w[sw install-agent-workflows]
+  spec.require_paths = ['skills/sw/lib']
 end

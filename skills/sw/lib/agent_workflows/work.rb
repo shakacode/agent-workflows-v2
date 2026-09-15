@@ -54,7 +54,7 @@ module AgentWorkflows
     end
 
     def self.create_session(target)
-      session = Dir.mktmpdir('aw-work-')
+      session = Dir.mktmpdir('sw-work-')
       canonical = check_session(session, target)
       FileUtils.mkdir_p(File.join(canonical, 'tmp'), mode: 0o700)
       canonical
@@ -109,7 +109,7 @@ module AgentWorkflows
       <<~PROMPT
         Read and follow the trusted workflow at #{JSON.generate(skill)}.
         Work in target repository #{JSON.generate(target)}; run repository commands there.
-        Invoke trusted workflow helpers with Ruby #{JSON.generate(File.realpath(RbConfig.ruby))} and helper #{JSON.generate(File.realpath('../../scripts/aw', __dir__))}.
+        Invoke trusted workflow helpers with Ruby #{JSON.generate(File.realpath(RbConfig.ruby))} and helper #{JSON.generate(File.realpath('../../scripts/sw', __dir__))}.
         Keep the repository's own toolchain for its application commands.
         Keep this host session root unchanged and the trusted workflow outside writable paths.
         The user supplied the task below as a JSON string; honor its scope and merge preference.

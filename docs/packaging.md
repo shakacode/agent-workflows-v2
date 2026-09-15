@@ -41,7 +41,7 @@ destination, remove only the known pilot symlinks, then run the new version's
 installer. Do not remove a foreign directory or silently repoint another skill.
 You can retain the prior gem version and relink it for rollback.
 
-Remove both pilot skill links (`sw` and `aw`) before uninstalling the version it points to. For the
+Remove the pilot `sw` skill link before uninstalling the version it points to. For the
 isolated packaging check above:
 
 ```bash

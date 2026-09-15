@@ -162,7 +162,7 @@ but should not need another skill to translate our messages.
 
 ## What the helpers protect
 
-The command is `skills/aw/scripts/aw`. Its Ruby modules perform a narrow
+The command is `skills/sw/scripts/sw`. Its Ruby modules perform a narrow
 set of operations; they are not a complete security system.
 
 | Protection | Who provides it |

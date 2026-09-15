@@ -24,32 +24,32 @@ class PackageTest < Minitest::Test
     run_gem('install', '--local', '--no-document', archive)
     check_commands
     source = install_skill
-    %w[sw aw].each { |name| File.unlink(File.join(@directory, 'pilot skills', name)) }
+    File.unlink(File.join(@directory, 'pilot skills', 'sw'))
     run_gem('uninstall', 'shakacode-workflows', '--all', '--executables', '--ignore-dependencies')
-    refute File.exist?(File.join(@home, 'bin', 'aw'))
+    refute File.exist?(File.join(@home, 'bin', 'sw'))
     refute File.exist?(source)
   end
 
   private
 
   def check_commands
-    %w[sw aw].each { |name| assert_includes run_executable(name, '--help'), 'Usage: sw' }
+    assert_includes run_executable('sw', '--help'), 'Usage: sw'
   end
 
   def check_public_skill(skills, source)
     sw = File.realpath(File.join(skills, 'sw'))
     assert File.file?(File.join(sw, 'SKILL.md'))
-    assert_equal source, File.realpath(File.join(sw, '..', 'aw'))
+    assert_equal source, sw
   end
 
   def install_skill
     skills = File.join(@directory, 'pilot skills')
     run_executable('install-agent-workflows', '--skills-dir', skills)
-    source = File.realpath(File.join(skills, 'aw'))
+    source = File.realpath(File.join(skills, 'sw'))
     assert source.start_with?("#{File.realpath(@home)}/gems/"), source
     check_public_skill(skills, source)
     assert File.file?(File.join(source, 'SKILL.md'))
-    assert File.file?(File.join(source, 'scripts', 'aw'))
+    assert File.file?(File.join(source, 'scripts', 'sw'))
     source
   end
 

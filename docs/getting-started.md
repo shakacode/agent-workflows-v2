@@ -25,7 +25,7 @@ If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ru
 3.4 available; keep your application's own Ruby/toolchain settings unchanged.
 You do not need Bundler or this project's development gems to use the skill.
 If a version manager selects a different Ruby inside your app, launch from outside
-that checkout with `sw work --repo /path/to/app`, or invoke `scripts/aw` with the
+that checkout with `sw work --repo /path/to/app`, or invoke `scripts/sw` with the
 absolute path to your Ruby 3.4 executable. Do not change the application's Ruby
 version just to start the workflow.
 
@@ -42,7 +42,7 @@ you want to change. If it already exists, use the upgrade instructions below.
 
 ## 3. Install outside your repositories
 
-<a id="use-aw-in-the-codex-app"></a>
+<a id="use-sw-in-the-codex-app"></a>
 
 ### Use $sw in the Codex app
 
@@ -74,8 +74,8 @@ Use a dedicated directory outside your repositories and global agent profile:
 "$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/agent-tools/shakacode-workflows-pilot/skills"
 ```
 
-The installer creates a `sw` entry point and an `aw` compatibility link in that directory and refuses to overwrite
-another skill; collisions are checked before either link is created. Keep links and source outside candidate repositories. It changes
+The installer creates a `sw` entry point in that directory and refuses to overwrite
+another skill. Keep the link and source outside candidate repositories. It changes
 no global profile, authentication, hooks, or other skills.
 
 This dedicated directory is for the terminal launcher; it does not register `$sw`
@@ -100,7 +100,7 @@ sandbox or an isolated agent configuration.
 For the source installation above, expose its command in this terminal:
 
 ```bash
-export PATH="$HOME/agent-tools/shakacode-workflows-pilot/skills/aw/scripts:$PATH"
+export PATH="$HOME/agent-tools/shakacode-workflows-pilot/skills/sw/scripts:$PATH"
 ```
 
 Run from anywhere inside the repository you want to change:
@@ -112,7 +112,7 @@ sw work "Fix the failing search test"
 Supply a GitHub issue, Linear link, or task description as the argument. When
 starting elsewhere, put `--repo /path/to/your/repository` before the task. Use
 `sw work --help` for the command syntax. A packaged installation already supplies
-`sw` and the compatible `aw`; see [installing the package](packaging.md).
+`sw`; see [installing the package](packaging.md).
 
 The launcher identifies your Git checkout and opens native interactive Codex.
 Your account, model, and reasoning settings stay native, and questions appear in
@@ -245,18 +245,16 @@ git -C "$HOME/agent-tools/shakacode-workflows" pull --ff-only
 "$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-Preserve local edits; do not force a switch. Rerunning the installer adds `$sw`
-and preserves the existing `$aw` link. If a destination points elsewhere, inspect it
+Preserve local edits; do not force a switch. Rerunning the installer adds `$sw`.
+If a destination points elsewhere, inspect it
 before replacing anything. Start a fresh Codex task after upgrading. For a dedicated
 terminal installation, supply your existing pilot skills directory instead.
 
-To remove the app installation, first verify both symlinks point to this trusted
-source, then remove only those links:
+To remove the app installation, first verify the symlink points to this trusted
+source, then remove only that link:
 
 ```bash
-for skill in sw aw; do
-  test -L "$HOME/.agents/skills/$skill" && unlink "$HOME/.agents/skills/$skill"
-done
+test -L "$HOME/.agents/skills/sw" && unlink "$HOME/.agents/skills/sw"
 ```
 
 For a terminal installation, use its skills directory in the same commands.

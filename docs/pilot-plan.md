@@ -265,10 +265,10 @@ are outside this immediate-merge pilot and are left unchanged.
 
 ## Design
 
-- **D1 (R1–R3, R9):** one shared workflow exposed as `$sw`, with `$aw` compatibility. Keep task requirements in
+- **D1 (R1–R3, R9):** one shared workflow exposed as `$sw`. Keep task requirements in
   their original user/issue record and code-delivery evidence on the PR. There is
   no project-wide local state database or canonical-target schema.
-- **D2 (R4–R7):** a small Ruby `sw` command (also available as `aw`) invoked from the installed skill,
+- **D2 (R4–R7):** a small Ruby `sw` command invoked from the installed skill,
   with `pr`, `walkthrough`, and `merge` operations. Use `gh` for authentication,
   pagination and APIs; use JSON and `Open3` argument vectors, never shell-built
   commands or a custom prose/JSON parser. Errors are concise and nonzero.
@@ -290,9 +290,9 @@ are outside this immediate-merge pilot and are left unchanged.
 
 ### Intended file boundaries
 
-`skills/aw/SKILL.md` owns agent instructions;
-`skills/aw/scripts/aw` owns CLI dispatch;
-`skills/aw/lib/agent_workflows/` owns small GitHub/merge operations;
+`skills/sw/SKILL.md` owns agent instructions;
+`skills/sw/scripts/sw` owns CLI dispatch;
+`skills/sw/lib/agent_workflows/` owns small GitHub/merge operations;
 `test/` owns behavioral tests. Installation is `bin/install` plus focused tests.
 This plan and the README are explanatory, never runtime configuration.
 
@@ -364,7 +364,7 @@ that exercises it rather than treating the ruleset's existence as proof.
 
 The root `Gemfile` and `Gemfile.lock` manage development dependencies; runtime
 helpers use standard libraries. `shakacode-workflows.gemspec` packages the complete
-skill and thin `sw` / `aw` / `install-agent-workflows` executables that reuse the existing
+skill and thin `sw` / `install-agent-workflows` executables that reuse the existing
 implementations. The provisional version is `0.1.0.pre.1`.
 
 The package test builds and installs the actual artifact into a separate gem home,
