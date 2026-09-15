@@ -209,8 +209,9 @@ for the finished PR.
 <summary>Optional startup-only test</summary>
 
 To inspect intake without implementation, send `$sw Stop after the startup
-questions, before editing files.` Then supply the issue when asked. This pause is
-only for testing; normal use needs just `$sw`. Resume when satisfied with the setup.
+questions, before editing files.` Then supply the issue when asked. This extra stop
+is for testing; normal `$sw` already pauses at the model/effort checkpoint and
+resumes implementation only after you say you are ready.
 
 Do not delete a working seam to test missing instructions. Use a disposable
 repository with real build/test scripts but no instructions for running them.

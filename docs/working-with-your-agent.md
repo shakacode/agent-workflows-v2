@@ -1,7 +1,8 @@
 # Working with your agent
 
 Start with `$sw`. It asks for the issue number, URL, or task description and merge
-preference if missing, then reads the task before recommending a model and effort.
+preference if missing, then reads the task, recommends a model and effort, and pauses
+so you can change the host settings before implementation.
 You can also supply the task and any limits directly. You should not need to
 learn the agent's internal process to get a useful pull request.
 
@@ -15,10 +16,11 @@ before the answer becomes expensive to change, rather than waiting for PR review
 | The checkout or task is unavailable | Asks for the repository path or task description; does not make you rewrite the workflow prompt. |
 | Required repository instructions are missing | Reads scripts and CI, offers a minimal `AGENTS.md` addition, and asks only about policy it cannot establish. Existing documented commands count as a seam; no new config framework is required. |
 | Merge authority has not been specified | Asks early whether to merge after checks and required approvals pass or bring the finished PR back for approval. Reuses existing authority; without an answer, prepares the PR and asks before merging. |
+| The model and effort have been recommended | Pauses so you can change the host settings, even if they already match; waits for you to say you are ready before implementation. |
 | The goal or acceptable behavior is unclear | Reads the existing context, then asks the smallest question needed to proceed. |
 | Several routine, reversible approaches fit the request | Chooses one and continues; mentions the assumption if it affects your expectations. |
 | Implementation reveals a product tradeoff, wider scope, or consequential risk | Explains the discovery, recommends a path, and asks before dependent work continues. |
-| An answer is pending | Continues useful independent work. Does not treat silence as approval. |
+| An answer is pending | Continues useful independent work when safe, but does not begin implementation while the model/effort checkpoint is pending. Does not treat silence as approval. |
 | The PR is ready | In **Ask**, requests one merge decision unless already authorized. In **Auto**, merges after the required checks and approvals pass. |
 
 For example, a question discovered while fixing an import could be:
