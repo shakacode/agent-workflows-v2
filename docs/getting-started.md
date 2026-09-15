@@ -20,13 +20,18 @@ merges, and satisfy required approvals. Otherwise, Shaka explains the blocker on
 
 ## Install in the Codex app
 
-Run these three commands with Ruby 3.4 available. Keep this trusted source checkout
-outside the repositories you will edit; review it before running the installer.
-If it already exists, follow **Upgrade** below.
+Keep this trusted source checkout outside the repositories you will edit.
+If it already exists, follow **Upgrade** below. First, get the source:
 
 ```bash
 mkdir -p "$HOME/agent-tools"
 git clone https://github.com/shakacode/shaka.git "$HOME/agent-tools/shaka"
+```
+
+Inspect the cloned `bin/install` and `skills/shaka/` source. Then, with Ruby 3.4
+available, install the skill:
+
+```bash
 "$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
