@@ -16,14 +16,14 @@ class GitHubWalkthroughTest < Minitest::Test
 
   def test_changed_or_closed_head_prevents_publication
     [snapshot_response(head: 'b' * 40), snapshot_response(state: 'CLOSED')].each do |snapshot|
-      assert_raises(AgentWorkflows::Error) { client(snapshot).walkthrough(head: HEAD, body: 'A walkthrough.') }
+      assert_raises(Shaka::Error) { client(snapshot).walkthrough(head: HEAD, body: 'A walkthrough.') }
       assert_equal 1, @calls.size
     end
   end
 
   def test_head_change_during_publication_is_reported
     github = client(snapshot_response, review_response, review_response, snapshot_response(head: 'b' * 40))
-    error = assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+    error = assert_raises(Shaka::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
     assert_includes error.message, '123'
     assert_equal 4, @calls.size
   end
@@ -32,28 +32,28 @@ class GitHubWalkthroughTest < Minitest::Test
     mismatches = [{ 'state' => 'APPROVED' }, { 'commit_id' => 'b' * 40 }, { 'body' => 'Wrong text.' }, { 'id' => 124 }]
     mismatches.each do |changes|
       github = client(snapshot_response, review_response, review_response(**changes))
-      assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+      assert_raises(Shaka::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
       assert_equal 3, @calls.size
     end
   end
 
   def test_invalid_review_publication_result_is_a_domain_error
     github = client(snapshot_response, response({}))
-    assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+    assert_raises(Shaka::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
   end
 
   def test_invalid_body_or_head_never_contacts_github
     ['', '  ', "\xff".b, nil].each do |body|
-      assert_raises(AgentWorkflows::Error) { client.walkthrough(head: HEAD, body: body) }
+      assert_raises(Shaka::Error) { client.walkthrough(head: HEAD, body: body) }
       assert_empty @calls
     end
-    assert_raises(AgentWorkflows::Error) { client.walkthrough(head: 'short', body: 'A walkthrough.') }
+    assert_raises(Shaka::Error) { client.walkthrough(head: 'short', body: 'A walkthrough.') }
     assert_empty @calls
   end
 
   def test_unauthorized_publication_does_not_attempt_readback
     github = client(snapshot_response, response({}, status: 1))
-    assert_raises(AgentWorkflows::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
+    assert_raises(Shaka::Error) { github.walkthrough(head: HEAD, body: 'A walkthrough.') }
     assert_equal 2, @calls.size
   end
 end

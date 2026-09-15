@@ -29,30 +29,30 @@ class GitHubTest < Minitest::Test
   end
 
   def test_api_failure_does_not_expose_stderr
-    error = assert_raises(AgentWorkflows::Error) { client(response({}, status: 4)).snapshot }
+    error = assert_raises(Shaka::Error) { client(response({}, status: 4)).snapshot }
     assert_match(/exit 4/, error.message)
     refute_match(/private/, error.message)
   end
 
   def test_malformed_json_and_utf8_are_domain_errors
     ['broken JSON', "\xff".b].each do |raw|
-      assert_raises(AgentWorkflows::Error) { client([raw, '', STATUS.new(0)]).snapshot }
+      assert_raises(Shaka::Error) { client([raw, '', STATUS.new(0)]).snapshot }
     end
   end
 
   def test_missing_or_denied_graphql_data_is_not_a_snapshot
     [{ 'errors' => [{ 'message' => 'unauthorized' }] }, { 'data' => {} },
      { 'data' => { 'repository' => nil } }, { 'data' => { 'repository' => 'malformed' } }, []].each do |value|
-      assert_raises(AgentWorkflows::Error) { client(response(value)).snapshot }
+      assert_raises(Shaka::Error) { client(response(value)).snapshot }
     end
   end
 
   def test_checks_require_an_array
-    assert_raises(AgentWorkflows::Error) { client(response({ 'message' => 'error' })).required_checks }
+    assert_raises(Shaka::Error) { client(response({ 'message' => 'error' })).required_checks }
   end
 
   def test_checks_with_empty_failed_output_report_unavailable_evidence
-    error = assert_raises(AgentWorkflows::Error) do
+    error = assert_raises(Shaka::Error) do
       client(['', 'no required checks reported', STATUS.new(1)]).required_checks
     end
     assert_match(/Required-check evidence is unavailable/, error.message)
@@ -60,17 +60,17 @@ class GitHubTest < Minitest::Test
 
   def test_repository_and_identifier_are_validated_before_execution
     ['owner/repo;whoami', '--repo', 'owner/..', 'https://github.com/owner/repo', "\xff", nil].each do |repository|
-      assert_raises(AgentWorkflows::Error) { AgentWorkflows::GitHub.new(repository, 42) }
+      assert_raises(Shaka::Error) { Shaka::GitHub.new(repository, 42) }
     end
     [0, -1, '42x', '--help', "\xff", nil].each do |number|
-      assert_raises(AgentWorkflows::Error) { AgentWorkflows::GitHub.new('owner/repo', number) }
+      assert_raises(Shaka::Error) { Shaka::GitHub.new('owner/repo', number) }
     end
   end
 
   def test_missing_cli_is_an_actionable_error
     runner = ->(*) { raise Errno::ENOENT }
-    error = assert_raises(AgentWorkflows::Error) do
-      AgentWorkflows::GitHub.new('owner/repo', 42, runner: runner).snapshot
+    error = assert_raises(Shaka::Error) do
+      Shaka::GitHub.new('owner/repo', 42, runner: runner).snapshot
     end
     assert_match(/install gh/, error.message)
   end

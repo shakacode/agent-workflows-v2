@@ -7,7 +7,7 @@ require 'rbconfig'
 
 module WorkFixture
   def setup
-    @directory = Dir.mktmpdir('sw-launcher-test')
+    @directory = Dir.mktmpdir('shaka-launcher-test')
     @target = File.join(@directory, 'consumer repo')
     @nested = File.join(@target, 'nested')
     @capture = File.join(@directory, 'capture.json')
@@ -25,10 +25,10 @@ module WorkFixture
   private
 
   def copy_source
-    @source = File.join(@directory, 'trusted source', 'sw')
-    @command = File.join(@source, 'scripts', 'sw')
+    @source = File.join(@directory, 'trusted source', 'shaka')
+    @command = File.join(@source, 'scripts', 'shaka')
     FileUtils.mkdir_p(File.dirname(@source))
-    FileUtils.cp_r(File.expand_path('../skills/sw', __dir__), @source)
+    FileUtils.cp_r(File.expand_path('../skills/shaka', __dir__), @source)
   end
 
   def started(*)
@@ -114,7 +114,7 @@ class WorkTest < Minitest::Test
     [[], ['   '], ['--repo'], ['--unknown']].each do |arguments|
       _output, error, status = launch(*arguments)
       refute status.success?
-      assert_includes error, 'sw work:'
+      assert_includes error, 'shaka work:'
       refute File.exist?(@capture)
     end
   end
@@ -122,7 +122,7 @@ class WorkTest < Minitest::Test
   def test_help_works_outside_a_repository_without_launching_codex
     output, error, status = launch('--help', directory: @directory)
     assert status.success?, error
-    assert_includes output, 'sw work'
+    assert_includes output, 'shaka work'
     assert_includes output, '--repo'
     refute File.exist?(@capture)
   end
@@ -144,15 +144,15 @@ class WorkBoundaryTest < Minitest::Test
     refute status.success?
     assert_includes error, 'outside the target checkout'
     refute File.exist?(@capture)
-    assert_empty Dir.glob(File.join(@target, 'sw-work-*'))
+    assert_empty Dir.glob(File.join(@target, 'shaka-work-*'))
   end
 
   def test_refuses_an_installed_skill_link_inside_the_writable_target
     parent = File.join(@target, 'installed skills')
     FileUtils.mkdir_p(parent)
-    link = File.join(parent, 'sw')
+    link = File.join(parent, 'shaka')
     File.symlink(File.realpath(@source), link)
-    _output, error, status = launch('Fix the test', command: File.join(link, 'scripts', 'sw'))
+    _output, error, status = launch('Fix the test', command: File.join(link, 'scripts', 'shaka'))
     refute status.success?
     assert_includes error, 'trusted workflow'
     refute File.exist?(@capture)
@@ -173,7 +173,7 @@ class WorkBoundaryTest < Minitest::Test
     refute status.success?
     assert_includes error, 'trusted workflow'
     refute File.exist?(@capture)
-    assert_empty Dir.glob(File.join(@source, 'sw-work-*'))
+    assert_empty Dir.glob(File.join(@source, 'shaka-work-*'))
   end
 
   def test_refuses_a_lexical_session_alias_inside_the_trusted_source
@@ -183,6 +183,6 @@ class WorkBoundaryTest < Minitest::Test
     refute status.success?
     assert_includes error, 'trusted workflow'
     refute File.exist?(@capture)
-    assert_empty Dir.glob(File.join(@directory, 'temp', 'sw-work-*'))
+    assert_empty Dir.glob(File.join(@directory, 'temp', 'shaka-work-*'))
   end
 end

@@ -1,4 +1,4 @@
-# ShakaCode Workflows
+# Shaka
 
 This public pilot implements the small product described in `docs/pilot-plan.md`.
 The maintainer authorized implementation, publication, and merging verified PRs.
@@ -21,8 +21,8 @@ Keep company strategy and private operational data out of product artifacts.
 ## Structure
 
 - `docs/pilot-plan.md` owns product requirements, design, acceptance, and scope.
-- `skills/sw/SKILL.md` is the public workflow entry point.
-- Its `scripts/sw` command uses small Ruby modules under its `lib/` directory.
+- `skills/shaka/SKILL.md` is the public workflow entry point.
+- Its `scripts/shaka` command uses small Ruby modules under its `lib/` directory.
 - `bin/install` links the public skill into an explicitly supplied skills directory.
 - Markdown explains decisions and invokes commands. Put executable logic in code.
 - Prefer Ruby standard libraries and GitHub CLI. Runtime needs no new gem.

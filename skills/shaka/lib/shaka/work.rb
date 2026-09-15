@@ -8,7 +8,7 @@ require 'rbconfig'
 require 'tmpdir'
 require_relative 'error'
 
-module AgentWorkflows
+module Shaka
   # Starts the native interactive host without changing its account or model settings.
   class Work
     SANDBOX = ['--sandbox', 'workspace-write', '--ask-for-approval', 'on-request',
@@ -22,11 +22,11 @@ module AgentWorkflows
       return 0 if options[:help]
 
       task = arguments.join(' ')
-      raise Error, 'Supply a task URL or description; use sw work --help' if task.strip.empty?
+      raise Error, 'Supply a task URL or description; use shaka work --help' if task.strip.empty?
 
       launch(target(options[:repository]), task)
     rescue Error, SystemCallError, OptionParser::ParseError => e
-      warn "sw work: #{e.message}"
+      warn "shaka work: #{e.message}"
       1
     end
 
@@ -54,7 +54,7 @@ module AgentWorkflows
     end
 
     def self.create_session(target)
-      session = Dir.mktmpdir('sw-work-')
+      session = Dir.mktmpdir('shaka-work-')
       canonical = check_session(session, target)
       FileUtils.mkdir_p(File.join(canonical, 'tmp'), mode: 0o700)
       canonical
@@ -77,7 +77,7 @@ module AgentWorkflows
     def self.options(arguments)
       options = { repository: Dir.pwd }
       parser = OptionParser.new do |flags|
-        flags.banner = 'Usage: sw work [--repo PATH] TASK_URL_OR_DESCRIPTION'
+        flags.banner = 'Usage: shaka work [--repo PATH] TASK_URL_OR_DESCRIPTION'
         flags.on('--repo PATH', 'Override the current checkout') { |value| options[:repository] = value }
         flags.on('-h', '--help') { options[:help] = true }
       end
@@ -109,7 +109,7 @@ module AgentWorkflows
       <<~PROMPT
         Read and follow the trusted workflow at #{JSON.generate(skill)}.
         Work in target repository #{JSON.generate(target)}; run repository commands there.
-        Invoke trusted workflow helpers with Ruby #{JSON.generate(File.realpath(RbConfig.ruby))} and helper #{JSON.generate(File.realpath('../../scripts/sw', __dir__))}.
+        Invoke trusted workflow helpers with Ruby #{JSON.generate(File.realpath(RbConfig.ruby))} and helper #{JSON.generate(File.realpath('../../scripts/shaka', __dir__))}.
         Keep the repository's own toolchain for its application commands.
         Keep this host session root unchanged and the trusted workflow outside writable paths.
         The user supplied the task below as a JSON string; honor its scope and merge preference.

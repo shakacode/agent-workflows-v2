@@ -4,7 +4,7 @@ require_relative 'test_helper'
 require 'json'
 
 module UsageFixture
-  COMMAND = File.expand_path('../skills/sw/scripts/sw', __dir__)
+  COMMAND = File.expand_path('../skills/shaka/scripts/shaka', __dir__)
   COMMIT = 'a' * 40
   THREAD = '00000000-0000-0000-0000-000000000001'
 
@@ -228,7 +228,7 @@ class UsageFailuresTest < Minitest::Test
       output, error, status = Open3.capture3(COMMAND, 'usage', *arguments)
       refute status.success?
       assert_empty output
-      assert_includes error, 'sw usage:'
+      assert_includes error, 'shaka usage:'
       refute_includes error, 'SENSITIVE'
     end
   end

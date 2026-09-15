@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
-require 'agent_workflows/github'
+require 'shaka/github'
 
 module GitHubHelper
   HEAD = 'a' * 40
@@ -13,7 +13,7 @@ module GitHubHelper
       @calls << [argv, stdin_data]
       responses.shift || raise('Unexpected GitHub request')
     end
-    AgentWorkflows::GitHub.new('owner/repo', 42, runner: runner)
+    Shaka::GitHub.new('owner/repo', 42, runner: runner)
   end
 
   def response(value, status: 0)

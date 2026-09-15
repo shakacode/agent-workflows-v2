@@ -2,7 +2,7 @@
 
 require_relative 'error'
 
-module AgentWorkflows
+module Shaka
   # Applies native GitHub gates; the calling skill must establish merge authority.
   class Merge
     MUTATION = <<~GRAPHQL

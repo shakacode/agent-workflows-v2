@@ -1,6 +1,6 @@
 # Working with your agent
 
-Start with `$sw`. It asks for the issue number, URL, or task description and merge
+Start with `$shaka`. It asks for the issue number, URL, or task description and merge
 preference if missing, then reads the task, recommends a model and effort, and pauses
 so you can change the host settings before implementation.
 You can also supply the task and any limits directly. You should not need to
@@ -39,7 +39,7 @@ the actual merge decision until you can see the finished change.
 
 ## Choose a small execution context
 
-`$sw` names an available model and low effort before implementation, with one
+`$shaka` names an available model and low effort before implementation, with one
 sentence explaining the choice. It pauses so you can change the host's model and
 effort settings, then waits for you to say you are ready. Existing explicit settings
 take precedence. On resumption, the agent checks the actual host setting when
@@ -49,7 +49,7 @@ Measure total planning, implementation, retries, and review, not just one attemp
 
 One owner works solo by default. Independent review still happens when required;
 solo implementation does not waive the review policy. A separate planning task is
-optional. Ask `$sw` to plan only when scope or a handoff needs thought; it returns
+optional. Ask `$shaka` to plan only when scope or a handoff needs thought; it returns
 the plan without an implementation checkpoint. Its output should name the task,
 recommended model/effort, acceptance, affected paths, checks, merge authority,
 and stopping point. Do not copy the whole planning conversation.
@@ -116,7 +116,7 @@ label a mixed contribution as AI-edited rather than claiming authorship of it al
 ### Make the PR description useful first
 
 Use short headings for the change and its user impact. When discussing a workflow,
-name it (such as “the `$sw` PR skill”) instead of saying “the skill” without context.
+name it (such as “the `$shaka` PR skill”) instead of saying “the skill” without context.
 Link to the current code walkthrough
 and review result; do not repeat their complete contents. Show decisions, blockers,
 and missing required review prominently. Put supporting validation, optional review
@@ -167,7 +167,7 @@ but should not need another skill to translate our messages.
 
 ## What the helpers protect
 
-The command is `skills/sw/scripts/sw`. Its Ruby modules perform a narrow
+The command is `skills/shaka/scripts/shaka`. Its Ruby modules perform a narrow
 set of operations; they are not a complete security system.
 
 | Protection | Who provides it |

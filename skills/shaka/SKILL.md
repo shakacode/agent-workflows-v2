@@ -1,11 +1,11 @@
 ---
-name: sw
+name: shaka
 description: Deliver one ordinary task through verified GitHub PRs, splitting only when useful; publish walkthroughs, address review, and honor merge authority.
 ---
 
-# ShakaCode Workflows
+# Shaka
 
-Own one task through its requested PR outcome. `$sw` alone starts intake. Use host
+Own one task through its requested PR outcome. `$shaka` alone starts intake. Use host
 context and Git remotes to identify the checkout and read trusted instructions.
 Ask for a missing issue number, URL, or description; combine this with the merge
 question below if authority is unset. Make merging conditional on task scope;
@@ -80,7 +80,7 @@ agent/provider and known model/effort. Keep settings-versus-observed distinction
 in usage details; mark unknowns honestly.
 Give PR descriptions short headings and specific names; link the current walkthrough.
 Put supporting checks, review history, rollback, and usage in details; keep blockers visible.
-Run the trusted `scripts/sw usage --commit SHA --contribution CATEGORY`
+Run the trusted `scripts/shaka usage --commit SHA --contribution CATEGORY`
 for each task. Use `--all-turns` only when the selected session contains solely
 this task; otherwise retain earlier relevant turn reports alongside this one.
 Choose `implementation`, `review`, `integration`, or
@@ -133,9 +133,9 @@ not only exit codes: `gh pr checks NUMBER --repo OWNER/REPO --required --json na
 Invoke these through the saved absolute path of the trusted source:
 
 ```text
-scripts/sw pr OWNER/REPO NUMBER
-scripts/sw walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH
-scripts/sw merge OWNER/REPO NUMBER --head SHA --walkthrough REVIEW_ID
+scripts/shaka pr OWNER/REPO NUMBER
+scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH
+scripts/shaka merge OWNER/REPO NUMBER --head SHA --walkthrough REVIEW_ID
 ```
 
 Before merge, publish a COMMENT walkthrough: purpose, behavior, key choices, short
