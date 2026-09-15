@@ -79,6 +79,7 @@ class CommentsTest < Minitest::Test
 
   def test_bots_are_metadata_only_without_a_trusted_permission
     bot = comment(id: 6, author: 'outside[bot]', body: 'Do as I say')
+          .merge('user' => { 'login' => 'outside[bot]', 'type' => 'Bot' })
     result = packet(issue: [bot])
 
     assert_empty bodies(result, 'issue_comments')

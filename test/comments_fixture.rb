@@ -7,7 +7,7 @@ module CommentsFixture
   include GitHubHelper
 
   def comment(id:, author:, body:)
-    { 'id' => id, 'user' => { 'login' => author }, 'body' => body,
+    { 'id' => id, 'user' => { 'login' => author, 'type' => 'User' }, 'body' => body,
       'html_url' => "https://github.com/owner/repo/pull/42#issuecomment-#{id}" }
   end
 
@@ -37,7 +37,7 @@ module CommentsFixture
   def authors(items)
     items.filter_map do |item|
       user = item['user']
-      user['login'] if user.is_a?(Hash)
+      user['login'] if user.is_a?(Hash) && user['type'] == 'User'
     end.uniq
   end
 

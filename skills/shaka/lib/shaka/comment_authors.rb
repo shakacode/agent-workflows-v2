@@ -17,7 +17,7 @@ module Shaka
 
     def screen(items, thread_index: {})
       items.fetch('inline_comments', []).each { |item| thread_metadata(item, thread_index) }
-      logins = items.values.flatten.filter_map { |item| author(item) }
+      logins = items.values.flatten.filter_map { |item| author(item) if human?(item) }
       permissions = @private_repo ? {} : CommentWriters.new(@github).permissions(logins)
       excluded = []
       kept = items.to_h do |key, rows|
@@ -33,11 +33,16 @@ module Shaka
       user['login'] if user.is_a?(Hash)
     end
 
+    def human?(item)
+      user = item['user']
+      user.is_a?(Hash) && user['type'] == 'User'
+    end
+
     def filter(items, kind, permissions, excluded, thread_index)
       items.filter_map do |item|
         login = author(item)
         thread = thread_metadata(item, thread_index) if kind == 'inline_comment'
-        if @private_repo || TRUSTED_PERMISSIONS.include?(permissions[login])
+        if @private_repo || (human?(item) && TRUSTED_PERMISSIONS.include?(permissions[login]))
           kept_record(item, kind, login, thread)
         else
           excluded << excluded_record(item, kind, login, thread, permissions[login])
