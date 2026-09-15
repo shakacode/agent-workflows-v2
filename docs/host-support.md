@@ -84,6 +84,11 @@ and per-session settings. Those are candidate setup mechanisms, not a verified
 V2 launch recipe. The next required evidence is a bounded real task that confirms
 trusted instruction loading, the write boundary, and the repository's checks.
 
+Cursor user skills can be installed at `~/.cursor/skills` with the standard
+installer. A September 14 trial did not find the skill through `~/.agents/skills`,
+so use the Cursor-specific directory and still confirm discovery in a new Agent chat.
+The trial did not establish a complete Cursor workflow or a supported launch recipe.
+
 The checked Cursor CLI exposes `--workspace`, `--add-dir`, `--sandbox`, and
 `--plugin-dir`. Its public help has no direct skill-file option. The native sandbox
 and V2 delivery have not been exercised, so these flags are not sufficient grounds
