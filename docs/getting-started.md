@@ -185,13 +185,15 @@ $aw
 
 If the task and merge preference are unknown, expect a question like:
 
-> Which issue number, URL, or task should I work on? Should I bring the finished PR
-> back for your approval (**Ask**), or merge when checks and required approvals
-> pass (**Auto**)? I recommend Ask for your first trial.
+> Which issue number, URL, or task should I work on? If it includes merging, should
+> I bring the finished PR back for your approval (**Ask**), or merge when checks and
+> required approvals pass (**Auto**)? I recommend Ask for your first trial.
 
 For example, answer with your issue number and `Ask`. A number is resolved against
 the current repository; a URL can identify a different one. The agent asks if the
-repository is unclear and reuses answers you have already supplied.
+repository is unclear and reuses answers you have already supplied. For a separate
+eligible Auto trial, answer with its issue number and `Auto`. Review-only or PR-only
+requests keep their stopping point and need no merge choice.
 
 It then reads the task and repository instructions before recommending a model
 and effort, with a short reason. If a switch is needed, use the host controls;

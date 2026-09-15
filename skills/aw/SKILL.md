@@ -8,8 +8,9 @@ description: Deliver one ordinary task through verified GitHub PRs, splitting on
 Own one task through its requested PR outcome. `$aw` alone starts intake: resolve
 the checkout from host context and Git remotes, then read trusted repository
 instructions. If the task is missing, ask for an issue number, URL, or description;
-combine this with the merge question below when authority is unset. Reuse known
-answers. Resolve a bare issue number against the verified repository; ask for the
+combine this with the merge question below when authority is unset. If scope is
+unknown, make merging conditional; skip that question for known review-only or
+PR-only work. Reuse known answers. Resolve a bare issue number against the verified repository; ask for the
 repository path if missing or ambiguous. Obtain the task before implementation.
 
 Read the task using an available connection; if inaccessible, ask for its description

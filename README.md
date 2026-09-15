@@ -8,7 +8,7 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-After [installation](docs/getting-started.md#use-aw-in-the-codex-app), start in your repository’s Codex task:
+After [installation](docs/getting-started.md#use-aw-in-the-codex-app), start in your repository's Codex task:
 
 ```text
 $aw
