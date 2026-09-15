@@ -199,7 +199,7 @@ important code choices, verification, and relevant risk/rollback. Use a single
 COMMENT review with permalinks initially; do not manufacture unresolved inline
 threads that need a second resolution workflow. A substantive change requires an
 updated walkthrough. An unchanged walkthrough is reused for the same revision.
-Superseded walkthroughs retain their evidence collapsed beneath a link to the current one; see
+When editable, superseded walkthroughs retain their evidence collapsed beneath a link to the current one; see
 [walkthrough guidance](working-with-your-agent.md#keep-one-current-walkthrough).
 
 The pilot will attempt an immediate merge with an expected-head compare, rather

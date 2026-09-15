@@ -71,11 +71,13 @@ limitations that change the conclusion must also stay visible.
 Start GitHub descriptions, comments, and reviews with a short attribution line,
 including when posting through a maintainer's account. For example:
 
-> 🤖 Codex · OpenAI · gpt-6-astra · xhigh (configured)
+> 🤖 Codex · OpenAI · gpt-6-astra · xhigh
 
 Use the actual agent/provider and known model/effort; label unavailable values
 UNKNOWN. The line identifies the writer, not every contributing reviewer. Detailed
-contributor usage belongs in the usage record. Preserve human text when editing;
+contributor usage and the distinction between selected settings and observed execution
+belong in usage details; “configured” is unnecessary in the author label.
+Preserve human text when editing;
 label a mixed contribution as AI-edited rather than claiming authorship of it all.
 
 ### Make the PR description useful first
@@ -91,11 +93,13 @@ history, routine rollback, and usage in clearly labeled details.
 
 Update the existing walkthrough for wording changes at the same revision. A new
 commit needs a walkthrough attached to that commit. After publishing and confirming
-its link, edit your older walkthroughs: show “Superseded — read the current
+its link, try to edit your older walkthroughs using trusted GitHub tools: show “Superseded — read the current
 walkthrough” with that link, then preserve the old body inside `<details>` labeled
 with its original revision. Update the PR description's link. Do not relabel old
 verification as current or overwrite human edits. Leave independent reviewers'
-reports intact.
+reports intact. If editing is unavailable or authorship is uncertain, leave the
+old body intact, keep the current link prominent, and explain the limitation.
+This presentation cleanup is best effort, not a merge gate.
 
 In chat, link to supporting records instead of reproducing them. A changed risk or
 missing required evidence belongs in the next visible update.

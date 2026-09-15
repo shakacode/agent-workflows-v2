@@ -45,7 +45,8 @@ Write plain English: explain the outcome and why, using established project term
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
 Prefix AI-authored GitHub descriptions, comments, and reviews with `🤖` and the
-agent/provider; include known model and configured effort, marking unknowns honestly.
+agent/provider and known model/effort. Keep settings-versus-observed distinctions
+in usage details; mark unknowns honestly.
 Give PR descriptions short headings and specific names; link the current walkthrough.
 Put supporting checks, review history, rollback, and usage in details; keep blockers visible.
 Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
@@ -108,9 +109,11 @@ scripts/aw merge OWNER/REPO NUMBER --head SHA --walkthrough REVIEW_ID
 
 Before merge, publish a COMMENT walkthrough: purpose, behavior, key choices, short
 validation summary, risks/rollback, and commit-pinned links to the changed code.
-Keep one current walkthrough visible. Reuse it for the same revision; after publishing
-for a new head, collapse your superseded walkthroughs with a link to the new one.
-Preserve their original revision/evidence and human edits. COMMENT is not approval.
+Link the current walkthrough prominently. Reuse it for the same revision. After
+publishing for a new head, try to collapse your older walkthroughs using trusted
+GitHub tools; preserve their revision/evidence and human edits. If unavailable,
+keep the current link and explain the limitation; cleanup does not block merge.
+COMMENT is not approval.
 
 ## Merge or hand off
 
@@ -128,8 +131,10 @@ Uncertain authority or consequential risk requires a decision; safety failures b
 
 Supply the current head and its walkthrough ID. Reverify changed heads and reassess
 authority for changed scope. Never bypass protection or accept missing required checks.
+Let reviews already running on this head finish; apply the review rules if unavailable.
 Leave queues and delayed auto-merge unchanged; this pilot merges immediately while
 the task is active. Explain pending gates; retry only after meaningful change and
 inspect live state after uncertain submission. Do not schedule background retries.
-Verify each result; report every PR's link and outcome, brief validation, and
-remaining task work or blocker.
+Verify each result and read any newly arrived reviews before finishing. Handle
+late findings through [review handling](../../docs/review.md#reviews-after-merge).
+Report every PR's link and outcome, brief validation, and remaining work or blocker.
