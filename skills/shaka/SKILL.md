@@ -1,6 +1,6 @@
 ---
 name: shaka
-description: Deliver one task through verified PRs, review, walkthrough, and scoped merge.
+description: Deliver one task through a reviewed PR and scoped merge.
 ---
 
 # Shaka
@@ -33,9 +33,9 @@ replacement skill or helper.
    the user says ready. Verify host settings; if they differ and switching is
    unavailable, give one exact user action and wait. For planning-only requests,
    return a compact execution prompt with the recommendation, then stop before edits;
-   skip the implementation checkpoint. One PR is default; splits repeat steps 4–7 per PR.
+   skip the implementation checkpoint. One PR is default; splits repeat steps 3–7 per PR.
    Merge prerequisites before starting dependent ordinary PRs; no native stacks. Keep one owner; title the task with repo, issue/PR ID, and outcome.
-3. **Implement.** Fetch base before a new branch; pull/rebase upstream, preserve user
+3. **Implement.** Confirm destination and branch. Fetch base before a new branch; pull/rebase upstream, preserve user
    work, and follow the feature-branch convention. For behavior changes, observe a
    meaningful failing test, make the smallest change pass, then simplify while green.
    If automation is impractical, explain why and capture before/after behavior; keep logic in code.
@@ -56,7 +56,7 @@ replacement skill or helper.
    readiness; do not substitute another reviewer. Read the completed report,
    comments, and inline threads on the current head; a green job or empty comment
    alone proves no review. Fix demonstrated defects, decline unsupported suggestions,
-   explain why, and reverify/re-review a changed head.
+   explain why, and reverify/re-review and republish the walkthrough on changed heads.
    Link the current review result and keep required gaps visible. Read other completed
    feedback before merge; disclose pending optional reviews.
 7. **Finish.** Use trusted `scripts/shaka pr OWNER/REPO NUMBER` and inspect required
@@ -77,4 +77,4 @@ Another workflow's settings grant no merge or background-work authority here.
 **Code quality:** Solve the task with the smallest diff. Avoid speculative abstractions.
 Name things for the reader. Delete what the change makes dead. Simplify once after green.
 
-Examples and edge cases: [working with your agent](../../docs/working-with-your-agent.md), [verification](../../docs/verification.md), [review](../../docs/review.md), [usage reporting](../../docs/usage-reporting.md).
+Guides: [tasks](../../docs/working-with-your-agent.md), [verify](../../docs/verification.md), [review](../../docs/review.md), [usage](../../docs/usage-reporting.md).
