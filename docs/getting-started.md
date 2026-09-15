@@ -255,7 +255,18 @@ before pulling, then update that remote to `https://github.com/shakacode/shaka.g
 when convenient. Rerunning the installer adds `$shaka`. The old `sw` and `aw`
 links may become broken when their source files move; inspect and unlink only
 your pilot links. Start a fresh Codex task after upgrading. For a dedicated
-terminal installation, supply your existing pilot skills directory instead.
+terminal installation, set `shaka_skills_dir` to your existing dedicated skills
+directory, then install and put the renamed command on `PATH`:
+
+```bash
+shaka_skills_dir="$HOME/agent-tools/shaka-pilot/skills"
+"$shaka_source/bin/install" --skills-dir "$shaka_skills_dir"
+export PATH="$shaka_skills_dir/shaka/scripts:$PATH"
+shaka work --help
+```
+
+Replace the old `sw/scripts` entry in your shell startup file with this
+`shaka/scripts` path so new terminals can also find the command.
 
 To remove the app installation, first verify each symlink belongs to this pilot.
 Earlier releases installed `sw` and sometimes `aw`; new installations create
