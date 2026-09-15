@@ -204,7 +204,7 @@ Merge this task's PR when its checks and required approvals pass.
 Check that the agent honors your choice, keeps a useful task title, publishes one
 current walkthrough, handles review findings, and reports available usage. Ask must
 stop for the finished PR's approval; Auto must preserve the same required gates.
-Record confusing questions or missed behavior in the existing pilot issue, without
+Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1), without
 private task content. These prompts are manual acceptance cases, not proof they pass.
 
 For a larger task, an optional first prompt is:
