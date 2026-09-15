@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
-require 'agent_workflows/merge'
+require 'shaka/merge'
 
 module MergeFixtures
   HEAD = 'a' * 40
@@ -50,7 +50,7 @@ module MergeFixtures
     @client.mutation_result = { 'mergePullRequest' => { 'pullRequest' => {
       'headRefOid' => HEAD, 'state' => 'MERGED', 'merged' => true, 'mergeCommit' => { 'oid' => 'b' * 40 }
     } } }
-    @merge = AgentWorkflows::Merge.new(@client)
+    @merge = Shaka::Merge.new(@client)
   end
 
   def snapshot
@@ -60,7 +60,7 @@ module MergeFixtures
   end
 
   def assert_blocked(pattern)
-    error = assert_raises(AgentWorkflows::Error) { @merge.call(head: HEAD, walkthrough: 17) }
+    error = assert_raises(Shaka::Error) { @merge.call(head: HEAD, walkthrough: 17) }
     assert_match pattern, error.message
     assert_empty @client.mutations
   end
@@ -150,7 +150,7 @@ class MergeCheckTest < Minitest::Test
   end
 
   def test_api_failure_does_not_submit
-    @client.checks = AgentWorkflows::Error.new('GitHub unavailable')
+    @client.checks = Shaka::Error.new('GitHub unavailable')
     assert_blocked(/GitHub unavailable/)
   end
 end
@@ -166,7 +166,7 @@ class MergeWalkthroughTest < Minitest::Test
   end
 
   def test_missing_review_on_this_pull_request_blocks
-    @client.review_result = AgentWorkflows::Error.new('Review not found on this PR')
+    @client.review_result = Shaka::Error.new('Review not found on this PR')
     assert_blocked(/not found on this PR/)
   end
 
@@ -184,7 +184,7 @@ class MergeSubmissionTest < Minitest::Test
 
   def test_rejects_invalid_head_before_submission
     [nil, '', 'main'].each do |head|
-      error = assert_raises(AgentWorkflows::Error) { @merge.call(head: head, walkthrough: 17) }
+      error = assert_raises(Shaka::Error) { @merge.call(head: head, walkthrough: 17) }
       assert_match(/full commit SHA/, error.message)
     end
     assert_empty @client.mutations
@@ -219,8 +219,8 @@ class MergeSubmissionTest < Minitest::Test
   end
 
   def test_head_change_at_server_is_rejected_without_retry
-    @client.mutation_error = AgentWorkflows::Error.new('Head branch was modified')
-    error = assert_raises(AgentWorkflows::Error) { @merge.call(head: HEAD, walkthrough: 17) }
+    @client.mutation_error = Shaka::Error.new('Head branch was modified')
+    error = assert_raises(Shaka::Error) { @merge.call(head: HEAD, walkthrough: 17) }
     assert_match(/Head branch was modified.*inspect live PR state/, error.message)
     assert_equal 1, @client.mutations.length
   end
@@ -228,14 +228,14 @@ class MergeSubmissionTest < Minitest::Test
   def test_unknown_mutation_outcome_requires_inspection
     [nil, 'merged', { 'pullRequest' => { 'state' => 'MERGED' } }].each do |payload|
       @client.mutation_result = { 'mergePullRequest' => payload }
-      error = assert_raises(AgentWorkflows::Error) { @merge.call(head: HEAD, walkthrough: 17) }
+      error = assert_raises(Shaka::Error) { @merge.call(head: HEAD, walkthrough: 17) }
       assert_match(/did not confirm.*inspect live PR state/, error.message)
     end
     assert_equal 3, @client.mutations.length
   end
 
   def test_snapshot_failure_does_not_submit
-    @client.snapshots = [AgentWorkflows::Error.new('Snapshot unavailable')]
+    @client.snapshots = [Shaka::Error.new('Snapshot unavailable')]
     assert_blocked(/Snapshot unavailable/)
   end
 end

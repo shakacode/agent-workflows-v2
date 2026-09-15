@@ -7,10 +7,10 @@ require 'rbconfig'
 class InstallTest < Minitest::Test
   def setup
     @directory = Dir.mktmpdir('workflows-install')
-    @source = File.join(@directory, 'source', 'skills', 'sw')
+    @source = File.join(@directory, 'source', 'skills', 'shaka')
     @installer = File.join(@directory, 'source', 'bin', 'install')
     @skills_dir = File.join(@directory, 'isolated profile', 'skills')
-    @destination = File.join(@skills_dir, 'sw')
+    @destination = File.join(@skills_dir, 'shaka')
     FileUtils.mkdir_p([@source, File.dirname(@installer)])
     FileUtils.cp(File.expand_path('../bin/install', __dir__), @installer)
     write_skills

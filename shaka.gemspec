@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+
+Gem::Specification.new do |spec|
+  spec.name = 'shaka'
+  spec.version = '0.1.0.pre.1'
+  spec.summary = 'Give your agent a task. Get a verified, explained pull request.'
+  spec.authors = ['ShakaCode']
+  spec.homepage = 'https://github.com/shakacode/shaka'
+  spec.required_ruby_version = '>= 3.4'
+  spec.metadata['source_code_uri'] = spec.homepage
+  spec.metadata['rubygems_mfa_required'] = 'true'
+  spec.metadata['documentation_uri'] = "#{spec.homepage}/blob/main/docs/getting-started.md"
+  spec.files = Dir['skills/shaka/SKILL.md', 'skills/shaka/lib/**/*.rb',
+                   'skills/shaka/scripts/*', 'bin/install', 'exe/*', 'docs/*.md', 'README.md']
+  spec.bindir = 'exe'
+  spec.executables = %w[shaka shaka-install]
+  spec.require_paths = ['skills/shaka/lib']
+end

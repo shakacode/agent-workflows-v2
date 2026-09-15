@@ -8,8 +8,8 @@ Build from the trusted source directory; RubyGems reads package files relative
 to the working directory. With the source installation from the first-use guide:
 
 ```bash
-cd "$HOME/agent-tools/shakacode-workflows"
-gem build shakacode-workflows.gemspec
+cd "$HOME/agent-tools/shaka"
+gem build shaka.gemspec
 ```
 
 To try the built package without changing your application bundle or normal gem
@@ -17,9 +17,9 @@ installation, use a separate gem home. These environment values apply only to th
 individual commands:
 
 ```bash
-sw_gem_home=$(mktemp -d)
-GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" gem install --local --no-document ./shakacode-workflows-0.1.0.pre.1.gem
-GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" "$sw_gem_home/bin/sw" --help
+shaka_gem_home=$(mktemp -d)
+GEM_HOME="$shaka_gem_home" GEM_PATH="$shaka_gem_home" gem install --local --no-document ./shaka-0.1.0.pre.1.gem
+GEM_HOME="$shaka_gem_home" GEM_PATH="$shaka_gem_home" "$shaka_gem_home/bin/shaka" --help
 ```
 
 Keep this temporary home for packaging checks only. A real pilot installation must
@@ -27,7 +27,7 @@ keep its trusted source outside the agent's writable directories, including any
 temporary directories the host allows. Do not export the test gem environment into
 your application's shell or add the pilot to its Gemfile.
 
-The package also contains `install-agent-workflows --skills-dir DIR`, which calls
+The package also contains `shaka-install --skills-dir DIR`, which calls
 the existing explicit-directory installer. Use it only when you want a link in a
 chosen skill directory. It preserves existing content and refuses to replace a
 different source. The [first-use guide](getting-started.md) explains the trusted
@@ -41,11 +41,11 @@ destination, remove only the known pilot symlinks, then run the new version's
 installer. Do not remove a foreign directory or silently repoint another skill.
 You can retain the prior gem version and relink it for rollback.
 
-Remove the pilot `sw` skill link before uninstalling the version it points to. For the
+Remove the pilot `shaka` skill link before uninstalling the version it points to. For the
 isolated packaging check above:
 
 ```bash
-GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" gem uninstall shakacode-workflows --all --executables
+GEM_HOME="$shaka_gem_home" GEM_PATH="$shaka_gem_home" gem uninstall shaka --all --executables
 ```
 
 A two-version artifact trial also confirmed explicit upgrade and rollback while
@@ -55,7 +55,7 @@ the package. Existing installer tests cover repeat installation, collisions, and
 source updates. These checks validate the artifact; they do not establish host
 compatibility or authorize a registry release.
 
-The provisional name is `shakacode-workflows`, with version `0.1.0.pre.1`. License
+The provisional name is `shaka`, with version `0.1.0.pre.1`. License
 and registry release approval remain outstanding. The gemspec does not invent a
 license grant, so RubyGems currently warns that a license is unspecified. Packaging
 uses [standard RubyGems tooling](https://guides.rubygems.org/make-your-own-gem/).

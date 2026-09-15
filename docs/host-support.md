@@ -5,7 +5,7 @@ Start with **Codex CLI**, the reference host for this pilot. Follow the
 Claude Code and Cursor are compatibility targets; neither has a verified V2
 consumer workflow yet.
 
-The hosts share one `sw` skill and the same Ruby helpers for GitHub
+The hosts share one `shaka` skill and the same Ruby helpers for GitHub
 operations. Your repository keeps its existing `AGENTS.md`, commands, and policy.
 Host-specific work covers installation, instruction loading, execution permissions,
 and reading native usage records. It does not create three copies of the workflow.

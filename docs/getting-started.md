@@ -1,6 +1,6 @@
 # Install and complete your first task
 
-This guide installs `$sw` in the Codex app or starts a fresh Codex CLI session.
+This guide installs `$shaka` in the Codex app or starts a fresh Codex CLI session.
 Claude Code and Cursor support remain planned. You do not need to know the previous
 workflow pack.
 
@@ -25,7 +25,7 @@ If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ru
 3.4 available; keep your application's own Ruby/toolchain settings unchanged.
 You do not need Bundler or this project's development gems to use the skill.
 If a version manager selects a different Ruby inside your app, launch from outside
-that checkout with `sw work --repo /path/to/app`, or invoke `scripts/sw` with the
+that checkout with `shaka work --repo /path/to/app`, or invoke `scripts/shaka` with the
 absolute path to your Ruby 3.4 executable. Do not change the application's Ruby
 version just to start the workflow.
 
@@ -33,8 +33,8 @@ version just to start the workflow.
 
 ```bash
 mkdir -p "$HOME/agent-tools"
-git clone https://github.com/shakacode/workflows.git "$HOME/agent-tools/shakacode-workflows"
-git -C "$HOME/agent-tools/shakacode-workflows" log -1 --oneline
+git clone https://github.com/shakacode/shaka.git "$HOME/agent-tools/shaka"
+git -C "$HOME/agent-tools/shaka" log -1 --oneline
 ```
 
 Review the source you will run. Keep this checkout separate from the application
@@ -42,24 +42,24 @@ you want to change. If it already exists, use the upgrade instructions below.
 
 ## 3. Install outside your repositories
 
-<a id="use-sw-in-the-codex-app"></a>
+<a id="use-shaka-in-the-codex-app"></a>
 
-### Use $sw in the Codex app
+### Use $shaka in the Codex app
 
 After completing steps 1–2, install into Codex's user skills directory:
 
 ```bash
-"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/.agents/skills"
+"$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
 In your repository's Codex task, send:
 
 ```text
-$sw
+$shaka
 ```
 
 The agent asks for the issue number, URL, or task description and your merge
-preference if unset. You can include the task directly, such as `$sw Fix the failing
+preference if unset. You can include the task directly, such as `$shaka Fix the failing
 search test`, to skip the task question. The skill should appear on the next turn; if it does
 not, restart Codex. The app uses that task's existing permissions. Installing a
 skill does not change its sandbox; use the terminal launcher below when you want
@@ -71,14 +71,14 @@ are changing.
 Use a dedicated directory outside your repositories and global agent profile:
 
 ```bash
-"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/agent-tools/shakacode-workflows-pilot/skills"
+"$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/agent-tools/shaka-pilot/skills"
 ```
 
-The installer creates a `sw` entry point in that directory and refuses to overwrite
+The installer creates a `shaka` entry point in that directory and refuses to overwrite
 another skill. Keep the link and source outside candidate repositories. It changes
 no global profile, authentication, hooks, or other skills.
 
-This dedicated directory is for the terminal launcher; it does not register `$sw`
+This dedicated directory is for the terminal launcher; it does not register `$shaka`
 in the Codex app. Choose the user-directory installation above for app discovery.
 
 If you used the earlier project-local instructions, remove that old link only if
@@ -100,19 +100,19 @@ sandbox or an isolated agent configuration.
 For the source installation above, expose its command in this terminal:
 
 ```bash
-export PATH="$HOME/agent-tools/shakacode-workflows-pilot/skills/sw/scripts:$PATH"
+export PATH="$HOME/agent-tools/shaka-pilot/skills/shaka/scripts:$PATH"
 ```
 
 Run from anywhere inside the repository you want to change:
 
 ```bash
-sw work "Fix the failing search test"
+shaka work "Fix the failing search test"
 ```
 
 Supply a GitHub issue, Linear link, or task description as the argument. When
 starting elsewhere, put `--repo /path/to/your/repository` before the task. Use
-`sw work --help` for the command syntax. A packaged installation already supplies
-`sw`; see [installing the package](packaging.md).
+`shaka work --help` for the command syntax. A packaged installation already supplies
+`shaka`; see [installing the package](packaging.md).
 
 The launcher identifies your Git checkout and opens native interactive Codex.
 Your account, model, and reasoning settings stay native, and questions appear in
@@ -182,7 +182,7 @@ In a fresh task for your chosen repository, start with an available model and
 already in progress. Send:
 
 ```text
-$sw
+$shaka
 ```
 
 If the task and merge preference are unknown, expect a question like:
@@ -208,9 +208,9 @@ for the finished PR.
 <details>
 <summary>Optional startup-only test</summary>
 
-To inspect intake without implementation, send `$sw Stop after the startup
+To inspect intake without implementation, send `$shaka Stop after the startup
 questions, before editing files.` Then supply the issue when asked. This extra stop
-is for testing; normal `$sw` already pauses at the model/effort checkpoint and
+is for testing; normal `$shaka` already pauses at the model/effort checkpoint and
 resumes implementation only after you say you are ready.
 
 Do not delete a working seam to test missing instructions. Use a disposable
@@ -221,13 +221,13 @@ repository with real build/test scripts but no instructions for running them.
 Check that the agent honors your choice, keeps a useful task title, publishes one
 current walkthrough, handles review findings, and reports available usage. Ask must
 stop for the finished PR's approval; Auto must preserve the same required gates.
-Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/workflows/issues/1), without
+Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/shaka/issues/1), without
 private task content. These are manual acceptance cases, not proof they pass.
 
 For a larger task, an optional first prompt is:
 
 ```text
-$sw Plan only for <task URL>. Recommend the smallest first PR and model/effort.
+$shaka Plan only for <task URL>. Recommend the smallest first PR and model/effort.
 Return a short prompt for a fresh implementation task. Do not edit or publish.
 ```
 
@@ -236,28 +236,33 @@ with its recommended host settings, carrying only the relevant plan and evidence
 
 ## Upgrade or remove
 
-Keep your existing trusted source directory when upgrading. If you installed before
-the rename, use `$HOME/agent-tools/agent-workflows-v2` in the commands below instead
-of `$HOME/agent-tools/shakacode-workflows`. GitHub redirects the old repository URL;
-there is no need to clone again or move working links.
+Keep your existing trusted source directory when upgrading. Set `shaka_source`
+to that checkout. Earlier guides used `agent-workflows-v2` and
+`shakacode-workflows`; new installations use `shaka`. GitHub redirects the old
+repository URL, so you do not need to clone again.
 
 ```bash
-git -C "$HOME/agent-tools/shakacode-workflows" switch main
-git -C "$HOME/agent-tools/shakacode-workflows" pull --ff-only
-"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/.agents/skills"
+shaka_source="$HOME/agent-tools/agent-workflows-v2"
+git -C "$shaka_source" remote -v
+git -C "$shaka_source" switch main
+git -C "$shaka_source" pull --ff-only
+"$shaka_source/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-Preserve local edits; do not force a switch. Rerunning the installer adds `$sw`.
-If a destination points elsewhere, inspect it
-before replacing anything. Start a fresh Codex task after upgrading. For a dedicated
+Use the actual directory you installed instead of the example value. Preserve
+local edits; do not force a switch. Confirm its remote is the ShakaCode pilot
+before pulling, then update that remote to `https://github.com/shakacode/shaka.git`
+when convenient. Rerunning the installer adds `$shaka`. The old `sw` and `aw`
+links may become broken when their source files move; inspect and unlink only
+your pilot links. Start a fresh Codex task after upgrading. For a dedicated
 terminal installation, supply your existing pilot skills directory instead.
 
-To remove the app installation, first verify each symlink points to this trusted
-source. The legacy `aw` cleanup applies only to installations from before this
-release; new installations create only `sw`. Then remove only those links:
+To remove the app installation, first verify each symlink belongs to this pilot.
+Earlier releases installed `sw` and sometimes `aw`; new installations create
+only `shaka`. Then remove only those links:
 
 ```bash
-for skill in sw aw; do
+for skill in shaka sw aw; do
   test -L "$HOME/.agents/skills/$skill" && unlink "$HOME/.agents/skills/$skill"
 done
 ```

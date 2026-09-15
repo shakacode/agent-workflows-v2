@@ -4,7 +4,7 @@ require 'json'
 require 'open3'
 require_relative 'error'
 
-module AgentWorkflows
+module Shaka
   # Reads native PR evidence and publishes reviews bound to its current commit.
   class GitHub
     SNAPSHOT_QUERY = <<~GRAPHQL
