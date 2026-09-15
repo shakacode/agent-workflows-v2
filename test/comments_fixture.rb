@@ -55,7 +55,7 @@ module CommentsFixture
 
   def thread(id:, resolved:, comments:)
     { 'id' => id, 'isResolved' => resolved,
-      'comments' => { 'nodes' => comments.map { |comment_id| { 'databaseId' => comment_id } },
+      'comments' => { 'nodes' => comments.map { |comment_id| { 'fullDatabaseId' => comment_id.to_s } },
                       'pageInfo' => { 'hasNextPage' => false } } }
   end
 

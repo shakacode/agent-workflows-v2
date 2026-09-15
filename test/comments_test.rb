@@ -116,4 +116,12 @@ class CommentsTest < Minitest::Test
     assert_equal 'T1', result['inline_comments'].first['thread_id']
     assert_equal true, result['inline_comments'].first['is_resolved']
   end
+
+  def test_large_inline_id_joins_using_full_database_id
+    inline = comment(id: 4_014_451_683, author: 'maintainer', body: 'Current GitHub ID')
+             .merge('path' => 'app.rb')
+    result = packet(inline: [inline], permissions: [permission('maintainer', 'write')])
+
+    assert_equal 'T4014451683', result['inline_comments'].first['thread_id']
+  end
 end

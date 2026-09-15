@@ -13,7 +13,7 @@ module Shaka
               nodes {
                 id isResolved
                 comments(first: 100) {
-                  nodes { databaseId }
+                  nodes { fullDatabaseId }
                   pageInfo { hasNextPage }
                 }
               }
@@ -102,8 +102,10 @@ module Shaka
     end
 
     def index_comment(comment, meta, index)
-      id = comment['databaseId'] if comment.is_a?(Hash)
-      raise Error, 'Review-thread comment ID is unavailable.' unless id.is_a?(Integer) && id.positive?
+      raw = comment['fullDatabaseId'] if comment.is_a?(Hash)
+      raise Error, 'Review-thread comment ID is unavailable.' unless raw.is_a?(String) && raw.match?(/\A[1-9]\d*\z/)
+
+      id = Integer(raw, 10)
       raise Error, 'Review comment belongs to multiple threads.' if index.key?(id) && index[id] != meta
 
       index[id] = meta
