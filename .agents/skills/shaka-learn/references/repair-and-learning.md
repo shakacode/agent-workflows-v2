@@ -84,6 +84,14 @@ claim that a prompt switched the host. Reuse the maintainer's explicit selection
 Without the capability, request one precise setting change rather than proceeding
 with an expensive fallback. Do not interrupt an active critical review to experiment.
 
+Agree on the allowed model/effort choices and escalation boundary once with the
+maintainer; avoid a new interview for each worker. Workers route questions through
+the supervisor, which resolves routine choices within that authority. The public
+skill's existing startup pause still applies today. Before claiming seamless
+supervision, test how an explicitly authorized delegated assignment satisfies that
+checkpoint; any required instruction change needs a reviewed, bounded follow-up.
+Do not silently bypass the pause or claim every host supports remote model changes.
+
 This draft activates no workers or persistent monitoring. A supervisor can operate
 while its task runs; durable wakeups require a separate explicit scheduling request.
 Machine aliases and cross-machine dispatch are deferred. Approved task IDs may be
