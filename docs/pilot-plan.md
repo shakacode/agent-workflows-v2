@@ -18,47 +18,35 @@ unnecessary. The maintainer also approved public visibility on September 14.
 
 ### Evaluate value before adding scope
 
-Use the requirements below as a lightweight product decision aid. Update the
-affected row when scope changes; do not turn this table into another checklist
-that every ordinary PR must complete. Existing acceptance criteria remain in force.
+For a proposed product capability, assess its **user problem, smallest useful
+solution, build cost, recurring burden, acceptance evidence, and disposition** in
+these existing tables. Prefer deleting a step or reusing repository instructions,
+native host/GitHub capabilities, or trustworthy libraries. An unfinished V1 PR
+alone does not establish value. Reassess product scope when evidence changes;
+ordinary consumer PRs do not need to maintain this assessment.
 
-For each requirement or proposed feature, ask:
+The Requirements table owns acceptance. Design records implementation choices;
+the rollout table orders work. Use the [existing success criteria](#success-evidence-and-commit-attribution)
+to assess developer attention, total tokens, delivery time and quality together,
+including retries/review. These sections serve different questions, not competing
+approval processes. Missing benefit measurements remain UNKNOWN.
 
-1. **Problem:** Who is affected, what goes wrong, and what existing task, PR or
-   explicit user need demonstrates it? A V1 feature or an unfinished PR alone is
-   not evidence of value.
-2. **Smallest useful solution:** Can we delete a step, improve instructions, or
-   use the repository, host, GitHub or an existing trustworthy library? Name what
-   the proposal replaces; include doing nothing as an alternative for convenience
-   features. Preserve safety invariants while simplifying their implementation.
-3. **Complexity:** Estimate both implementation cost and recurring cost: user
-   questions, context/tokens, Ruby and dependencies, validation/review work,
-   configuration, and host-specific maintenance. Consider the combined workflow,
-   not only the feature in isolation.
-4. **Evidence:** State the smallest observable success case and what would make
-   us simplify or remove the feature. Compare total developer attention, tokens,
-   delivery time and quality, including retries and review. Use existing evidence;
-   missing measurements stay UNKNOWN.
-5. **Decision:** Keep an essential capability; simplify an expensive implementation;
-   defer an unproven convenience or advanced capability; retire demonstrated
-   duplication or burden without sufficient benefit. Record the reason in this
-   plan or its existing PR, not a new tracker or approval loop.
+**Apparent complexity: build / recurring.** L means little new implementation or
+ongoing work; M means a bounded integration or repeated human/maintenance work;
+H means a subsystem, broad compatibility or substantial recurring burden.
+These are rough estimates, not measured effort or a numeric ranking: do not sum
+ratings or use them as a pass/fail threshold. Use UNKNOWN for an unbounded design.
+Count extra questions, context, code/dependencies, checks, reports and host upkeep,
+including interactions with existing features. Conditional UI evidence is not work
+for every PR.
 
-**Complexity is provisional, not a score or a time estimate.** In the tables,
-`build / recurring` uses **L** for existing instructions/native capabilities with
-little new maintenance, **M** for a bounded helper/integration or repeated human
-work, and **H** for a subsystem, broad compatibility, or substantial ongoing
-coordination. Use UNKNOWN where the design is too uncertain. Recurring cost is
-assessed at the stated scope: conditional UI evidence, for example, does not
-become work for every PR. Revisit estimates when real use contradicts them.
-
-**Reject negative-value additions:** an extra mode, question, report, validator,
-dependency or agent must remove enough demonstrated work or risk to justify its
-ongoing burden. If value is unproven, defer and name the observation that would
-justify reconsidering it. If an implemented convenience adds work without helping,
-simplify or retire it. Unknown savings do not justify weakening trust boundaries,
-current-head verification, merge authority or required checks; reduce duplication
-around those invariants instead. No weighted score or new measurement system is needed.
+**Keep, simplify, defer, or retire:** preserve essential safety capabilities;
+simplify expensive implementations; defer unproven conveniences; retire demonstrated
+duplication or burden without sufficient benefit. For optional features, consider
+doing nothing and name what evidence would justify reconsideration. For trust,
+current-head verification, merge authority and required checks, reduce duplication
+without weakening the invariant. No new tracker, scoring system, telemetry,
+per-PR checklist or approval loop is needed.
 
 ### Requirements
 
@@ -72,7 +60,7 @@ a claim that implementation or real-use acceptance is complete.
 | R2 | A generic workflow runs the wrong commands or ignores a repository’s established policy. | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. | L / L for declared commands; M / M for undocumented setup. | Keep the seam; reuse or minimally document it. Avoid a policy interpreter or universal config migration. |
 | R3 | The agent either surprises the maintainer by merging or repeatedly asks for authority already given. | The two merge preferences are `ask` and `auto`. If authority is unset, ask early which the user wants for this task; default to `ask` without an answer. Reuse established authority. A review-only or PR-only request stops there regardless of a broader merge preference. | L / L: one scoped choice, reused. | Keep Ask/Auto and request-only scope. Treat R3/R5 as one user interaction, not two approval systems. |
 | R4 | A maintainer cannot quickly understand what changed, why, or what was verified. | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. | L / M: authoring and keeping the explanation current. | Keep one concise current walkthrough. Simplify it if reading/updating it duplicates the PR description. |
-| R5 | Safe small PRs wait for redundant decisions, accumulate conflicts, or merge beyond the requested scope. | For ordinary PRs, `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted change when the same gates pass without another question. Native stacks are outside this pilot. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. | M / L using existing eligibility checks and native approval. | Keep the R3 choice through closeout. Do not add a second approval or delayed-merge controller. |
+| R5 | Safe small PRs wait for redundant decisions, increasing backlog and integration work. | For ordinary PRs, `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted change when the same gates pass without another question. Native stacks are outside this pilot. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. | M / L using existing eligibility checks and native approval. | Keep the R3 choice through closeout. Do not add a second approval or delayed-merge controller. |
 | R6 | Passing checks or reviews for an old revision can be mistaken for permission to merge new code. | Readiness and merge use live GitHub facts and the exact expected head. Missing/unreadable required evidence, incomplete checks, stale heads, conflicts, disallowed merges, or unresolved consequential feedback block. Never bypass GitHub protection. | M / L: bounded live checks; H if rebuilding GitHub state. | Keep the invariant. Use GitHub’s protection and checks; remove duplicate evidence/state engines. |
 | R7 | Contributor-controlled content or code can influence privileged actions or expose credentials. | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. | M / L: trusted source and existing execution boundary. | Keep the trust boundary. Do not trade it for token savings or disable it because a repo is private. |
 | R8 | Installation overwrites user configuration, loads a writable skill, or makes upgrades difficult. | Install the self-contained skill into an explicitly chosen skills directory, with both link and source outside candidate-writable directories. Preserve existing skills and user files. Test installation in isolation; installation does not disable other instructions or create a sandbox. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. | M / L for one tested host; H / M for broad host support. | Keep explicit, reversible installation. Expand hosts after a demonstrated working path. |
@@ -498,15 +486,15 @@ skills, open PRs and issues by user outcome. For each group record its source li
 current V2 equivalent, observed missing behavior, priority, and acceptance in this
 plan. Use **keep, simplify, defer, or retire**; port behavior rather than machinery.
 
-| Feature / requirement | Problem and smallest useful solution | Apparent complexity: build / recurring | Decision and evidence to revisit it |
+| Feature group | Problem and smallest useful solution | Apparent complexity: build / recurring | Decision and evidence to revisit it |
 | --- | --- | --- | --- |
-| Seam, authority, current-head checks, trust (R2/R3/R5–R7) | Prevent wrong commands or unsafe/out-of-scope actions using the existing seam and native gates. | L–M / L; a replacement policy engine would be H / H. | Keep invariants, simplify mechanisms. Resolve demonstrated consumer failures before adoption. |
-| Tests, visual evidence, review, walkthroughs, usage (R4/R6/R11/R14) | Make correctness and cost assessable using existing tools and one useful current explanation. | M / M, conditional on the change. | Keep. Simplify if duplicated artifacts or repeated checks consume attention without finding defects; retain required evidence. |
-| Model/effort recommendation and solo default (R1/R11/R12) | Avoid paying for expensive reasoning or delegation on bounded work; recommend low effort and verify the actual host setting. | L / L; an automatic model-routing service would be H / M. | Keep the short recommendation. Escalate from observed difficulty; compare total retry/review cost before claiming savings. |
-| Searchable task names (R13) | Help a maintainer find the right task. Use native rename with repository, verified issue/PR and outcome; preserve user titles. | L / L. | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841). Verify naming/update in the manual trial; no title schema, synchronization or coordination dependency. |
-| Planning and resume (R1/R12/R13) | Avoid repeating exploration or losing unfinished work. Use an optional short handoff and one owner with preserved evidence. | L / L when needed; M recurring for mandatory handoffs. | Simplify. Fresh tasks for new objectives; reuse the current task for ongoing ownership. Defer a separate planning skill until existing `$aw` planning repeatedly fails a concrete need. |
-| Claude Code/Cursor delivery | Users need the same ordinary outcome in their chosen host. Validate the portable skill and each host’s real boundaries. | M–H / M across hosts; unknown usage fields remain UNKNOWN. | Defer unsupported parity claims. Expand after a named host need and one complete, verified delivery path; do not burden Codex tasks with compatibility work. |
-| Documentation website (R8/R13) | Users cannot find a clear install-to-first-PR path. Publish the existing concise guides on the established site. | M / L with reused content; M recurring if maintaining duplicate manuals. | Keep the staged website plan. Verify a first-time user can finish setup; avoid another content platform or copied source of truth. |
+| Seam, authority, current-head checks, trust | Prevent wrong commands or unsafe/out-of-scope actions using the existing seam and native gates. | L–M / L; a replacement policy engine would be H / H. | Keep invariants, simplify mechanisms. Resolve demonstrated consumer failures before adoption. |
+| Tests, visual evidence, review, walkthroughs, usage | Make correctness and cost assessable using existing tools and one useful current explanation. | M / M, conditional on the change. | Keep; avoid additional universal audits. Simplify duplicated artifacts or checks while retaining required evidence. |
+| Model/effort recommendation and solo default | Avoid paying for expensive reasoning or delegation on bounded work; recommend low effort and verify the actual host setting. | L / L; an automatic model-routing service would be H / UNKNOWN until scoped. | Keep the short recommendation. Escalate from observed difficulty; compare total retry/review cost before claiming savings. |
+| Searchable task names | Help a maintainer find the right task. Use native rename with repository, verified issue/PR and outcome; preserve user titles. | L / L. | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841). Verify naming/update in the manual trial; no title schema, synchronization or coordination dependency. |
+| Planning and resume | Avoid repeating exploration or losing unfinished work. Use an optional short handoff and one owner with preserved evidence. | L / L when needed; M recurring for mandatory handoffs. | Simplify. Fresh tasks for new objectives; reuse the current task for ongoing ownership. Defer a separate planning skill until existing `$aw` planning repeatedly fails a concrete need. |
+| Claude Code/Cursor delivery | Users need the same ordinary outcome in their chosen host. Validate the portable skill and each host’s real boundaries. | M–H / M across hosts; unknown usage fields remain UNKNOWN. | Follow the already-approved Claude Code, then Cursor validation sequence. Verify a complete delivery path before claiming parity; do not burden ordinary Codex tasks with compatibility work. |
+| Documentation website | Users cannot find a clear install-to-first-PR path. Publish the existing concise guides on the established site. | M / L with reused content; M recurring if maintaining duplicate manuals. | Keep the staged website plan. Verify a first-time user can finish setup; avoid another content platform or copied source of truth. |
 | Fleet coordination, native stacks, autonomous merge control plane | Concurrent/dependent work can need coordination beyond one owner. Start with GitHub issues/PRs and sequential delivery. | H / H for a control plane; native stack integration still needs a bounded design. | Defer behind an explicit advanced boundary. Reconsider only after a real concurrent-writer/dependency case defeats the simpler path. Ordinary authorized auto-merge remains in the kernel. |
 
 Retiring V1 means ending its use for replaced workflows. Archiving its repository,
