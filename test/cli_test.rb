@@ -5,11 +5,12 @@ require_relative 'test_helper'
 class CliTest < Minitest::Test
   COMMAND = File.expand_path('../skills/shaka/scripts/shaka', __dir__)
 
-  def test_help_explains_the_three_operations
+  def test_help_explains_the_operations
     output, error, status = Open3.capture3(COMMAND, '--help')
     assert status.success?, error
-    assert_includes output, 'pr|walkthrough|merge'
+    assert_includes output, 'pr|comments|walkthrough|merge'
     assert_includes output, '--head'
+    assert_includes output, '--issue'
   end
 
   def test_invalid_operation_exits_without_a_github_call

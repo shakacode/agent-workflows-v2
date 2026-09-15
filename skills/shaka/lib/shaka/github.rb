@@ -7,6 +7,8 @@ require_relative 'error'
 module Shaka
   # Reads native PR evidence and publishes reviews bound to its current commit.
   class GitHub
+    attr_reader :repository, :number
+
     SNAPSHOT_QUERY = <<~GRAPHQL
       query($owner: String!, $name: String!, $number: Int!) {
         repository(owner: $owner, name: $name) {
@@ -73,6 +75,10 @@ module Shaka
       result
     end
 
+    def paginated(path)
+      execute(['gh', 'api', '--paginate', '--slurp', path])
+    end
+
     def graphql(query, variables = {})
       response = api('graphql', method: 'POST', fields: { query: query, variables: variables })
       raise Error, 'GraphQL failed or returned missing data.' if response['errors'] || !response['data'].is_a?(Hash)
@@ -83,9 +89,7 @@ module Shaka
     private
 
     def positive_integer(value)
-      unless value.to_s.ascii_only? && value.to_s.match?(/\A[1-9]\d*\z/)
-        raise Error, 'Expected a positive integer identifier.'
-      end
+      raise Error, 'Expected positive integer.' unless value.to_s.ascii_only? && value.to_s.match?(/\A[1-9]\d*\z/)
 
       value.to_i
     end
@@ -112,9 +116,7 @@ module Shaka
 
     def execute(argv, input: '', accepted: [0])
       stdout, _stderr, status = @runner.call(argv, stdin_data: input)
-      unless accepted.include?(status.exitstatus)
-        raise Error, "gh #{argv[1, 2].join(' ')} failed (exit #{status.exitstatus})."
-      end
+      raise Error, "gh #{argv[1]} failed (exit #{status.exitstatus})." unless accepted.include?(status.exitstatus)
 
       parse_json(stdout)
     rescue Errno::ENOENT

@@ -51,6 +51,13 @@ class GitHubTest < Minitest::Test
     assert_raises(Shaka::Error) { client(response({ 'message' => 'error' })).required_checks }
   end
 
+  def test_paginated_comment_fetch_passes_fixed_argv_without_a_shell
+    result = client(response([[{ 'id' => 1 }], [{ 'id' => 2 }]])).paginated('repos/owner/repo/pulls/42/comments')
+    ids = result.flatten.map { |item| item['id'] }
+    assert_equal [1, 2], ids
+    assert_equal %w[gh api --paginate --slurp repos/owner/repo/pulls/42/comments], @calls.first.first
+  end
+
   def test_checks_with_empty_failed_output_report_unavailable_evidence
     error = assert_raises(Shaka::Error) do
       client(['', 'no required checks reported', STATUS.new(1)]).required_checks
