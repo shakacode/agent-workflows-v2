@@ -2,7 +2,7 @@
 
 A useful PR proves the behavior and shows what changed. The agent uses your
 repository's existing test commands, app startup instructions, and browser tools.
-Keep those choices in your `AGENTS.md` seam; V2 does not introduce a test framework
+Keep those choices in your `AGENTS.md`; V2 does not introduce a test framework
 or require a particular screenshot service.
 
 ## Change one behavior at a time
