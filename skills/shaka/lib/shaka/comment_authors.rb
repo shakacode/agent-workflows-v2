@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'error'
+require_relative 'comment_writers'
 
 module Shaka
   # Screens public comment prose using GitHub's repository permission evidence.
   class CommentAuthors
     TRUSTED_PERMISSIONS = %w[write maintain admin].freeze
-    LOGIN = /\A[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\z/
     KINDS = { 'issue_comments' => 'issue_comment', 'review_summaries' => 'review_summary',
               'inline_comments' => 'inline_comment' }.freeze
 
@@ -17,7 +17,8 @@ module Shaka
 
     def screen(items, thread_index: {})
       items.fetch('inline_comments', []).each { |item| thread_metadata(item, thread_index) }
-      permissions = @private_repo ? {} : author_permissions(items.values.flatten)
+      logins = items.values.flatten.filter_map { |item| author(item) }
+      permissions = @private_repo ? {} : CommentWriters.new(@github).permissions(logins)
       excluded = []
       kept = items.to_h do |key, rows|
         [key, filter(rows, KINDS.fetch(key), permissions, excluded, thread_index)]
@@ -26,51 +27,6 @@ module Shaka
     end
 
     private
-
-    def author_permissions(items)
-      prefix = "repos/#{@github.repository}"
-      writers = writer_candidates(prefix)
-      logins = items.filter_map { |item| author(item) }.uniq
-      logins.select { |login| writers.include?(login.to_s.downcase) }.to_h do |login|
-        [login, permission_for(prefix, login)]
-      end
-    end
-
-    def writer_candidates(prefix)
-      writer_pages(prefix).filter_map { |row| writer_login(row) }.uniq
-    rescue Error
-      raise Error, 'Repository writer evidence is unavailable.'
-    end
-
-    def writer_pages(prefix)
-      pages = @github.paginated("#{prefix}/collaborators?permission=push&per_page=100")
-      unless pages.is_a?(Array) && pages.all? { |page| page.is_a?(Array) && page.all?(Hash) }
-        raise Error, 'Malformed repository writer listing.'
-      end
-
-      pages.flatten(1)
-    end
-
-    def writer_login(row)
-      permissions = row['permissions']
-      unless row['login'].is_a?(String) && permissions.is_a?(Hash) && [true, false].include?(permissions['push'])
-        raise Error, 'Malformed repository writer listing.'
-      end
-
-      row['login'].downcase if permissions['push']
-    end
-
-    def permission_for(prefix, login)
-      return unless login.is_a?(String) && login.match?(LOGIN)
-
-      result = @github.api("#{prefix}/collaborators/#{login}/permission")
-      user = result['user']
-      return unless user.is_a?(Hash) && user['login'].is_a?(String) && user['login'].casecmp?(login)
-
-      result['permission']
-    rescue Error
-      nil
-    end
 
     def author(item)
       user = item['user']
@@ -84,7 +40,7 @@ module Shaka
         if @private_repo || TRUSTED_PERMISSIONS.include?(permissions[login])
           kept_record(item, kind, login, thread)
         else
-          excluded << excluded_record(item, kind, login, thread)
+          excluded << excluded_record(item, kind, login, thread, permissions[login] == 'unavailable')
           nil
         end
       end
@@ -110,9 +66,10 @@ module Shaka
         'commit_id' => item['commit_id'], 'in_reply_to_id' => item['in_reply_to_id'] }
     end
 
-    def excluded_record(item, kind, login, thread)
+    def excluded_record(item, kind, login, thread, unavailable)
       row = { 'kind' => kind, 'id' => item['id'], 'author' => login,
-              'url' => item['html_url'], 'body_withheld' => !item['body'].to_s.empty? }
+              'url' => item['html_url'], 'body_withheld' => !item['body'].to_s.empty?,
+              'verification_unavailable' => unavailable }
       row.merge!(thread) if kind == 'inline_comment'
       row
     end

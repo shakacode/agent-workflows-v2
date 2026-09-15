@@ -12,16 +12,51 @@ class CommentWritersTest < Minitest::Test
                     permissions: [permission('maintainer', 'write')])
 
     assert_equal ['Review this'], bodies(result, 'issue_comments')
-    assert_equal 30, result['excluded_interactions'].length
-    assert_equal(1, @calls.count { |argv, _| argv.join(' ').include?('/permission') })
+    assert_equal 1, permission_call_count
+    refute(@calls.any? { |argv, _| argv.join(' ').include?('collaborators?permission=push') })
   end
 
-  def test_unavailable_writer_listing_blocks_public_packet
-    maintainer = comment(id: 32, author: 'maintainer', body: 'Check this')
-    github = client(snapshot_response, response({ 'private' => false }), response([[maintainer]]),
+  def test_empty_public_pr_needs_no_writer_lookup
+    result = packet
+
+    assert_empty result['issue_comments']
+    refute(@calls.any? { |argv, _| argv.join(' ').include?('/collaborators') })
+  end
+
+  def test_known_read_permission_is_not_marked_unavailable
+    outside = comment(id: 33, author: 'outside', body: 'Feedback')
+    result = packet(issue: [outside], permissions: [permission('outside', 'read')])
+
+    assert_equal false, result['excluded_interactions'].first['verification_unavailable']
+  end
+
+  def test_unavailable_batched_writer_evidence_blocks_public_packet
+    commenters = (1..9).map { |id| comment(id: id, author: "person#{id}", body: 'Check this') }
+    github = client(snapshot_response, response({ 'private' => false }), response([commenters]),
                     response([[]]), response([[]]), thread_response([]), response({}, status: 4))
 
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/writer evidence is unavailable/, error.message)
+  end
+
+  def test_mismatched_graphql_collaborator_cannot_grant_permission
+    edge = { 'node' => { 'login' => 'another-user' }, 'permission' => 'WRITE' }
+    fields = (0..8).to_h { |index| ["u#{index}", { 'edges' => [] }] }
+    fields['u0'] = { 'edges' => [edge] }
+    github = client(response({ 'data' => { 'repository' => fields } }))
+    logins = (1..9).map { |id| "person#{id}" }
+
+    error = assert_raises(Shaka::Error) { Shaka::CommentWriters.new(github).permissions(logins) }
+    assert_match(/writer evidence is unavailable/, error.message)
+    assert_equal 1, @calls.length
+  end
+
+  def test_oversized_public_author_set_stops_before_external_lookup
+    github = client
+    logins = (1..501).map { |id| "person#{id}" }
+
+    error = assert_raises(Shaka::Error) { Shaka::CommentWriters.new(github).permissions(logins) }
+    assert_match(/Too many public comment authors/, error.message)
+    assert_empty @calls
   end
 end

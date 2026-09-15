@@ -1,0 +1,90 @@
+# frozen_string_literal: true
+
+require_relative 'error'
+
+module Shaka
+  # Narrows high-volume public authors in batches before final REST permission checks.
+  class CommentWriters
+    LOGIN = /\A[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\z/
+    DIRECT_LIMIT = 8
+    BATCH_SIZE = 50
+    MAX_AUTHORS = 500
+    WRITER_ROLES = %w[WRITE MAINTAIN ADMIN].freeze
+
+    def initialize(github)
+      @github = github
+    end
+
+    def permissions(logins)
+      valid = logins.uniq.select { |login| login.is_a?(String) && login.match?(LOGIN) }
+      return {} if valid.empty?
+      raise Error, 'Too many public comment authors for a bounded trust read.' if valid.length > MAX_AUTHORS
+
+      candidates = valid.length <= DIRECT_LIMIT ? valid : batched_candidates(valid)
+      prefix = "repos/#{@github.repository}"
+      candidates.to_h { |login| [login, permission_for(prefix, login)] }
+    end
+
+    private
+
+    def batched_candidates(logins)
+      logins.each_slice(BATCH_SIZE).flat_map { |slice| graph_candidates(slice) }
+    rescue Error
+      raise Error, 'Repository writer evidence is unavailable.'
+    end
+
+    def graph_candidates(logins)
+      query, variables = query_for(logins)
+      response = @github.graphql(query, variables)
+      repository = response['repository']
+      raise Error, 'Malformed repository writer response.' unless repository.is_a?(Hash)
+
+      logins.each_with_index.filter_map do |login, index|
+        role = collaborator_role(repository["u#{index}"], login)
+        login if WRITER_ROLES.include?(role)
+      end
+    end
+
+    def query_for(logins)
+      owner, name = @github.repository.split('/')
+      declarations = logins.each_index.map { |index| "$login#{index}: String!" }.join(', ')
+      fields = logins.each_index.map do |index|
+        "u#{index}: collaborators(first: 1, login: $login#{index}) { edges { node { login } permission } }"
+      end.join(' ')
+      query = "query($owner: String!, $name: String!, #{declarations}) { " \
+              "repository(owner: $owner, name: $name) { #{fields} } }"
+      variables = { owner: owner, name: name }
+      logins.each_with_index { |login, index| variables["login#{index}"] = login }
+      [query, variables]
+    end
+
+    def collaborator_role(connection, login)
+      edges = connection['edges'] if connection.is_a?(Hash)
+      raise Error, 'Malformed repository writer response.' unless edges.is_a?(Array) && edges.length <= 1
+      return if edges.empty?
+
+      edge = edges.first
+      raise Error, 'Malformed repository writer response.' unless valid_edge?(edge, login)
+
+      edge['permission']
+    end
+
+    def valid_edge?(edge, login)
+      return false unless edge.is_a?(Hash)
+
+      user = edge['node']
+      user.is_a?(Hash) && user['login'].is_a?(String) && user['login'].casecmp?(login) &&
+        edge['permission'].is_a?(String)
+    end
+
+    def permission_for(prefix, login)
+      result = @github.api("#{prefix}/collaborators/#{login}/permission")
+      user = result['user']
+      return 'unavailable' unless user.is_a?(Hash) && user['login'].is_a?(String) && user['login'].casecmp?(login)
+
+      result['permission'].is_a?(String) ? result['permission'] : 'unavailable'
+    rescue Error
+      'unavailable'
+    end
+  end
+end

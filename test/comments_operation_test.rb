@@ -16,7 +16,7 @@ class CommentsOperationTest < Minitest::Test
 
   def test_changed_head_blocks_comment_packet
     github = client(snapshot_response, response({ 'private' => false }), response([[]]),
-                    response([[]]), response([[]]), thread_response([]), writer_response([]),
+                    response([[]]), response([[]]), thread_response([]),
                     snapshot_response(head: 'b' * 40))
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/head changed/, error.message)

@@ -17,7 +17,7 @@ module CommentsFixture
     pages = options.fetch(:thread_pages) { [thread_response(threads)] }
     github = client(snapshot_response, response({ 'private' => private_repo }),
                     *comment_responses(issue, reviews, inline), *pages,
-                    *writer_pages(private_repo, options, issue + reviews + inline), *options.fetch(:permissions, []),
+                    *prefilter_pages(private_repo, options, issue + reviews + inline), *options.fetch(:permissions, []),
                     *finish_context(private_repo))
     Shaka::Comments.new(github).call(expected_head: HEAD)
   end
@@ -41,25 +41,37 @@ module CommentsFixture
     end.uniq
   end
 
-  def writer_pages(private_repo, options, items)
+  def prefilter_pages(private_repo, options, items)
     return [] if private_repo
 
-    [writer_response(options.fetch(:writers) { authors(items) })]
+    logins = authors(items).select { |login| login.is_a?(String) && login.match?(Shaka::CommentWriters::LOGIN) }
+    return [] if logins.length <= Shaka::CommentWriters::DIRECT_LIMIT
+
+    writers = options.fetch(:writers, logins)
+    logins.each_slice(Shaka::CommentWriters::BATCH_SIZE).map { |slice| graph_writer_response(slice, writers) }
   end
 
-  def writer_response(logins)
-    response([logins.map { |login| { 'login' => login, 'permissions' => { 'push' => true } } }])
+  def graph_writer_response(logins, writers)
+    fields = logins.each_with_index.to_h do |login, index|
+      edges = writers.include?(login) ? [{ 'node' => { 'login' => login }, 'permission' => 'WRITE' }] : []
+      ["u#{index}", { 'edges' => edges }]
+    end
+    response({ 'data' => { 'repository' => fields } })
   end
 
   def issue_packet(comments:, permissions: [])
     github = client(response({ 'number' => 42 }), response({ 'private' => false }),
-                    response([comments]), writer_response(authors(comments)), *permissions,
+                    response([comments]), *prefilter_pages(false, {}, comments), *permissions,
                     response({ 'private' => false }))
     Shaka::Comments.new(github).call(issue_only: true)
   end
 
   def bodies(result, key)
     result.fetch(key).map { |item| item['body'] }
+  end
+
+  def permission_call_count
+    @calls.count { |argv, _| argv.join(' ').include?('/permission') }
   end
 
   def permission(login, level)
