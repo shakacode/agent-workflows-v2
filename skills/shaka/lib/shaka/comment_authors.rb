@@ -15,11 +15,12 @@ module Shaka
       @private_repo = private_repo
     end
 
-    def screen(items)
+    def screen(items, thread_index: {})
+      items.fetch('inline_comments', []).each { |item| thread_metadata(item, thread_index) }
       permissions = @private_repo ? {} : author_permissions(items.values.flatten)
       excluded = []
       kept = items.to_h do |key, rows|
-        [key, filter(rows, KINDS.fetch(key), permissions, excluded)]
+        [key, filter(rows, KINDS.fetch(key), permissions, excluded, thread_index)]
       end
       { 'excluded_interactions' => excluded }.merge(kept)
     end
@@ -50,23 +51,31 @@ module Shaka
       user['login'] if user.is_a?(Hash)
     end
 
-    def filter(items, kind, permissions, excluded)
+    def filter(items, kind, permissions, excluded, thread_index)
       items.filter_map do |item|
         login = author(item)
+        thread = thread_metadata(item, thread_index) if kind == 'inline_comment'
         if @private_repo || TRUSTED_PERMISSIONS.include?(permissions[login])
-          kept_record(item, kind, login)
+          kept_record(item, kind, login, thread)
         else
-          excluded << excluded_record(item, kind, login)
+          excluded << excluded_record(item, kind, login, thread)
           nil
         end
       end
     end
 
-    def kept_record(item, kind, login)
+    def thread_metadata(item, index)
+      meta = index[item['id']] || index[item['in_reply_to_id']]
+      raise Error, 'Inline comment has no review-thread metadata.' unless meta
+
+      meta
+    end
+
+    def kept_record(item, kind, login, thread)
       row = { 'id' => item['id'], 'author' => login, 'body' => item['body'], 'url' => item['html_url'] }
       row['state'] = item['state'] if kind == 'review_summary'
       row['commit_id'] = item['commit_id'] if kind == 'review_summary'
-      row.merge!(inline_location(item)) if kind == 'inline_comment'
+      row.merge!(inline_location(item)).merge!(thread) if kind == 'inline_comment'
       row
     end
 
@@ -75,9 +84,11 @@ module Shaka
         'commit_id' => item['commit_id'], 'in_reply_to_id' => item['in_reply_to_id'] }
     end
 
-    def excluded_record(item, kind, login)
-      { 'kind' => kind, 'id' => item['id'], 'author' => login,
-        'url' => item['html_url'], 'body_withheld' => !item['body'].to_s.empty? }
+    def excluded_record(item, kind, login, thread)
+      row = { 'kind' => kind, 'id' => item['id'], 'author' => login,
+              'url' => item['html_url'], 'body_withheld' => !item['body'].to_s.empty? }
+      row.merge!(thread) if kind == 'inline_comment'
+      row
     end
   end
 end

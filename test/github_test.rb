@@ -31,6 +31,7 @@ class GitHubTest < Minitest::Test
   def test_api_failure_does_not_expose_stderr
     error = assert_raises(Shaka::Error) { client(response({}, status: 4)).snapshot }
     assert_match(/exit 4/, error.message)
+    assert_match(/gh api graphql failed/, error.message)
     refute_match(/private/, error.message)
   end
 
@@ -56,6 +57,14 @@ class GitHubTest < Minitest::Test
     ids = result.flatten.map { |item| item['id'] }
     assert_equal [1, 2], ids
     assert_equal %w[gh api --paginate --slurp repos/owner/repo/pulls/42/comments], @calls.first.first
+  end
+
+  def test_paginated_failure_identifies_endpoint_without_stderr
+    error = assert_raises(Shaka::Error) do
+      client(response({}, status: 4)).paginated('repos/owner/repo/pulls/42/comments')
+    end
+    assert_match(%r{gh api repos/owner/repo/pulls/42/comments failed}, error.message)
+    refute_match(/private stderr/, error.message)
   end
 
   def test_checks_with_empty_failed_output_report_unavailable_evidence

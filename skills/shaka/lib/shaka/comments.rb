@@ -2,6 +2,7 @@
 
 require_relative 'error'
 require_relative 'comment_authors'
+require_relative 'comment_threads'
 
 module Shaka
   # Reads one issue or PR discussion at a stable visibility and PR head.
@@ -14,9 +15,11 @@ module Shaka
       head = issue_only ? issue_head(expected_head) : pr_head(expected_head)
       private_repo = repository_private?
       items = fetch_items(issue_only:)
-      screened = CommentAuthors.new(@github, private_repo:).screen(items)
+      threads, index = issue_only ? [[], {}] : CommentThreads.new(@github).call
+      screened = CommentAuthors.new(@github, private_repo:).screen(items, thread_index: index)
       verify_context(head, private_repo)
-      { 'visibility' => private_repo ? 'private' : 'public', 'head' => head }.merge(screened)
+      { 'visibility' => private_repo ? 'private' : 'public', 'head' => head,
+        'review_threads' => threads }.merge(screened)
     end
 
     private

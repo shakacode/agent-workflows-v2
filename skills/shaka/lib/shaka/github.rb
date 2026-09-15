@@ -52,9 +52,7 @@ module Shaka
       raise Error, 'Required-check evidence is unavailable; confirm native required checks and GitHub access.'
     end
 
-    def review(id)
-      api("#{reviews_path}/#{positive_integer(id)}")
-    end
+    def review(id) = api("#{reviews_path}/#{positive_integer(id)}")
 
     def walkthrough(head:, body:)
       body = utf8(body)
@@ -75,9 +73,7 @@ module Shaka
       result
     end
 
-    def paginated(path)
-      execute(['gh', 'api', '--paginate', '--slurp', path])
-    end
+    def paginated(path) = execute(['gh', 'api', '--paginate', '--slurp', path])
 
     def graphql(query, variables = {})
       response = api('graphql', method: 'POST', fields: { query: query, variables: variables })
@@ -116,7 +112,10 @@ module Shaka
 
     def execute(argv, input: '', accepted: [0])
       stdout, _stderr, status = @runner.call(argv, stdin_data: input)
-      raise Error, "gh #{argv[1]} failed (exit #{status.exitstatus})." unless accepted.include?(status.exitstatus)
+      detail = argv.find { |arg| arg == 'graphql' || arg.start_with?('repos/') } || argv[2]
+      unless accepted.include?(status.exitstatus)
+        raise Error, "gh #{argv[1]} #{detail} failed (exit #{status.exitstatus})."
+      end
 
       parse_json(stdout)
     rescue Errno::ENOENT

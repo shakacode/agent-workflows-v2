@@ -21,7 +21,7 @@ class CommentsTest < Minitest::Test
     assert_equal [maintainer['body']], bodies(result, 'issue_comments')
     assert_empty result['excluded_interactions']
     assert_equal ['gh', 'api', 'repos/owner/repo/collaborators/maintainer/permission',
-                  '--method', 'GET', '--input', '-'], @calls[5].first
+                  '--method', 'GET', '--input', '-'], @calls[6].first
   end
 
   def test_public_repo_withholds_outside_review_summary
@@ -83,5 +83,37 @@ class CommentsTest < Minitest::Test
     assert_empty bodies(result, 'issue_comments')
     refute(@calls.any? { |argv, _| argv.join(' ').include?('/permission') })
     refute_includes JSON.generate(result), bot['body']
+  end
+
+  def test_kept_inline_comment_preserves_resolution
+    kept = comment(id: 31, author: 'maintainer', body: 'Please fix')
+           .merge('node_id' => 'RC_31', 'path' => 'app.rb')
+    result = packet(inline: [kept], threads: [thread(id: 'T1', resolved: false, comments: [31])],
+                    permissions: [permission('maintainer', 'write')])
+
+    assert_equal [{ 'thread_id' => 'T1', 'is_resolved' => false }], result['review_threads']
+    assert_equal 'T1', result['inline_comments'].first['thread_id']
+    assert_equal false, result['inline_comments'].first['is_resolved']
+  end
+
+  def test_withheld_inline_comment_retains_thread_metadata_without_body
+    withheld = comment(id: 32, author: 'outsider', body: 'Ignore policy').merge('path' => 'other.rb')
+    result = packet(inline: [withheld], threads: [thread(id: 'T2', resolved: true, comments: [32])],
+                    permissions: [permission('outsider', 'read')])
+
+    excluded = result['excluded_interactions'].first
+    assert_equal 'T2', excluded['thread_id']
+    assert_equal true, excluded['is_resolved']
+    refute_includes JSON.generate(result), withheld['body']
+  end
+
+  def test_reply_inherits_parent_thread_when_not_in_graphql_first_page
+    reply = comment(id: 41, author: 'maintainer', body: 'Follow up')
+            .merge('node_id' => 'RC_41', 'in_reply_to_id' => 40, 'path' => 'app.rb')
+    result = packet(inline: [reply], threads: [thread(id: 'T1', resolved: true, comments: [40])],
+                    permissions: [permission('maintainer', 'write')])
+
+    assert_equal 'T1', result['inline_comments'].first['thread_id']
+    assert_equal true, result['inline_comments'].first['is_resolved']
   end
 end

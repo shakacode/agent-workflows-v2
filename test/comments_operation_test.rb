@@ -16,7 +16,7 @@ class CommentsOperationTest < Minitest::Test
 
   def test_changed_head_blocks_comment_packet
     github = client(snapshot_response, response({ 'private' => false }), response([[]]),
-                    response([[]]), response([[]]), snapshot_response(head: 'b' * 40))
+                    response([[]]), response([[]]), thread_response([]), snapshot_response(head: 'b' * 40))
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
     assert_match(/head changed/, error.message)
   end
@@ -30,7 +30,8 @@ class CommentsOperationTest < Minitest::Test
   def test_visibility_change_blocks_unscreened_packet
     outside = comment(id: 11, author: 'outside', body: 'Private before, public afterward')
     github = client(snapshot_response, response({ 'private' => true }), response([[outside]]),
-                    response([[]]), response([[]]), snapshot_response, response({ 'private' => false }))
+                    response([[]]), response([[]]), thread_response([]), snapshot_response,
+                    response({ 'private' => false }))
 
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
     assert_match(/visibility changed/, error.message)
@@ -54,5 +55,33 @@ class CommentsOperationTest < Minitest::Test
   def test_malformed_pages_block_comment_packet
     github = client(snapshot_response, response({ 'private' => false }), response({ 'message' => 'bad' }))
     assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+  end
+
+  def test_thread_pages_are_joined_before_screening
+    inline = comment(id: 51, author: 'maintainer', body: 'Second page')
+             .merge('node_id' => 'RC_51', 'path' => 'app.rb')
+    result = packet(inline: [inline], thread_pages: two_thread_pages,
+                    permissions: [permission('maintainer', 'write')])
+
+    assert_equal 'T2', result['inline_comments'].first['thread_id']
+    assert_equal 'next', JSON.parse(@calls[6].last).dig('variables', 'cursor')
+  end
+
+  def test_unmapped_inline_comment_blocks_packet
+    inline = comment(id: 52, author: 'outside', body: 'Unmapped')
+    github = client(snapshot_response, response({ 'private' => false }), response([[]]),
+                    response([[]]), response([[inline]]), thread_response([]))
+
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    assert_match(/no review-thread metadata/, error.message)
+  end
+
+  def test_malformed_thread_response_blocks_packet
+    github = client(snapshot_response, response({ 'private' => false }), response([[]]),
+                    response([[]]), response([[]]),
+                    response({ 'data' => { 'repository' => 'bad' } }))
+
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    assert_match(/Review-thread evidence is unavailable/, error.message)
   end
 end
