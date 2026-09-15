@@ -8,11 +8,15 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-After [installation](docs/getting-started.md#use-aw-in-the-codex-app), give Codex a task:
+After [installation](docs/getting-started.md#use-aw-in-the-codex-app), start in your repository's Codex task:
 
 ```text
-$aw Fix the failing search test
+$aw
 ```
+
+The agent asks for the issue number, URL, or task description and your merge
+preference if unset. It reads the task before recommending a model and effort.
+You can also include the task directly, such as `$aw Fix the failing search test`.
 
 For a fresh Codex terminal session, start from your repository:
 

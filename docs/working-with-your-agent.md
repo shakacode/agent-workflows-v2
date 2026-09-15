@@ -1,7 +1,8 @@
 # Working with your agent
 
-Give the agent the outcome you want and any limits that matter. A task description,
-GitHub issue, or existing tracker link is enough to start. You should not need to
+Start with `$aw`. It asks for the issue number, URL, or task description and merge
+preference if missing, then reads the task before recommending a model and effort.
+You can also supply the task and any limits directly. You should not need to
 learn the agent's internal process to get a useful pull request.
 
 ## When the agent asks questions
