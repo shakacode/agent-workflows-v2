@@ -29,9 +29,35 @@ module Shaka
 
     def author_permissions(items)
       prefix = "repos/#{@github.repository}"
-      items.filter_map { |item| author(item) }.uniq.to_h do |login|
+      writers = writer_candidates(prefix)
+      logins = items.filter_map { |item| author(item) }.uniq
+      logins.select { |login| writers.include?(login.to_s.downcase) }.to_h do |login|
         [login, permission_for(prefix, login)]
       end
+    end
+
+    def writer_candidates(prefix)
+      writer_pages(prefix).filter_map { |row| writer_login(row) }.uniq
+    rescue Error
+      raise Error, 'Repository writer evidence is unavailable.'
+    end
+
+    def writer_pages(prefix)
+      pages = @github.paginated("#{prefix}/collaborators?permission=push&per_page=100")
+      unless pages.is_a?(Array) && pages.all? { |page| page.is_a?(Array) && page.all?(Hash) }
+        raise Error, 'Malformed repository writer listing.'
+      end
+
+      pages.flatten(1)
+    end
+
+    def writer_login(row)
+      permissions = row['permissions']
+      unless row['login'].is_a?(String) && permissions.is_a?(Hash) && [true, false].include?(permissions['push'])
+        raise Error, 'Malformed repository writer listing.'
+      end
+
+      row['login'].downcase if permissions['push']
     end
 
     def permission_for(prefix, login)

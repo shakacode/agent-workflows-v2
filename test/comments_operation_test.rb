@@ -16,8 +16,9 @@ class CommentsOperationTest < Minitest::Test
 
   def test_changed_head_blocks_comment_packet
     github = client(snapshot_response, response({ 'private' => false }), response([[]]),
-                    response([[]]), response([[]]), thread_response([]), snapshot_response(head: 'b' * 40))
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+                    response([[]]), response([[]]), thread_response([]), writer_response([]),
+                    snapshot_response(head: 'b' * 40))
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/head changed/, error.message)
   end
 
@@ -27,13 +28,21 @@ class CommentsOperationTest < Minitest::Test
     assert_match(/expected head/, error.message)
   end
 
+  def test_pr_read_requires_full_expected_head_before_github_read
+    github = client
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+
+    assert_match(/Expected a full PR head/, error.message)
+    assert_empty @calls
+  end
+
   def test_visibility_change_blocks_unscreened_packet
     outside = comment(id: 11, author: 'outside', body: 'Private before, public afterward')
     github = client(snapshot_response, response({ 'private' => true }), response([[outside]]),
                     response([[]]), response([[]]), thread_response([]), snapshot_response,
                     response({ 'private' => false }))
 
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/visibility changed/, error.message)
   end
 
@@ -54,7 +63,7 @@ class CommentsOperationTest < Minitest::Test
 
   def test_malformed_pages_block_comment_packet
     github = client(snapshot_response, response({ 'private' => false }), response({ 'message' => 'bad' }))
-    assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
   end
 
   def test_thread_pages_are_joined_before_screening
@@ -72,7 +81,7 @@ class CommentsOperationTest < Minitest::Test
     github = client(snapshot_response, response({ 'private' => false }), response([[]]),
                     response([[]]), response([[inline]]), thread_response([]))
 
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/no review-thread metadata/, error.message)
   end
 
@@ -81,7 +90,7 @@ class CommentsOperationTest < Minitest::Test
                     response([[]]), response([[]]),
                     response({ 'data' => { 'repository' => 'bad' } }))
 
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call }
+    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/Review-thread evidence is unavailable/, error.message)
   end
 end

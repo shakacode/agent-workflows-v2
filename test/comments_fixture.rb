@@ -13,13 +13,13 @@ module CommentsFixture
 
   def packet(issue: [], reviews: [], inline: [], threads: [], **options)
     private_repo = options.fetch(:private_repo, false)
-    permissions = options.fetch(:permissions, [])
     threads = default_threads(inline) if threads.empty?
     pages = options.fetch(:thread_pages) { [thread_response(threads)] }
     github = client(snapshot_response, response({ 'private' => private_repo }),
-                    *comment_responses(issue, reviews, inline), *pages, *permissions,
+                    *comment_responses(issue, reviews, inline), *pages,
+                    *writer_pages(private_repo, options, issue + reviews + inline), *options.fetch(:permissions, []),
                     *finish_context(private_repo))
-    Shaka::Comments.new(github).call
+    Shaka::Comments.new(github).call(expected_head: HEAD)
   end
 
   def default_threads(inline)
@@ -34,9 +34,27 @@ module CommentsFixture
     [response([issue]), response([reviews]), response([inline])]
   end
 
+  def authors(items)
+    items.filter_map do |item|
+      user = item['user']
+      user['login'] if user.is_a?(Hash)
+    end.uniq
+  end
+
+  def writer_pages(private_repo, options, items)
+    return [] if private_repo
+
+    [writer_response(options.fetch(:writers) { authors(items) })]
+  end
+
+  def writer_response(logins)
+    response([logins.map { |login| { 'login' => login, 'permissions' => { 'push' => true } } }])
+  end
+
   def issue_packet(comments:, permissions: [])
     github = client(response({ 'number' => 42 }), response({ 'private' => false }),
-                    response([comments]), *permissions, response({ 'private' => false }))
+                    response([comments]), writer_response(authors(comments)), *permissions,
+                    response({ 'private' => false }))
     Shaka::Comments.new(github).call(issue_only: true)
   end
 

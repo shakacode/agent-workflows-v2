@@ -48,7 +48,7 @@ begin
              issue_only = options.fetch(:issue_only, false)
              raise OptionParser::InvalidArgument, '--head does not apply to issues' if issue_only && options[:head]
 
-             Shaka::Comments.new(github).call(issue_only:, expected_head: issue_only ? nil : options.fetch(:head))
+             Shaka::Comments.new(github).call(issue_only:, expected_head: issue_only ? nil : options[:head])
            when 'walkthrough'
              github.walkthrough(head: options.fetch(:head),
                                 body: File.read(options.fetch(:body_file), encoding: 'UTF-8'))

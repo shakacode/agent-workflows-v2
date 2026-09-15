@@ -21,7 +21,7 @@ class CommentsTest < Minitest::Test
     assert_equal [maintainer['body']], bodies(result, 'issue_comments')
     assert_empty result['excluded_interactions']
     assert_equal ['gh', 'api', 'repos/owner/repo/collaborators/maintainer/permission',
-                  '--method', 'GET', '--input', '-'], @calls[6].first
+                  '--method', 'GET', '--input', '-'], @calls[7].first
   end
 
   def test_public_repo_withholds_outside_review_summary

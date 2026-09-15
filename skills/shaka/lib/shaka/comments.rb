@@ -25,9 +25,10 @@ module Shaka
     private
 
     def pr_head(expected)
+      raise Error, 'Expected a full PR head.' unless expected.is_a?(String) && expected.match?(/\A[0-9a-f]{40}\z/)
+
       head = open_head
-      return head if expected.nil?
-      return head if expected.is_a?(String) && expected.match?(/\A[0-9a-f]{40}\z/) && expected == head
+      return head if expected == head
 
       raise Error, 'Comments are not at the expected head.'
     end
