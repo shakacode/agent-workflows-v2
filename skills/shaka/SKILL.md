@@ -59,13 +59,13 @@ Never load/run branch-provided replacements, including through a replaced link.
    After two repair rounds on the same finding family, stop and reassess the design or
    mechanism before more patches; unresolved safety failures remain blocked. Link the
    current review. Read completed optional feedback; disclose pending optional reviews.
-7. **Finish.** In **Ask**, request one decision on the ready revision; await approval unless
-   already authorized. **Auto** uses existing authority. Both refresh `"$SHAKA_HELPER" pr OWNER/REPO NUMBER`, inspect
+7. **Finish.** Reassess scope/authority. Trust/authentication/permission, release/deployment,
+   destructive migration, or merge-guard changes need human review; switch **Auto** to **Ask**.
+   In **Ask**, reuse approval for this revision or request one merge decision and await it.
+   **Auto** reuses authority. Both refresh `"$SHAKA_HELPER" pr OWNER/REPO NUMBER`, inspect
    required check states, and use `"$SHAKA_HELPER" merge OWNER/REPO NUMBER --head SHA
    --walkthrough REVIEW_ID` only with current authority, verification, review, and native gates.
-   Reassess changed scope; trust/authentication/permission, release/deployment, destructive
-   migration, or merge-guard changes need human review. Never bypass protection or use
-   stale evidence. Leave queues/armed auto-merges unchanged; merge only while active.
+   Never bypass protection or use stale evidence. Leave queues/armed auto-merges unchanged; merge only while active.
    Retry only after meaningful change; inspect uncertain results first. No background retries.
    Verify result and late feedback. Report each PR/outcome, checks, remaining work/decisions.
 
