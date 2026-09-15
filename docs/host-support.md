@@ -20,7 +20,7 @@ establish complete usage attribution.
 | --- | --- | --- | --- |
 | Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | CLI options inspected; V2 instruction activation unverified. | Dedicated CLI package version/help checked; V2 instruction activation unverified. |
 | OS write boundary | A native workspace sandbox denied writes to the separate trusted source, installed link, and link directory while allowing the session and target checkout. | Native V2 sandbox boundary unverified. | Native V2 sandbox boundary unverified. |
-| Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides through its repository seam; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
+| Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides using its repository instructions; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
 | Usage | Reader matched 14 real CLI responses and repeated-source input without double counting; attribution remains partial. | Complete V2 usage reporting unverified. | Complete V2 token and effort reporting unverified. |
 
 The Codex write test establishes that particular local boundary. It does not
@@ -41,6 +41,34 @@ directories also count: placing the trusted skill in a system temporary director
 can undermine an otherwise separate installation. See the
 [Codex permissions documentation](https://learn.chatgpt.com/docs/permissions)
 for the host's controls; the getting-started guide owns the tested V2 recipe.
+
+## Startup boundary and current validation
+
+Each launch creates a private temporary session outside the consumer checkout,
+reads the trusted skill by its absolute source path, and directs repository
+commands to the checkout. It adds no skill link to that writable session. The
+launcher rejects canonical or lexical overlaps between writable paths and the
+trusted source or installed command/link parents. If your `TMPDIR` is inside the
+target checkout, choose a temporary directory outside it before launching.
+
+The native shell sandbox permits writes in the session and target checkout,
+overrides extra writable roots, excludes ambient temporary directories, and uses
+approval prompts for this launch. It sets shell `TMPDIR` and zsh `TMPPREFIX`
+inside the session's temporary directory. It leaves authentication and model settings
+alone. Session scratch stays in the system temporary directory after Codex exits;
+the launcher leaves no background process. Codex still shows its native directory
+trust and command-approval prompts; the launcher does not bypass them.
+
+On Codex CLI 0.154.0, separate startup and native sandbox probes kept candidate
+skill metadata out of the initial prompt and denied writes to the trusted source,
+installed link, and link parent while permitting session and checkout writes.
+A live terminal trial verified temporary-file access, protected-file write denial,
+and automatic native usage discovery. A separate native sandbox check reproduced
+and corrected zsh heredoc failures using the session temp prefix. Launcher tests
+verify the executed arguments and path refusals. App startup,
+other host versions, and complete isolation remain unverified. The sandbox does
+not establish that dependencies are trustworthy or remove secrets from published
+text. Do not approve an escape merely to make a check pass.
 
 ## Claude Code and Cursor
 

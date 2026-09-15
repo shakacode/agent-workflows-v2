@@ -1,6 +1,7 @@
 # Model and token reporting
 
 Each task reports the available native usage for its commits and contributions.
+`UNKNOWN` means the available records do not establish a value; it never means zero.
 The agent runs the trusted installed helper and includes its output in the PR,
 or the final response when there is no PR:
 
