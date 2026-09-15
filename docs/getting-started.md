@@ -53,11 +53,12 @@ After completing steps 1–2, install into Codex's user skills directory:
 In your repository's Codex task, send:
 
 ```text
-$aw Fix the failing search test
+$aw
 ```
 
-A task URL works too. The agent asks for anything missing, including merge
-preference when it is unset. The skill should appear on the next turn; if it does
+The agent asks for the issue number, URL, or task description and your merge
+preference if unset. You can include the task directly, such as `$aw Fix the failing
+search test`, to skip the task question. The skill should appear on the next turn; if it does
 not, restart Codex. The app uses that task's existing permissions. Installing a
 skill does not change its sandbox; use the terminal launcher below when you want
 its tested startup boundary. Keep the trusted source outside the repository you
@@ -174,40 +175,48 @@ for questions, writing preferences, and security boundaries.
 
 ## Try the guided flow
 
-In a fresh task for your chosen repository, select an available model and **low**
-effort in your host. Use a small issue you own; avoid opening a second owner for
-work already in progress. Start with:
+In a fresh task for your chosen repository, start with an available model and
+**low** effort. Use a small issue you own; avoid opening a second owner for work
+already in progress. Send:
 
 ```text
-$aw Work on <issue URL>. Stop after the startup questions, before editing files.
+$aw
 ```
 
-Expect a short model/effort recommendation, the resolved repository and task, and
-a merge question if authority is unset. Missing required repository instructions
-should produce a concrete offer to add the smallest seam. Existing instructions
-should be reused. Do not delete a working seam to test the missing-seam case;
-use a disposable repository with real build/test scripts but no instructions for
-running them.
+If the task and merge preference are unknown, expect a question like:
 
-If the proposed setup is correct, select the recommended model and **low** effort
-in the host controls before answering in the same task:
+> Which issue number, URL, or task should I work on? Should I bring the finished PR
+> back for your approval (**Ask**), or merge when checks and required approvals
+> pass (**Auto**)? I recommend Ask for your first trial.
 
-```text
-I've selected the model and low effort in the host. Add the proposed repository instructions
-if needed, then implement the task. Bring the verified PR back for my merge approval.
-```
+For example, answer with your issue number and `Ask`. A number is resolved against
+the current repository; a URL can identify a different one. The agent asks if the
+repository is unclear and reuses answers you have already supplied.
 
-To test Auto on a separate eligible task, choose instead:
+It then reads the task and repository instructions before recommending a model
+and effort, with a short reason. If a switch is needed, use the host controls;
+a prompt cannot change the runner. Missing required repository instructions should
+produce a concrete offer to add the smallest seam. Approve that proposal if needed.
+Once necessary answers and setup are settled, implementation proceeds without
+another startup approval. **Ask** saves the merge decision for the finished PR.
 
-```text
-Merge this task's PR when its checks and required approvals pass.
-```
+<details>
+<summary>Optional startup-only test</summary>
+
+To inspect intake without implementation, send `$aw Stop after the startup
+questions, before editing files.` Then supply the issue when asked. This pause is
+only for testing; normal use needs just `$aw`. Resume when satisfied with the setup.
+
+Do not delete a working seam to test missing instructions. Use a disposable
+repository with real build/test scripts but no instructions for running them.
+
+</details>
 
 Check that the agent honors your choice, keeps a useful task title, publishes one
 current walkthrough, handles review findings, and reports available usage. Ask must
 stop for the finished PR's approval; Auto must preserve the same required gates.
 Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1), without
-private task content. These prompts are manual acceptance cases, not proof they pass.
+private task content. These are manual acceptance cases, not proof they pass.
 
 For a larger task, an optional first prompt is:
 

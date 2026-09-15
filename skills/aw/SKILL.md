@@ -5,16 +5,21 @@ description: Deliver one ordinary task through verified GitHub PRs, splitting on
 
 # Work one task
 
-Own one task through its requested PR outcome. Read the supplied task text or URL
-using an available connection; if inaccessible, ask for its description and acceptance
-criteria. Resolve the target checkout from host context and Git remotes; ask for its
-path only if missing or ambiguous, before editing. Keep requirements in the original
-tracker and delivery state on GitHub. Link the work item from the PR when sharing
-is authorized; do not create a duplicate issue. Reading a tracker does not authorize
-updating it. Keep private task content and links out of public artifacts unless
-sharing is authorized.
+Own one task through its requested PR outcome. `$aw` alone starts intake: resolve
+the checkout from host context and Git remotes, then read trusted repository
+instructions. If the task is missing, ask for an issue number, URL, or description;
+combine this with the merge question below when authority is unset. Reuse known
+answers. Resolve a bare issue number against the verified repository; ask for the
+repository path if missing or ambiguous. Obtain the task before implementation.
 
-Before implementation, recommend an available model and low effort with one reason.
+Read the task using an available connection; if inaccessible, ask for its description
+and acceptance criteria. Keep requirements in the original tracker and delivery state
+on GitHub. Link the work item from the PR when sharing is authorized; do not create
+a duplicate issue. Reading a tracker does not authorize updating it. Keep private
+task content and links out of public artifacts unless sharing is authorized.
+
+After reading the task and before implementation, recommend an available model and
+low effort with one reason tied to its scope and risk.
 Honor explicit settings; increase effort only for a demonstrated reasoning difficulty,
 not waiting or tool failures. Verify the host setting when possible; a prompt cannot
 change it. If switching is needed and unavailable, give one exact user action and wait.
