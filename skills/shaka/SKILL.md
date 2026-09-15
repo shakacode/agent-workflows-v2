@@ -43,14 +43,14 @@ replacement skill or helper.
    results, and tested revision. Fix failures before readiness; rerun affected checks.
    For visible changes, inspect before/after screenshots and add short video when
    interaction or timing matters. Reverify changed heads; captures complement tests.
-5. **Explain.** Commit, push, and open or update the feature-branch PR. Prefix AI
-   GitHub text with `🤖` and known agent/provider/model/effort. Summarize behavior
-   and impact; put checks and usage in `<details>`. Run trusted
-   `scripts/shaka usage --commit SHA --contribution CATEGORY` for each task; label
-   SHARED/UNKNOWN fields and publish aggregate metadata only. Before merge, use trusted
-   `scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH` to publish
-   a COMMENT pinned to the head: purpose, behavior, choices, validation, risks/rollback,
-   and code links. Link the current walkthrough prominently; preserve/collapse older ones.
+5. **Explain.** Commit and push the feature-branch PR; prefix AI GitHub text with `🤖`
+   and known agent/provider/model/effort. Summarize behavior/impact; put checks and
+   usage in `<details>`. Run trusted `scripts/shaka usage --commit SHA --contribution
+   CATEGORY` for each task. Use `--all-turns` only for task-dedicated sources;
+   otherwise select all task turns and contributor/retry files. Label SHARED/UNKNOWN;
+   publish only aggregates. Before merge, use trusted `scripts/shaka walkthrough
+   OWNER/REPO NUMBER --head SHA --body-file PATH` to publish a COMMENT pinned to the
+   head: purpose, behavior, choices, validation, risks/rollback, code links. Link current prominently; preserve/collapse older ones.
 6. **Review.** Obtain independent review when repository policy, the user, or
    concrete risk requires it. Unavailable, failed, or stale required review blocks
    readiness; do not substitute another reviewer. Read the completed report,
