@@ -46,7 +46,7 @@ work, the agent may supply repeated `--file PATH` and `--turn ID` options using
 its private source context. Without `--turn`, each file contributes its latest
 turn. For a session dedicated to one task, use `--all-turns` to include planning,
 implementation, user answers, and merge turns together. It cannot be combined with
-`--turn`. A fresh `aw work` session starts with one task; if it later contains
+`--turn`. A fresh `sw work` session starts with one task; if it later contains
 unrelated work or inherited history, select relevant turns instead. Never include
 other tasks just to obtain a bigger total. The visible report states its scope;
 latest-turn output is not a whole-task total. Retain earlier non-overlapping task

@@ -22,7 +22,7 @@ class CliTest < Minitest::Test
     _output, error, status = Open3.capture3(COMMAND, 'walkthrough', 'owner/repo', '1',
                                             '--head', 'a' * 40, '--body-file', '/missing/aw-v2-body.md')
     refute status.success?
-    assert_includes error, 'aw:'
+    assert_includes error, 'sw:'
     assert_includes error, 'aw-v2-body.md'
   end
 

@@ -119,13 +119,13 @@ module AgentWorkflows
       puts new(options).report
       0
     rescue OptionParser::ParseError
-      warn 'aw usage: invalid options; use aw usage --help'
+      warn 'sw usage: invalid options; use sw usage --help'
       1
     end
 
     def self.parser(options)
       OptionParser.new do |flags|
-        flags.banner = 'Usage: aw usage --commit SHA[,SHA] --contribution NAME [options]'
+        flags.banner = 'Usage: sw usage --commit SHA[,SHA] --contribution NAME [options]'
         source_options(flags, options)
         flags.on('--commit SHA', 'Affected full commit SHAs, comma separated') { |v| options[:commit] = v }
         flags.on('--contribution NAME', 'Contribution category (see guide)') { |v| options[:contribution] = v }

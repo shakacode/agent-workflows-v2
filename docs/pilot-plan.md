@@ -265,10 +265,10 @@ are outside this immediate-merge pilot and are left unchanged.
 
 ## Design
 
-- **D1 (R1–R3, R9):** one concise `aw` skill. Keep task requirements in
+- **D1 (R1–R3, R9):** one shared workflow exposed as `$sw`, with `$aw` compatibility. Keep task requirements in
   their original user/issue record and code-delivery evidence on the PR. There is
   no project-wide local state database or canonical-target schema.
-- **D2 (R4–R7):** a small Ruby `aw` command invoked from the installed skill,
+- **D2 (R4–R7):** a small Ruby `sw` command (also available as `aw`) invoked from the installed skill,
   with `pr`, `walkthrough`, and `merge` operations. Use `gh` for authentication,
   pagination and APIs; use JSON and `Open3` argument vectors, never shell-built
   commands or a custom prose/JSON parser. Errors are concise and nonzero.
@@ -348,12 +348,12 @@ observation.
 The first deliverable is tested code and a useful real-PR walkthrough, followed
 by its authorized merge. A normal maintainer-authorized bootstrap merge does not
 demonstrate the product's protected automatic-merge path. That path was subsequently
-observed on [PR #3](https://github.com/shakacode/agent-workflows-v2/pull/3) and the
+observed on [PR #3](https://github.com/shakacode/workflows/pull/3) and the
 later pilot PRs, with current-head walkthroughs and enforced native checks.
 Repeated consumer use remains required before claiming broader adoption.
 
 The private-hosting restriction was resolved by the authorized public visibility
-change on September 14. The active [main ruleset](https://github.com/shakacode/agent-workflows-v2/rules/23252676)
+change on September 14. The active [main ruleset](https://github.com/shakacode/workflows/rules/23252676)
 requires PRs and an up-to-date `validate` check from GitHub Actions. It has no
 bypass actors and blocks force-push and deletion. The required approving-review
 count is zero for the single-user pilot; the skill still handles consequential
@@ -363,8 +363,8 @@ that exercises it rather than treating the ruleset's existence as proof.
 ## Ruby packaging
 
 The root `Gemfile` and `Gemfile.lock` manage development dependencies; runtime
-helpers use standard libraries. `agent-workflows-v2.gemspec` packages the complete
-skill and thin `aw` / `install-agent-workflows` executables that reuse the existing
+helpers use standard libraries. `shakacode-workflows.gemspec` packages the complete
+skill and thin `sw` / `aw` / `install-agent-workflows` executables that reuse the existing
 implementations. The provisional version is `0.1.0.pre.1`.
 
 The package test builds and installs the actual artifact into a separate gem home,
@@ -388,8 +388,8 @@ and decisions; this plan remains a contributor document. The installed skill own
 agent instructions. The website should render the user guides without becoming
 another source of workflow policy.
 
-Observed September 14, 2026: [agents.shakacode.com](https://agents.shakacode.com/)
-already has a [docs section](https://agents.shakacode.com/docs/). Its homepage says
+Observed September 14, 2026: [workflows.shakacode.com](https://workflows.shakacode.com/)
+already has a [docs section](https://workflows.shakacode.com/docs/). Its homepage says
 coordination is optional, but its main sequence still emphasizes planning,
 splitting work, review, and audit. The public
 [site repository](https://github.com/shakacode/agent-workflows-com) uses Astro and
@@ -464,7 +464,7 @@ Stop scope growth when a proposed mechanism does not serve an acceptance case.
 Rollback is removing the pilot skill symlink or using the prior trusted checkout
 revision. No issue state migration, production data change, or V1 replacement
 is required. Public source publication and reviewed, verified pilot PR merges
-are authorized. The maintainer also requested `$aw` in the Codex app; installation
+are authorized. The maintainer also requested `$sw` in the Codex app; installation
 of that one user skill is authorized. Registry releases remain out of scope.
 
 ### Priorities for retiring ordinary V1 use
@@ -492,7 +492,7 @@ plan. Use **keep, simplify, defer, or retire**; port behavior rather than machin
 | Tests, visual evidence, review, walkthroughs, usage | Make correctness and cost assessable using existing tools and one useful current explanation. | M / M, conditional on the change. | Keep; avoid additional universal audits. Simplify duplicated artifacts or checks while retaining required evidence. |
 | Model/effort recommendation and solo default | Avoid paying for expensive reasoning or delegation on bounded work; recommend low effort and verify the actual host setting. | L / L; an automatic model-routing service would be H / UNKNOWN until scoped. | Keep the short recommendation. Escalate from observed difficulty; compare total retry/review cost before claiming savings. |
 | Searchable task names | Help a maintainer find the right task. Use native rename with repository, verified issue/PR and outcome; preserve user titles. | L / L. | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841). Verify naming/update in the manual trial; no title schema, synchronization or coordination dependency. |
-| Planning and resume | Avoid repeating exploration or losing unfinished work. Use an optional short handoff and one owner with preserved evidence. | L / L when needed; M recurring for mandatory handoffs. | Simplify. Fresh tasks for new objectives; reuse the current task for ongoing ownership. Defer a separate planning skill until existing `$aw` planning repeatedly fails a concrete need. |
+| Planning and resume | Avoid repeating exploration or losing unfinished work. Use an optional short handoff and one owner with preserved evidence. | L / L when needed; M recurring for mandatory handoffs. | Simplify. Fresh tasks for new objectives; reuse the current task for ongoing ownership. Defer a separate planning skill until existing `$sw` planning repeatedly fails a concrete need. |
 | Claude Code/Cursor delivery | Users need the same ordinary outcome in their chosen host. Validate the portable skill and each host’s real boundaries. | M–H / M across hosts; unknown usage fields remain UNKNOWN. | Follow the already-approved Claude Code, then Cursor validation sequence. Verify a complete delivery path before claiming parity; do not burden ordinary Codex tasks with compatibility work. |
 | Documentation website | Users cannot find a clear install-to-first-PR path. Publish the existing concise guides on the established site. | M / L with reused content; M recurring if maintaining duplicate manuals. | Keep the staged website plan. Verify a first-time user can finish setup; avoid another content platform or copied source of truth. |
 | Fleet coordination, native stacks, autonomous merge control plane | Concurrent/dependent work can need coordination beyond one owner. Start with GitHub issues/PRs and sequential delivery. | H / H for a control plane; native stack integration still needs a bounded design. | Defer behind an explicit advanced boundary. Reconsider only after a real concurrent-writer/dependency case defeats the simpler path. Ordinary authorized auto-merge remains in the kernel. |

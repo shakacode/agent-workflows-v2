@@ -228,7 +228,7 @@ class UsageFailuresTest < Minitest::Test
       output, error, status = Open3.capture3(COMMAND, 'usage', *arguments)
       refute status.success?
       assert_empty output
-      assert_includes error, 'aw usage:'
+      assert_includes error, 'sw usage:'
       refute_includes error, 'SENSITIVE'
     end
   end

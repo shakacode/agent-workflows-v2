@@ -3,9 +3,9 @@ name: aw
 description: Deliver one ordinary task through verified GitHub PRs, splitting only when useful; publish walkthroughs, address review, and honor merge authority.
 ---
 
-# Work one task
+# ShakaCode Workflows
 
-Own one task through its requested PR outcome. `$aw` alone starts intake. Use host
+Own one task through its requested PR outcome. `$sw` (or `$aw`) alone starts intake. Use host
 context and Git remotes to identify the checkout and read trusted instructions.
 Ask for a missing issue number, URL, or description; combine this with the merge
 question below if authority is unset. Make merging conditional on task scope;

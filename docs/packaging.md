@@ -8,8 +8,8 @@ Build from the trusted source directory; RubyGems reads package files relative
 to the working directory. With the source installation from the first-use guide:
 
 ```bash
-cd "$HOME/agent-tools/agent-workflows-v2"
-gem build agent-workflows-v2.gemspec
+cd "$HOME/agent-tools/shakacode-workflows"
+gem build shakacode-workflows.gemspec
 ```
 
 To try the built package without changing your application bundle or normal gem
@@ -17,9 +17,9 @@ installation, use a separate gem home. These environment values apply only to th
 individual commands:
 
 ```bash
-aw_gem_home=$(mktemp -d)
-GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" gem install --local --no-document ./agent-workflows-v2-0.1.0.pre.1.gem
-GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" "$aw_gem_home/bin/aw" --help
+sw_gem_home=$(mktemp -d)
+GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" gem install --local --no-document ./shakacode-workflows-0.1.0.pre.1.gem
+GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" "$sw_gem_home/bin/sw" --help
 ```
 
 Keep this temporary home for packaging checks only. A real pilot installation must
@@ -37,15 +37,15 @@ source and host startup boundaries.
 
 RubyGems installs each version in its own directory. A manually installed skill
 link keeps pointing to its original version. To change that link, inspect its
-destination, remove only the known pilot symlink, then run the new version's
+destination, remove only the known pilot symlinks, then run the new version's
 installer. Do not remove a foreign directory or silently repoint another skill.
 You can retain the prior gem version and relink it for rollback.
 
-Remove a pilot skill link before uninstalling the version it points to. For the
+Remove both pilot skill links (`sw` and `aw`) before uninstalling the version it points to. For the
 isolated packaging check above:
 
 ```bash
-GEM_HOME="$aw_gem_home" GEM_PATH="$aw_gem_home" gem uninstall agent-workflows-v2 --all --executables
+GEM_HOME="$sw_gem_home" GEM_PATH="$sw_gem_home" gem uninstall shakacode-workflows --all --executables
 ```
 
 A two-version artifact trial also confirmed explicit upgrade and rollback while
@@ -55,7 +55,7 @@ the package. Existing installer tests cover repeat installation, collisions, and
 source updates. These checks validate the artifact; they do not establish host
 compatibility or authorize a registry release.
 
-The provisional name is `agent-workflows-v2`, with version `0.1.0.pre.1`. License
+The provisional name is `shakacode-workflows`, with version `0.1.0.pre.1`. License
 and registry release approval remain outstanding. The gemspec does not invent a
 license grant, so RubyGems currently warns that a license is unspecified. Packaging
 uses [standard RubyGems tooling](https://guides.rubygems.org/make-your-own-gem/).

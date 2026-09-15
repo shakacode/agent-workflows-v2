@@ -13,7 +13,7 @@ class InstallTest < Minitest::Test
     @destination = File.join(@skills_dir, 'aw')
     FileUtils.mkdir_p([@source, File.dirname(@installer)])
     FileUtils.cp(File.expand_path('../bin/install', __dir__), @installer)
-    File.write(File.join(@source, 'SKILL.md'), 'version one')
+    write_skills
   end
 
   def teardown
@@ -45,6 +45,7 @@ class InstallTest < Minitest::Test
 
     refute install.last.success?
     assert_equal 'user content', File.read(marker)
+    refute File.exist?(File.join(@skills_dir, 'sw'))
   end
 
   def test_refuses_an_existing_file
@@ -91,7 +92,35 @@ class InstallTest < Minitest::Test
     assert_equal 'version two', File.read(File.join(@destination, 'SKILL.md'))
   end
 
+  def test_installs_sw_and_keeps_aw_compatible
+    sw_source = File.join(File.dirname(@source), 'sw')
+    FileUtils.mkdir_p(sw_source)
+    File.write(File.join(sw_source, 'SKILL.md'), 'new entry point')
+    output, status = install
+
+    assert status.success?, output
+    assert_equal File.realpath(sw_source), File.realpath(File.join(@skills_dir, 'sw'))
+    assert_equal File.realpath(@source), File.realpath(@destination)
+  end
+
+  def test_refuses_foreign_sw_without_installing_aw
+    sw = File.join(@skills_dir, 'sw')
+    FileUtils.mkdir_p(sw)
+    File.write(File.join(sw, 'keep'), 'user content')
+
+    refute install.last.success?
+    refute File.exist?(@destination)
+    assert_equal 'user content', File.read(File.join(sw, 'keep'))
+  end
+
   private
+
+  def write_skills
+    File.write(File.join(@source, 'SKILL.md'), 'version one')
+    sw = File.join(File.dirname(@source), 'sw')
+    FileUtils.mkdir_p(sw)
+    File.write(File.join(sw, 'SKILL.md'), 'sw entry')
+  end
 
   def install
     run_installer('--skills-dir', @skills_dir)

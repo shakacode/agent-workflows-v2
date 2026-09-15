@@ -1,6 +1,6 @@
 # Install and complete your first task
 
-This guide installs `$aw` in the Codex app or starts a fresh Codex CLI session.
+This guide installs `$sw` in the Codex app or starts a fresh Codex CLI session.
 Claude Code and Cursor support remain planned. You do not need to know the previous
 workflow pack.
 
@@ -25,7 +25,7 @@ If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ru
 3.4 available; keep your application's own Ruby/toolchain settings unchanged.
 You do not need Bundler or this project's development gems to use the skill.
 If a version manager selects a different Ruby inside your app, launch from outside
-that checkout with `aw work --repo /path/to/app`, or invoke `scripts/aw` with the
+that checkout with `sw work --repo /path/to/app`, or invoke `scripts/aw` with the
 absolute path to your Ruby 3.4 executable. Do not change the application's Ruby
 version just to start the workflow.
 
@@ -33,8 +33,8 @@ version just to start the workflow.
 
 ```bash
 mkdir -p "$HOME/agent-tools"
-git clone https://github.com/shakacode/agent-workflows-v2.git "$HOME/agent-tools/agent-workflows-v2"
-git -C "$HOME/agent-tools/agent-workflows-v2" log -1 --oneline
+git clone https://github.com/shakacode/workflows.git "$HOME/agent-tools/shakacode-workflows"
+git -C "$HOME/agent-tools/shakacode-workflows" log -1 --oneline
 ```
 
 Review the source you will run. Keep this checkout separate from the application
@@ -42,22 +42,24 @@ you want to change. If it already exists, use the upgrade instructions below.
 
 ## 3. Install outside your repositories
 
-### Use $aw in the Codex app
+<a id="use-aw-in-the-codex-app"></a>
+
+### Use $sw in the Codex app
 
 After completing steps 1–2, install into Codex's user skills directory:
 
 ```bash
-"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/.agents/skills"
+"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
 In your repository's Codex task, send:
 
 ```text
-$aw
+$sw
 ```
 
 The agent asks for the issue number, URL, or task description and your merge
-preference if unset. You can include the task directly, such as `$aw Fix the failing
+preference if unset. You can include the task directly, such as `$sw Fix the failing
 search test`, to skip the task question. The skill should appear on the next turn; if it does
 not, restart Codex. The app uses that task's existing permissions. Installing a
 skill does not change its sandbox; use the terminal launcher below when you want
@@ -69,14 +71,14 @@ are changing.
 Use a dedicated directory outside your repositories and global agent profile:
 
 ```bash
-"$HOME/agent-tools/agent-workflows-v2/bin/install" --skills-dir "$HOME/agent-tools/agent-workflows-v2-pilot/skills"
+"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/agent-tools/shakacode-workflows-pilot/skills"
 ```
 
-The installer creates an `aw` link in that directory and refuses to overwrite
-another skill. Keep both link and source outside candidate repositories. It changes
+The installer creates a `sw` entry point and an `aw` compatibility link in that directory and refuses to overwrite
+another skill; collisions are checked before either link is created. Keep links and source outside candidate repositories. It changes
 no global profile, authentication, hooks, or other skills.
 
-This dedicated directory is for the terminal launcher; it does not register `$aw`
+This dedicated directory is for the terminal launcher; it does not register `$sw`
 in the Codex app. Choose the user-directory installation above for app discovery.
 
 If you used the earlier project-local instructions, remove that old link only if
@@ -98,19 +100,19 @@ sandbox or an isolated agent configuration.
 For the source installation above, expose its command in this terminal:
 
 ```bash
-export PATH="$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw/scripts:$PATH"
+export PATH="$HOME/agent-tools/shakacode-workflows-pilot/skills/aw/scripts:$PATH"
 ```
 
 Run from anywhere inside the repository you want to change:
 
 ```bash
-aw work "Fix the failing search test"
+sw work "Fix the failing search test"
 ```
 
 Supply a GitHub issue, Linear link, or task description as the argument. When
 starting elsewhere, put `--repo /path/to/your/repository` before the task. Use
-`aw work --help` for the command syntax. A packaged installation already supplies
-`aw`; see [installing the package](packaging.md).
+`sw work --help` for the command syntax. A packaged installation already supplies
+`sw` and the compatible `aw`; see [installing the package](packaging.md).
 
 The launcher identifies your Git checkout and opens native interactive Codex.
 Your account, model, and reasoning settings stay native, and questions appear in
@@ -180,7 +182,7 @@ In a fresh task for your chosen repository, start with an available model and
 already in progress. Send:
 
 ```text
-$aw
+$sw
 ```
 
 If the task and merge preference are unknown, expect a question like:
@@ -205,9 +207,9 @@ another startup approval. **Ask** saves the merge decision for the finished PR.
 <details>
 <summary>Optional startup-only test</summary>
 
-To inspect intake without implementation, send `$aw Stop after the startup
+To inspect intake without implementation, send `$sw Stop after the startup
 questions, before editing files.` Then supply the issue when asked. This pause is
-only for testing; normal use needs just `$aw`. Resume when satisfied with the setup.
+only for testing; normal use needs just `$sw`. Resume when satisfied with the setup.
 
 Do not delete a working seam to test missing instructions. Use a disposable
 repository with real build/test scripts but no instructions for running them.
@@ -217,13 +219,13 @@ repository with real build/test scripts but no instructions for running them.
 Check that the agent honors your choice, keeps a useful task title, publishes one
 current walkthrough, handles review findings, and reports available usage. Ask must
 stop for the finished PR's approval; Auto must preserve the same required gates.
-Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1), without
+Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/workflows/issues/1), without
 private task content. These are manual acceptance cases, not proof they pass.
 
 For a larger task, an optional first prompt is:
 
 ```text
-$aw Plan only for <task URL>. Recommend the smallest first PR and model/effort.
+$sw Plan only for <task URL>. Recommend the smallest first PR and model/effort.
 Return a short prompt for a fresh implementation task. Do not edit or publish.
 ```
 
@@ -232,37 +234,32 @@ with its recommended host settings, carrying only the relevant plan and evidence
 
 ## Upgrade or remove
 
-Upgrade the trusted source, review its changes, then start a new Codex task:
+Keep your existing trusted source directory when upgrading. If you installed before
+the rename, use `$HOME/agent-tools/agent-workflows-v2` in the commands below instead
+of `$HOME/agent-tools/shakacode-workflows`. GitHub redirects the old repository URL;
+there is no need to clone again or move working links.
 
 ```bash
-git -C "$HOME/agent-tools/agent-workflows-v2" switch main
-git -C "$HOME/agent-tools/agent-workflows-v2" pull --ff-only
+git -C "$HOME/agent-tools/shakacode-workflows" switch main
+git -C "$HOME/agent-tools/shakacode-workflows" pull --ff-only
+"$HOME/agent-tools/shakacode-workflows/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-Switching to `main` also resumes normal upgrades after a rollback to a detached
-commit. Preserve local edits; do not force a switch or discard changes.
-The existing link uses the updated source. If you installed the earlier
-`work-pr-v2` pilot, remove that link only after confirming it points to this trusted
-source, then rerun the installer. Do not delete a directory or an unrelated link.
-The skill and its new link are named `aw`; old terminal PATH entries need updating.
+Preserve local edits; do not force a switch. Rerunning the installer adds `$sw`
+and preserves the existing `$aw` link. If a destination points elsewhere, inspect it
+before replacing anything. Start a fresh Codex task after upgrading. For a dedicated
+terminal installation, supply your existing pilot skills directory instead.
 
-For the Codex app, remove only the installed link with:
+To remove the app installation, first verify both symlinks point to this trusted
+source, then remove only those links:
 
 ```bash
-test -L "$HOME/.agents/skills/aw" && unlink "$HOME/.agents/skills/aw"
+for skill in sw aw; do
+  test -L "$HOME/.agents/skills/$skill" && unlink "$HOME/.agents/skills/$skill"
+done
 ```
 
-For the dedicated terminal installation:
-
-```bash
-test -L "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw" && unlink "$HOME/agent-tools/agent-workflows-v2-pilot/skills/aw"
-```
-
-For rollback, switch the trusted source checkout to a previously reviewed revision
-without overwriting local edits. If that revision also uses `skills/aw`, the link
-continues to work. A revision before the rename needs reinstallation: remove only
-your verified `aw` symlink, run that revision's installer with the same `--skills-dir`,
-and use its `work-pr-v2` skill name and terminal PATH. Switching revisions alone
-would leave `aw` dangling. Returning to a newer revision likewise needs removal of
-the verified old link and reinstallation as `aw`. Other skills and application
-configuration are unaffected.
+For a terminal installation, use its skills directory in the same commands.
+Remove verified links before uninstalling a gem or rolling back to a revision
+without those entry points, then run that revision's installer. Do not remove an
+unrelated skill or directory. Other skills and application configuration are unaffected.

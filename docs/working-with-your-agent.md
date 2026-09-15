@@ -1,6 +1,6 @@
 # Working with your agent
 
-Start with `$aw`. It asks for the issue number, URL, or task description and merge
+Start with `$sw`. It asks for the issue number, URL, or task description and merge
 preference if missing, then reads the task before recommending a model and effort.
 You can also supply the task and any limits directly. You should not need to
 learn the agent's internal process to get a useful pull request.
@@ -37,7 +37,7 @@ the actual merge decision until you can see the finished change.
 
 ## Choose a small execution context
 
-`$aw` recommends an available model and low effort before implementation, with one
+`$sw` recommends an available model and low effort before implementation, with one
 sentence explaining the choice. Existing explicit settings take precedence. The
 agent checks the actual host setting when available and tells you when a manual
 switch is needed; writing a model name in a prompt does not change the runner.
@@ -45,7 +45,7 @@ Measure total planning, implementation, retries, and review, not just one attemp
 
 One owner works solo by default. Independent review still happens when required;
 solo implementation does not waive the review policy. A separate planning task is
-optional. Ask `$aw` to plan only when scope or a handoff needs thought; its output
+optional. Ask `$sw` to plan only when scope or a handoff needs thought; its output
 should name the task, recommended model/effort, acceptance, affected paths, checks,
 merge authority, and stopping point. Do not copy the whole planning conversation.
 
@@ -111,7 +111,7 @@ label a mixed contribution as AI-edited rather than claiming authorship of it al
 ### Make the PR description useful first
 
 Use short headings for the change and its user impact. When discussing a workflow,
-name it (such as “the `$aw` PR skill”) instead of saying “the skill” without context.
+name it (such as “the `$sw` PR skill”) instead of saying “the skill” without context.
 Link to the current code walkthrough
 and review result; do not repeat their complete contents. Show decisions, blockers,
 and missing required review prominently. Put supporting validation, optional review

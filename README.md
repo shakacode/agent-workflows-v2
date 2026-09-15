@@ -1,4 +1,4 @@
-# Agent Workflows V2
+# ShakaCode Workflows
 
 A small, portable workflow for one agent and one pull request. Public pilot.
 
@@ -8,20 +8,22 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-After [installation](docs/getting-started.md#use-aw-in-the-codex-app), start in your repository's Codex task:
+After [installation](docs/getting-started.md#use-sw-in-the-codex-app), start in your repository's Codex task:
 
 ```text
-$aw
+$sw
 ```
+
+`$aw` and the `aw` command remain compatibility aliases.
 
 The agent asks for the issue number, URL, or task description and your merge
 preference if unset. It reads the task before recommending a model and effort.
-You can also include the task directly, such as `$aw Fix the failing search test`.
+You can also include the task directly, such as `$sw Fix the failing search test`.
 
 For a fresh Codex terminal session, start from your repository:
 
 ```bash
-aw work "Fix the failing search test"
+sw work "Fix the failing search test"
 ```
 
 Or give it a task URL. The launcher opens native interactive Codex, identifies the
@@ -137,9 +139,9 @@ and helpers; see [build and test the gem](docs/packaging.md). Registry publicati
 and the license decision remain outstanding.
 The [packaging plan](docs/pilot-plan.md#ruby-packaging) describes the path to one.
 See [the pilot plan](docs/pilot-plan.md) for requirements, acceptance cases,
-rollout, and current scope. [Issue #1](https://github.com/shakacode/agent-workflows-v2/issues/1)
+rollout, and current scope. [Issue #1](https://github.com/shakacode/workflows/issues/1)
 owns the pilot. No release or adoption claim follows from tests alone.
 
-The planned V2 guide will live on [agents.shakacode.com](https://agents.shakacode.com),
-which currently documents V1. See the [website plan](docs/pilot-plan.md#documentation-website)
+The public guide is moving to [workflows.shakacode.com](https://workflows.shakacode.com),
+with the existing agents address retained as a redirect. See the [website plan](docs/pilot-plan.md#documentation-website)
 for the transition and ShakaStack documentation conventions.
