@@ -186,12 +186,14 @@ Expect a short model/effort recommendation, the resolved repository and task, an
 a merge question if authority is unset. Missing required repository instructions
 should produce a concrete offer to add the smallest seam. Existing instructions
 should be reused. Do not delete a working seam to test the missing-seam case;
-use a disposable repository with real documented build/test commands.
+use a disposable repository with real build/test scripts but no instructions for
+running them.
 
-If the proposed setup is correct, answer in the same task:
+If the proposed setup is correct, select the recommended model and **low** effort
+in the host controls before answering in the same task:
 
 ```text
-Use the recommended model at low effort. Add the proposed repository instructions
+I've selected the model and low effort in the host. Add the proposed repository instructions
 if needed, then implement the task. Bring the verified PR back for my merge approval.
 ```
 

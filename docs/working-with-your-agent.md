@@ -40,7 +40,6 @@ the actual merge decision until you can see the finished change.
 sentence explaining the choice. Existing explicit settings take precedence. The
 agent checks the actual host setting when available and tells you when a manual
 switch is needed; writing a model name in a prompt does not change the runner.
-Escalation needs a concrete reasoning difficulty, not slow CI or missing credentials.
 Measure total planning, implementation, retries, and review, not just one attempt.
 
 One owner works solo by default. Independent review still happens when required;
