@@ -37,10 +37,12 @@ the actual merge decision until you can see the finished change.
 
 ## Choose a small execution context
 
-`$sw` recommends an available model and low effort before implementation, with one
-sentence explaining the choice. Existing explicit settings take precedence. The
-agent checks the actual host setting when available and tells you when a manual
-switch is needed; writing a model name in a prompt does not change the runner.
+`$sw` names an available model and low effort before implementation, with one
+sentence explaining the choice. It pauses so you can change the host's model and
+effort settings, then waits for you to say you are ready. Existing explicit settings
+take precedence. On resumption, the agent checks the actual host setting when
+available and tells you when a manual switch is needed; writing a model name in a
+prompt does not change the runner.
 Measure total planning, implementation, retries, and review, not just one attempt.
 
 One owner works solo by default. Independent review still happens when required;

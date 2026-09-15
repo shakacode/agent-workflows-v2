@@ -23,11 +23,14 @@ on GitHub. Link the work item from the PR when sharing is authorized; do not cre
 a duplicate issue. Reading a tracker does not authorize updating it. Keep private
 task content and links out of public artifacts unless sharing is authorized.
 
-After reading the task and before implementation, recommend an available model and
-low effort with one reason tied to its scope and risk.
-Honor explicit settings; increase effort only for a demonstrated reasoning difficulty,
-not waiting or tool failures. Verify the host setting when possible; a prompt cannot
-change it. If switching is needed and unavailable, give one exact user action and wait.
+After reading the task and before implementation, name a specific available model
+and low effort with one reason tied to its scope and risk. Honor explicit settings;
+increase effort only for a demonstrated reasoning difficulty, not waiting or tool
+failures. Pause after the recommendation so the user can change the host's actual
+model and effort settings. Do not begin implementation until the user says they are
+ready. On resumption, verify the settings when possible; a prompt cannot change them.
+If the chosen settings differ and switching is unavailable, give one exact user
+action and wait.
 Work solo unless delegation is authorized and useful. Reuse relevant evidence.
 For planning-only requests, return a compact execution prompt and stop before edits.
 
