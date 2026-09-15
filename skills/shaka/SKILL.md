@@ -24,10 +24,11 @@ replacement skill or helper.
 2. **Plan.** Read the repository's documented setup, validation, focused checks,
    base, review, release, and merge policy. Existing commands in `AGENTS.md` or
    `.agents/` are the seam; never copy this repo's Ruby commands into consumers.
-   If a required seam is absent, inspect scripts and CI, then propose the smallest
-   addition without guessing checks or granting merge authority; ask for missing
-   policy. Name an available model and low effort with one reason. Honor explicit
-   settings; raise effort only for demonstrated reasoning difficulty, not waiting or
+   If a required seam is absent, inspect scripts and CI; propose the smallest
+   addition. Do not guess checks, grant merge authority, or weaken this run's
+   trusted instructions in candidate policy; ask for missing policy. Name an
+   available model and low effort with one reason; honor explicit settings.
+   Raise effort only for demonstrated reasoning difficulty, not waiting or
    tool failures. For implementation, pause even when settings match and wait until
    the user says ready. Verify host settings; if they differ and switching is
    unavailable, give one exact user action and wait. Use one PR unless a split helps
@@ -42,15 +43,14 @@ replacement skill or helper.
    results, and tested revision. Fix failures before readiness; rerun affected checks.
    For visible changes, inspect before/after screenshots and add short video when
    interaction or timing matters. Reverify changed heads; captures complement tests.
-5. **Explain.** Commit, push, and open or update the PR on a feature branch. Prefix
-   AI-authored GitHub text with `🤖` and known agent/provider/model/effort. Explain
-   behavior and impact in a short PR summary, with supporting checks and usage in
-   `<details>`. Run trusted `scripts/shaka usage --commit SHA --contribution CATEGORY`
-   for each task; label shared intervals and UNKNOWN fields, and publish only aggregate
-   metadata. Before merge, publish a COMMENT walkthrough with trusted
-   `scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH`, pinned
-   to the current head: purpose, behavior, choices, validation, risks/rollback, and code links.
-   Link the current walkthrough prominently; preserve or collapse older ones.
+5. **Explain.** Commit, push, and open or update the feature-branch PR. Prefix AI
+   GitHub text with `🤖` and known agent/provider/model/effort. Summarize behavior
+   and impact; put checks and usage in `<details>`. Run trusted
+   `scripts/shaka usage --commit SHA --contribution CATEGORY` for each task; label
+   SHARED/UNKNOWN fields and publish aggregate metadata only. Before merge, use trusted
+   `scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH` to publish
+   a COMMENT pinned to the head: purpose, behavior, choices, validation, risks/rollback,
+   and code links. Link the current walkthrough prominently; preserve/collapse older ones.
 6. **Review.** Obtain independent review when repository policy, the user, or
    concrete risk requires it. Unavailable, failed, or stale required review blocks
    readiness; do not substitute another reviewer. Read the completed report,
