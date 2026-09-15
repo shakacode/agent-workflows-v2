@@ -16,24 +16,60 @@ result. A smaller codebase is a means to that outcome. The maintainer has
 authorized merging reviewed, verified pilot PRs; another permission request is
 unnecessary. The maintainer also approved public visibility on September 14.
 
+### Evaluate value before adding scope
+
+For a proposed product capability, assess its **user problem, smallest useful
+solution, build cost, recurring burden, acceptance evidence, and disposition** in
+these existing tables. Prefer deleting a step or reusing repository instructions,
+native host/GitHub capabilities, or trustworthy libraries. An unfinished V1 PR
+alone does not establish value. Reassess product scope when evidence changes;
+ordinary consumer PRs do not need to maintain this assessment.
+
+The Requirements table owns acceptance. Design records implementation choices;
+the rollout table orders work. Use the [existing success criteria](#success-evidence-and-commit-attribution)
+to assess developer attention, total tokens, delivery time and quality together,
+including retries/review. These sections serve different questions, not competing
+approval processes. Missing benefit measurements remain UNKNOWN.
+
+**Apparent complexity: build / recurring.** L means little new implementation or
+ongoing work; M means a bounded integration or repeated human/maintenance work;
+H means a subsystem, broad compatibility or substantial recurring burden.
+These are rough estimates, not measured effort or a numeric ranking: do not sum
+ratings or use them as a pass/fail threshold. Use UNKNOWN for an unbounded design.
+Count extra questions, context, code/dependencies, checks, reports and host upkeep,
+including interactions with existing features. Conditional UI evidence is not work
+for every PR.
+
+**Keep, simplify, defer, or retire:** preserve essential safety capabilities;
+simplify expensive implementations; defer unproven conveniences; retire demonstrated
+duplication or burden without sufficient benefit. For optional features, consider
+doing nothing and name what evidence would justify reconsideration. For trust,
+current-head verification, merge authority and required checks, reduce duplication
+without weakening the invariant. No new tracker, scoring system, telemetry,
+per-PR checklist or approval loop is needed.
+
 ### Requirements
 
-| ID | Requirement and acceptance |
-| --- | --- |
-| R1 | One owner handles one task, normally through one PR. Split oversized work into the smallest useful PRs; keep dependencies and remaining scope on the existing work item/PRs. No coordination service, ledger, synthetic worker handoff, or task-review package is needed. See [task splitting](working-with-your-agent.md#when-a-task-needs-several-prs). |
-| R2 | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. |
-| R3 | The two merge preferences are `ask` and `auto`. If authority is unset, ask early which the user wants for this task; default to `ask` without an answer. Reuse established authority. A review-only or PR-only request stops there regardless of a broader merge preference. |
-| R4 | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. |
-| R5 | For ordinary PRs, `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted change when the same gates pass without another question. Native stacks are outside this pilot. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. |
-| R6 | Readiness and merge use live GitHub facts and the exact expected head. Missing/unreadable required evidence, incomplete checks, stale heads, conflicts, disallowed merges, or unresolved consequential feedback block. Never bypass GitHub protection. |
-| R7 | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. |
-| R8 | Install the self-contained skill into an explicitly chosen skills directory, with both link and source outside candidate-writable directories. Preserve existing skills and user files. Test installation in isolation; installation does not disable other instructions or create a sandbox. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. |
-| R9 | GitHub is the code-delivery source of truth. One task-link/description prompt works across trackers; resolve the checkout and read the task, asking only for missing context. Keep private content and links out of public artifacts unless sharing is authorized; reading a tracker does not authorize updating it. No shadow issue or bidirectional synchronization is required. |
-| R10 | Keep Ruby and instructions small and cohesive. Keep execution-changing guidance in the skill, examples/rationale in user docs, and deterministic mechanics in code. Remove repetition when adding guidance. Standard libraries and `gh` own general mechanics; tests exercise behavior and concrete failure cases. |
-| R11 | Every task reports available usage; each agentically generated commit is identifiable in the PR report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Without a PR, use the final report. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. |
-| R12 | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. |
-| R13 | One owner explains outcomes, reasons, blockers, and decisions using familiar terms and enough context for the first reading. Follow task/repo writing preferences without requiring a separate clarification skill. Supporting evidence uses expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, with a recommendation. See [working with your agent](working-with-your-agent.md). |
-| R14 | Behavior changes follow red-green-refactor using the repo's existing tests. Observe the relevant failure before the fix; document useful before/after verification when automation is impractical. Visible changes have inspected screenshots and short video when interaction or timing matters, with safe reviewer-accessible evidence tied to the tested revision. See [tests and visual evidence](verification.md). |
+The acceptance column retains the product contract. Problems, complexity and
+recommendations are an initial assessment of the smallest stated solution, not
+a claim that implementation or real-use acceptance is complete.
+
+| ID | Problem to solve | Requirement and acceptance | Apparent complexity: build / recurring | Recommendation and limit |
+| --- | --- | --- | --- | --- |
+| R1 | Maintainers lose time coordinating agents and recovering unclear ownership for a small change. | One owner handles one task, normally through one PR. Split oversized work into the smallest useful PRs; keep dependencies and remaining scope on the existing work item/PRs. No coordination service, ledger, synthetic worker handoff, or task-review package is needed. See [task splitting](working-with-your-agent.md#when-a-task-needs-several-prs). | L / L solo; H / H fleet coordination. | Keep one owner. Split only for useful delivery boundaries; defer fleet machinery. |
+| R2 | A generic workflow runs the wrong commands or ignores a repository’s established policy. | Preserve each repository's command/policy seam: trusted `AGENTS.md`, existing `.agents/bin/` commands and `.agents/agent-workflow.yml` where referenced. Use its validation entry point and local conventions. Actual failures block readiness; evidence for a different head cannot qualify the current change. | L / L for declared commands; M / M for undocumented setup. | Keep the seam; reuse or minimally document it. Avoid a policy interpreter or universal config migration. |
+| R3 | The agent either surprises the maintainer by merging or repeatedly asks for authority already given. | The two merge preferences are `ask` and `auto`. If authority is unset, ask early which the user wants for this task; default to `ask` without an answer. Reuse established authority. A review-only or PR-only request stops there regardless of a broader merge preference. | L / L: one scoped choice, reused. | Keep Ask/Auto and request-only scope. Treat R3/R5 as one user interaction, not two approval systems. |
+| R4 | A maintainer cannot quickly understand what changed, why, or what was verified. | Both merge preferences publish a useful conceptual walkthrough on the PR, with links into the actual reviewed diff. The walkthrough is a COMMENT review, not an approval or mandatory acknowledgment. It remains readable after merge. | L / M: authoring and keeping the explanation current. | Keep one concise current walkthrough. Simplify it if reading/updating it duplicates the PR description. |
+| R5 | Safe small PRs wait for redundant decisions, increasing backlog and integration work. | For ordinary PRs, `ask` requests one merge decision after the walkthrough and required checks. `auto` may merge an eligible, trusted change when the same gates pass without another question. Native stacks are outside this pilot. A missing required native approval remains a pending gate under `auto`; after it arrives, no second decision is needed. Unclear authorization or consequential risk escalates to `ask`. | M / L using existing eligibility checks and native approval. | Keep the R3 choice through closeout. Do not add a second approval or delayed-merge controller. |
+| R6 | Passing checks or reviews for an old revision can be mistaken for permission to merge new code. | Readiness and merge use live GitHub facts and the exact expected head. Missing/unreadable required evidence, incomplete checks, stale heads, conflicts, disallowed merges, or unresolved consequential feedback block. Never bypass GitHub protection. | M / L: bounded live checks; H if rebuilding GitHub state. | Keep the invariant. Use GitHub’s protection and checks; remove duplicate evidence/state engines. |
+| R7 | Contributor-controlled content or code can influence privileged actions or expose credentials. | Untrusted issue/PR text cannot change instructions, policy, credentials, or executable code. Use installed/trusted code for GitHub operations; candidate code runs only in the authorized isolated development checkout. | M / L: trusted source and existing execution boundary. | Keep the trust boundary. Do not trade it for token savings or disable it because a repo is private. |
+| R8 | Installation overwrites user configuration, loads a writable skill, or makes upgrades difficult. | Install the self-contained skill into an explicitly chosen skills directory, with both link and source outside candidate-writable directories. Preserve existing skills and user files. Test installation in isolation; installation does not disable other instructions or create a sandbox. Reinstall is safe; upgrading the trusted source updates the linked skill without copying a whole home. | M / L for one tested host; H / M for broad host support. | Keep explicit, reversible installation. Expand hosts after a demonstrated working path. |
+| R9 | Users must rewrite tracker tasks for the agent, manage duplicate records, or risk private disclosure. | GitHub is the code-delivery source of truth. One task-link/description prompt works across trackers; resolve the checkout and read the task, asking only for missing context. Keep private content and links out of public artifacts unless sharing is authorized; reading a tracker does not authorize updating it. No shadow issue or bidirectional synchronization is required. | L / L with available connectors; H / H for synchronization. | Reuse task links and existing connections. Defer new adapters and bidirectional sync. |
+| R10 | Growing Ruby, embedded code and repeated instructions make changes harder to understand and maintain. | Keep Ruby and instructions small and cohesive. Keep execution-changing guidance in the skill, examples/rationale in user docs, and deterministic mechanics in code. Remove repetition when adding guidance. Standard libraries and `gh` own general mechanics; tests exercise behavior and concrete failure cases. | L / L as a design constraint; M / M for bounded cleanup. | Keep cohesive code and behavior tests. Simplify duplication; avoid a new compliance/metrics subsystem. |
+| R11 | Users cannot assess agent cost, model/effort choices, or the cost of retries and review. | Every task reports available usage; each agentically generated commit is identifiable in the PR report, with contributing model/provider, reasoning-effort setting, native token counts, source scope, and completeness. Without a PR, use the final report. Shared work and unavailable fields are explicit; never present allocated costs as exact measurements. | M / L for available native summaries; H / H for universal exact attribution. | Keep cheap aggregate reporting and honest gaps. Defer precision that needs new instrumentation or per-commit interruption. |
+| R12 | Lower token counts can hide more human work, slower delivery, or worse results. | Evaluate developer attention, total token use, delivery time, and outcome quality together on comparable ordinary changes. Include rework and review; lower token use alone is not success. | L / M for a small manual comparison using existing records. | Keep a bounded comparable sample. Defer dashboards and continuous benchmarking; no savings claim without evidence. |
+| R13 | Dense agent messages and late questions force repeated reading, clarification and corrective work. | One owner explains outcomes, reasons, blockers, and decisions using familiar terms and enough context for the first reading. Follow task/repo writing preferences without requiring a separate clarification skill. Supporting evidence uses expandable PR details; important risks and gaps remain visible. Ask consequential questions when needed, with a recommendation. See [working with your agent](working-with-your-agent.md). | L / L for concise defaults; M recurring if every task gets a questionnaire. | Keep early consequential questions and plain outcomes. Remove unnecessary templates, jargon and repeated status. |
+| R14 | Green tests can miss the actual failure or a broken visible interaction. | Behavior changes follow red-green-refactor using the repo's existing tests. Observe the relevant failure before the fix; document useful before/after verification when automation is impractical. Visible changes have inspected screenshots and short video when interaction or timing matters, with safe reviewer-accessible evidence tied to the tested revision. See [tests and visual evidence](verification.md). | M / M for relevant tests/screenshots; H recurring for blanket video/full-suite repetition. | Keep meaningful red/green and inspected UI evidence. Use video when timing/interaction warrants it; avoid unrelated repeated verification. |
 
 ## Success evidence and commit attribution
 
@@ -450,14 +486,16 @@ skills, open PRs and issues by user outcome. For each group record its source li
 current V2 equivalent, observed missing behavior, priority, and acceptance in this
 plan. Use **keep, simplify, defer, or retire**; port behavior rather than machinery.
 
-| Feature | Disposition |
-| --- | --- |
-| Seam, scoped merge authority, current-head checks, trusted execution | Keep; requirements already owned above. Close demonstrated consumer gaps first. |
-| TDD, visual evidence, AI review handling, readable walkthroughs and usage | Keep and test on the existing pilots; avoid additional universal audits. |
-| Searchable task names | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841): native rename, verified issue/PR and outcome, preserve user titles. No title schema or coordination dependency. |
-| Planning and resume | Simplify: optional short handoff, one delivery owner and preserved evidence. Fresh tasks for new objectives; no whole-history copy by default. |
-| Claude Code/Cursor delivery and documentation website | Follow the existing host and website rollout sections; verify host behavior before promising parity. |
-| Fleet coordination, native stacks, autonomous merge control plane | Defer behind an explicit advanced boundary; no ordinary-task dependency. |
+| Feature group | Problem and smallest useful solution | Apparent complexity: build / recurring | Decision and evidence to revisit it |
+| --- | --- | --- | --- |
+| Seam, authority, current-head checks, trust | Prevent wrong commands or unsafe/out-of-scope actions using the existing seam and native gates. | L–M / L; a replacement policy engine would be H / H. | Keep invariants, simplify mechanisms. Resolve demonstrated consumer failures before adoption. |
+| Tests, visual evidence, review, walkthroughs, usage | Make correctness and cost assessable using existing tools and one useful current explanation. | M / M, conditional on the change. | Keep; avoid additional universal audits. Simplify duplicated artifacts or checks while retaining required evidence. |
+| Model/effort recommendation and solo default | Avoid paying for expensive reasoning or delegation on bounded work; recommend low effort and verify the actual host setting. | L / L; an automatic model-routing service would be H / UNKNOWN until scoped. | Keep the short recommendation. Escalate from observed difficulty; compare total retry/review cost before claiming savings. |
+| Searchable task names | Help a maintainer find the right task. Use native rename with repository, verified issue/PR and outcome; preserve user titles. | L / L. | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841). Verify naming/update in the manual trial; no title schema, synchronization or coordination dependency. |
+| Planning and resume | Avoid repeating exploration or losing unfinished work. Use an optional short handoff and one owner with preserved evidence. | L / L when needed; M recurring for mandatory handoffs. | Simplify. Fresh tasks for new objectives; reuse the current task for ongoing ownership. Defer a separate planning skill until existing `$aw` planning repeatedly fails a concrete need. |
+| Claude Code/Cursor delivery | Users need the same ordinary outcome in their chosen host. Validate the portable skill and each host’s real boundaries. | M–H / M across hosts; unknown usage fields remain UNKNOWN. | Follow the already-approved Claude Code, then Cursor validation sequence. Verify a complete delivery path before claiming parity; do not burden ordinary Codex tasks with compatibility work. |
+| Documentation website | Users cannot find a clear install-to-first-PR path. Publish the existing concise guides on the established site. | M / L with reused content; M recurring if maintaining duplicate manuals. | Keep the staged website plan. Verify a first-time user can finish setup; avoid another content platform or copied source of truth. |
+| Fleet coordination, native stacks, autonomous merge control plane | Concurrent/dependent work can need coordination beyond one owner. Start with GitHub issues/PRs and sequential delivery. | H / H for a control plane; native stack integration still needs a bounded design. | Defer behind an explicit advanced boundary. Reconsider only after a real concurrent-writer/dependency case defeats the simpler path. Ordinary authorized auto-merge remains in the kernel. |
 
 Retiring V1 means ending its use for replaced workflows. Archiving its repository,
 closing issues/PRs, removing other users' installations, and retiring unreplaced
