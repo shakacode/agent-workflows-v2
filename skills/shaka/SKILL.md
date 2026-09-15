@@ -13,9 +13,10 @@ from a trusted source outside candidate checkouts. `$shaka` alone starts intake.
    private destination. Resolve an issue number against that repository and read the
    task through an available connection. If the task or checkout is missing, ask for
    its description, acceptance criteria, or path. Confirm the task matches the
-   checkout. Ask early for a task-scoped merge preference when unset: **Ask** by
-   default, or **Auto** after gates pass. Reuse established authority; review-only
-   and PR-only scope stops at its requested outcome. Keep requirements in the
+   checkout. If the task permits merging, ask early for a task-scoped merge preference
+   when unset. **Ask** is the default without an answer; **Auto** merges after gates.
+   Reuse established authority; review-only and PR-only scope stops at its requested
+   outcome. Keep requirements in the
    original tracker and link the work item from an authorized PR.
 2. **Plan.** Read the repository's documented setup, validation, focused checks,
    base, review, release, and merge policy. Existing commands in `AGENTS.md` or
@@ -33,8 +34,9 @@ from a trusted source outside candidate checkouts. `$shaka` alone starts intake.
    in code. Choose routine, reversible approaches; ask about consequential scope or
    risk before dependent work. Work solo unless delegation is authorized and useful.
 4. **Verify.** Run the repository's validation entry point and justified focused
-   checks; record command, result, and tested revision. For visible changes, inspect
-   before/after screenshots and add short video when interaction or timing matters.
+   checks; record command, result, and tested revision. Fix failures before PR readiness
+   and rerun affected checks after fixes. For visible changes, inspect before/after
+   screenshots and add short video when interaction or timing matters.
    Reverify changed heads. Safe reviewer-accessible captures complement tests.
 5. **Explain.** Commit, push, and open or update the PR on a feature branch. Prefix
    AI-authored GitHub text with `🤖` and known agent/provider/model/effort. Explain
