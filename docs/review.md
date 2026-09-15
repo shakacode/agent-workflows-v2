@@ -47,9 +47,11 @@ its findings. Runner success alone does not establish review or merge readiness.
 
 ## Reviews after merge
 
-Let reviews already running on the current head finish before merging; use the
-required/optional availability rules above if they fail or become unavailable.
-Before finishing the task, read any reviews that arrived during merge.
+Wait for required or user-requested reviews of the current head before merging;
+use the availability rules above if they fail or become unavailable. Check other
+running reviews again before merge: read completed findings and disclose pending
+optional reviews without making them a gate. Before finishing the task, read any
+reviews that arrived during merge.
 
 A late review is still actionable feedback. The delivery owner checks the finding
 against the merged change and current main, replies on its original thread, and

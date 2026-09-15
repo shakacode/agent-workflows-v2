@@ -131,7 +131,8 @@ Uncertain authority or consequential risk requires a decision; safety failures b
 
 Supply the current head and its walkthrough ID. Reverify changed heads and reassess
 authority for changed scope. Never bypass protection or accept missing required checks.
-Let reviews already running on this head finish; apply the review rules if unavailable.
+Wait for required/requested reviews. Read other completed feedback before merge;
+report pending optional reviews without making them a gate.
 Leave queues and delayed auto-merge unchanged; this pilot merges immediately while
 the task is active. Explain pending gates; retry only after meaningful change and
 inspect live state after uncertain submission. Do not schedule background retries.
