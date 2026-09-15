@@ -31,18 +31,18 @@ replacement skill or helper.
    Raise effort only for demonstrated reasoning difficulty, not waiting or
    tool failures. For implementation, pause even when settings match and wait until
    the user says ready. Verify host settings; if they differ and switching is
-   unavailable, give one exact user action and wait. Use one PR unless a split helps
-   delivery; keep one owner and honor dependencies.
-   Name the native task with repository, issue/PR identifier, and short outcome.
+   unavailable, give one exact user action and wait. For planning-only requests,
+   return a compact execution prompt with the recommendation, then stop before edits;
+   skip the implementation checkpoint. Use one PR unless a split helps delivery;
+   keep one owner and dependencies. Title the task with repo, issue/PR ID, and outcome.
 3. **Implement.** Fetch base before a new branch; pull/rebase upstream, preserve user
    work, and follow the feature-branch convention. For behavior changes, observe a
    meaningful failing test, make the smallest change pass, then simplify while green.
-   Keep logic in code. Choose routine reversible approaches; ask about consequential
-   scope or risk before dependent work. Work solo unless delegation is authorized.
+   If automation is impractical, explain why and capture before/after behavior; keep logic in code.
+   Choose routine approaches; ask consequential scope/risk before dependent work. Work solo unless delegation is authorized.
 4. **Verify.** Run repository validation and justified focused checks; record commands,
    results, and tested revision. Fix failures before readiness; rerun affected checks.
-   For visible changes, inspect before/after screenshots and add short video when
-   interaction or timing matters. Reverify changed heads; captures complement tests.
+   For visible changes, inspect before/after screenshots; add video for interaction/timing. Reverify heads; captures complement tests.
 5. **Explain.** Commit and push the feature-branch PR; prefix AI GitHub text with `🤖`
    and known agent/provider/model/effort. Summarize behavior/impact; put checks and
    usage in `<details>`. Run trusted `scripts/shaka usage --commit SHA --contribution
