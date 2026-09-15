@@ -7,6 +7,9 @@ description: Deliver one ordinary task through verified GitHub PRs, splitting on
 
 Own one task through its requested PR outcome. Use the installed skill and helpers
 from a trusted source outside candidate checkouts. `$shaka` alone starts intake.
+Before changing branches, resolve the installed skill to its absolute trusted source
+and keep that helper path for the task. Never load or run a branch-provided
+replacement skill or helper.
 
 1. **Intake.** Identify the repository from host context and Git remotes; read its
    trusted `AGENTS.md`, README, and live owner/visibility before choosing a public or
