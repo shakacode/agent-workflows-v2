@@ -1,6 +1,6 @@
 ---
 name: shaka
-description: Deliver one ordinary task through verified GitHub PRs, splitting only when useful; publish walkthroughs, address review, and honor merge authority.
+description: Deliver one task through verified PRs, review, walkthrough, and scoped merge.
 ---
 
 # Shaka
@@ -33,13 +33,13 @@ replacement skill or helper.
    the user says ready. Verify host settings; if they differ and switching is
    unavailable, give one exact user action and wait. For planning-only requests,
    return a compact execution prompt with the recommendation, then stop before edits;
-   skip the implementation checkpoint. Use one PR unless a split helps delivery;
-   keep one owner and dependencies. Title the task with repo, issue/PR ID, and outcome.
+   skip the implementation checkpoint. One PR is default; splits repeat steps 4–7 per PR.
+   Merge prerequisites before starting dependent ordinary PRs; no native stacks. Keep one owner; title the task with repo, issue/PR ID, and outcome.
 3. **Implement.** Fetch base before a new branch; pull/rebase upstream, preserve user
    work, and follow the feature-branch convention. For behavior changes, observe a
    meaningful failing test, make the smallest change pass, then simplify while green.
    If automation is impractical, explain why and capture before/after behavior; keep logic in code.
-   Choose routine approaches; ask consequential scope/risk before dependent work. Work solo unless delegation is authorized.
+   Choose routine approaches; ask consequential scope/risk. Work solo unless delegation is authorized; workers own exclusive files or worktrees.
 4. **Verify.** Run repository validation and justified focused checks; record commands,
    results, and tested revision. Fix failures before readiness; rerun affected checks.
    For visible changes, inspect before/after screenshots; add video for interaction/timing. Reverify heads; captures complement tests.
