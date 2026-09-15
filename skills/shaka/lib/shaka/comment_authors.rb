@@ -40,7 +40,7 @@ module Shaka
         if @private_repo || TRUSTED_PERMISSIONS.include?(permissions[login])
           kept_record(item, kind, login, thread)
         else
-          excluded << excluded_record(item, kind, login, thread, permissions[login] == 'unavailable')
+          excluded << excluded_record(item, kind, login, thread, permissions[login])
           nil
         end
       end
@@ -66,10 +66,10 @@ module Shaka
         'commit_id' => item['commit_id'], 'in_reply_to_id' => item['in_reply_to_id'] }
     end
 
-    def excluded_record(item, kind, login, thread, unavailable)
+    def excluded_record(item, kind, login, thread, evidence)
       row = { 'kind' => kind, 'id' => item['id'], 'author' => login,
               'url' => item['html_url'], 'body_withheld' => !item['body'].to_s.empty?,
-              'verification_unavailable' => unavailable }
+              'verification_unavailable' => evidence == 'unavailable', 'prefiltered' => evidence == 'prefiltered' }
       row.merge!(thread) if kind == 'inline_comment'
       row
     end

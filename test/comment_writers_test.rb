@@ -16,6 +16,14 @@ class CommentWritersTest < Minitest::Test
     refute(@calls.any? { |argv, _| argv.join(' ').include?('collaborators?permission=push') })
   end
 
+  def test_batched_nonwriter_is_marked_as_prefiltered
+    outside = (1..9).map { |id| comment(id: id, author: "outside#{id}", body: 'Noise') }
+    result = packet(issue: outside, writers: [])
+
+    assert_equal true, result['excluded_interactions'].first['prefiltered']
+    assert_empty result['issue_comments']
+  end
+
   def test_empty_public_pr_needs_no_writer_lookup
     result = packet
 
@@ -28,6 +36,7 @@ class CommentWritersTest < Minitest::Test
     result = packet(issue: [outside], permissions: [permission('outside', 'read')])
 
     assert_equal false, result['excluded_interactions'].first['verification_unavailable']
+    assert_equal false, result['excluded_interactions'].first['prefiltered']
   end
 
   def test_unavailable_batched_writer_evidence_blocks_public_packet

@@ -16,16 +16,27 @@ module Shaka
     end
 
     def permissions(logins)
-      valid = logins.uniq.select { |login| login.is_a?(String) && login.match?(LOGIN) }
+      valid = valid_logins(logins)
       return {} if valid.empty?
       raise Error, 'Too many public comment authors for a bounded trust read.' if valid.length > MAX_AUTHORS
 
       candidates = valid.length <= DIRECT_LIMIT ? valid : batched_candidates(valid)
       prefix = "repos/#{@github.repository}"
-      candidates.to_h { |login| [login, permission_for(prefix, login)] }
+      checked = candidates.to_h { |login| [login, permission_for(prefix, login)] }
+      mark_prefiltered(valid, candidates, checked)
     end
 
     private
+
+    def valid_logins(logins)
+      logins.uniq.select { |login| login.is_a?(String) && login.match?(LOGIN) }
+    end
+
+    def mark_prefiltered(valid, candidates, checked)
+      return checked if valid.length <= DIRECT_LIMIT
+
+      (valid - candidates).to_h { |login| [login, 'prefiltered'] }.merge(checked)
+    end
 
     def batched_candidates(logins)
       logins.each_slice(BATCH_SIZE).flat_map { |slice| graph_candidates(slice) }
