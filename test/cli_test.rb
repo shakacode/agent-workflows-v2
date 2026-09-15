@@ -32,4 +32,10 @@ class CliTest < Minitest::Test
     refute status.success?
     assert_includes error, 'head'
   end
+
+  def test_pr_comment_reader_requires_an_expected_head
+    _output, error, status = Open3.capture3(COMMAND, 'comments', 'owner/repo', '1')
+    refute status.success?
+    assert_includes error, 'head'
+  end
 end
