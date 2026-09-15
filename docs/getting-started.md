@@ -250,11 +250,14 @@ If a destination points elsewhere, inspect it
 before replacing anything. Start a fresh Codex task after upgrading. For a dedicated
 terminal installation, supply your existing pilot skills directory instead.
 
-To remove the app installation, first verify the symlink points to this trusted
-source, then remove only that link:
+To remove the app installation, first verify each symlink points to this trusted
+source. The legacy `aw` cleanup applies only to installations from before this
+release; new installations create only `sw`. Then remove only those links:
 
 ```bash
-test -L "$HOME/.agents/skills/sw" && unlink "$HOME/.agents/skills/sw"
+for skill in sw aw; do
+  test -L "$HOME/.agents/skills/$skill" && unlink "$HOME/.agents/skills/$skill"
+done
 ```
 
 For a terminal installation, use its skills directory in the same commands.
