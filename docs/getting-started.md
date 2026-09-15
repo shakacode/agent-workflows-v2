@@ -1,7 +1,7 @@
 # Install and complete your first task
 
-This guide installs `$shaka` in the Codex app or starts a fresh Codex CLI session.
-Claude Code and Cursor support remain planned. You do not need to know the previous
+This guide installs `$shaka` in the Codex app, `/shaka` in Claude Code, or starts a fresh
+Codex CLI session. Cursor support remains planned. You do not need to know the previous
 workflow pack.
 
 Use this pilot for ordinary changes in a trusted checkout. This recipe does not
@@ -9,13 +9,14 @@ establish isolation for executing untrusted contributor code.
 
 ## 1. Install the prerequisites
 
-Install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
+Install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started) or
+[Claude Code](https://code.claude.com/docs/en/setup),
 [Git](https://git-scm.com/downloads), [Ruby 3.4](https://www.ruby-lang.org/en/documentation/installation/),
-and [GitHub CLI](https://cli.github.com/). Sign in to Codex and authorize GitHub CLI
+and [GitHub CLI](https://cli.github.com/). Sign in to your agent host and authorize GitHub CLI
 for the repository you will work in. Check your terminal:
 
 ```bash
-codex --version
+codex --version   # or: claude --version
 git --version
 ruby --version
 gh auth status
@@ -65,6 +66,25 @@ not, restart Codex. The app uses that task's existing permissions. Installing a
 skill does not change its sandbox; use the terminal launcher below when you want
 its tested startup boundary. Keep the trusted source outside the repository you
 are changing.
+
+<a id="use-shaka-in-claude-code"></a>
+
+### Use /shaka in Claude Code
+
+After completing steps 1–2, install into Claude Code's user skills directory:
+
+```bash
+"$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.claude/skills"
+```
+
+Start Claude Code in your repository, with `claude` in a terminal or in the desktop
+app, and send `/shaka`, or include the task: `/shaka Fix the failing search test`.
+
+Claude Code runs your personal skill instead of a same-named skill in a repository's
+`.claude/skills`, and the skill stops if it finds itself loaded from inside the checkout.
+Keep the trusted source outside the repository and outside any `--add-dir` directory,
+and do not approve edits to it. Your usual Claude Code permission mode applies; the
+skill adds no sandbox.
 
 ### Use a fresh Codex terminal session
 
@@ -167,7 +187,7 @@ checks, opens the PR, explains the change, and handles consequential review find
 You receive the outcome and PR link; supporting checks and available usage evidence
 are in expandable details. Usage is reported on every task, with missing data
 marked UNKNOWN. The [native usage reader](usage-reporting.md) collects available
-Codex records automatically; complete per-commit attribution remains unverified.
+Codex and Claude Code records automatically; complete per-commit attribution remains unverified.
 
 Merging requires observable native GitHub checks enforced for the acting account.
 If that setup is missing, the agent can hand over the PR with the reason it cannot

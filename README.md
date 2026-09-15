@@ -8,7 +8,8 @@ Give the agent a task or PR link. It implements the change, runs the repository'
 checks, explains the code on the PR, handles review, and reaches your requested
 stopping point. GitHub holds the PR state; no coordination service is needed.
 
-After [installation](docs/getting-started.md#use-shaka-in-the-codex-app), start in your repository's Codex task:
+After [installation](docs/getting-started.md#3-install-outside-your-repositories), start in your repository's Codex task
+(in Claude Code, send `/shaka`):
 
 ```text
 $shaka
@@ -82,8 +83,8 @@ The agent uses your repo’s existing reviewer, handles demonstrated findings, a
 rechecks fixes; see [review handling](docs/review.md).
 
 Every task reports available model, reasoning-setting, and token evidence, with
-shared work and missing data labeled. The agent runs the native Codex
-[usage reader](docs/usage-reporting.md); unavailable fields stay UNKNOWN. The
+shared work and missing data labeled. The agent runs the native Codex or
+Claude Code [usage reader](docs/usage-reporting.md); unavailable fields stay UNKNOWN. The
 [pilot plan](docs/pilot-plan.md#success-evidence-and-commit-attribution) defines
 the evidence needed before claiming savings. Writing preferences belong in your
 repo's existing `AGENTS.md`; see [communication and safety](docs/working-with-your-agent.md).
@@ -105,10 +106,11 @@ claimed. See the [seam boundary](docs/pilot-plan.md#repository-seam).
 
 ## Host support
 
-Codex is the first reference host. Keep one shared skill and GitHub workflow;
-validate Claude Code next, then Cursor, before claiming full support for them.
-Both are compatibility targets today. The Codex usage reader names its tested
-record formats and reports gaps; Claude and Cursor reporting remain unverified.
+Codex is the first reference host and Claude Code the second; both use the same
+skill, helpers, and GitHub workflow. Each host has a usage reader that names its
+tested record versions and reports gaps. Claude Code skill startup and usage reading
+are verified; its first complete consumer delivery is still pending. Cursor remains
+a compatibility target.
 See [tested host support](docs/host-support.md) and the
 [host boundary](docs/pilot-plan.md#host-boundary)
 for the rollout and the differences that affect model and token reporting.
