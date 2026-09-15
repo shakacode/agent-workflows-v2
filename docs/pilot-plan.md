@@ -200,7 +200,7 @@ COMMENT review with permalinks initially; do not manufacture unresolved inline
 threads that need a second resolution workflow. A substantive change requires an
 updated walkthrough. An unchanged walkthrough is reused for the same revision.
 Superseded walkthroughs retain their evidence collapsed beneath a link to the current one; see
-[PR communication](working-with-your-agent.md#make-the-pr-description-useful-first).
+[walkthrough guidance](working-with-your-agent.md#keep-one-current-walkthrough).
 
 The pilot will attempt an immediate merge with an expected-head compare, rather
 than arm a delayed native auto-merge request. This avoids granting authority to a
