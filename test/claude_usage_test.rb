@@ -126,6 +126,25 @@ class ClaudeUsageFailuresTest < Minitest::Test
     end
   end
 
+  def test_all_turns_excludes_and_discloses_responses_without_a_turn
+    Dir.mktmpdir do |directory|
+      file = transcript(directory, 'session.jsonl', [reply('m0', 900), { type: 'user', promptId: '  ' },
+                                                     reply('m1', 800), prompt('new'), reply('m2', 100)])
+      output = report('--host', 'claude-code', '--file', file, '--all-turns')
+      assert_includes output, '| 100 |'
+      assert_includes output.split('<details>').first, 'Unreadable or unidentifiable records'
+      refute_match(/900|800/, output)
+    end
+  end
+
+  def test_discovery_skips_an_unreadable_line_before_the_session_id
+    Dir.mktmpdir do |directory|
+      path = transcript(directory, "#{SESSION}.jsonl", [prompt('new'), reply('m1', 100)])
+      File.write(path, "{broken\n#{File.read(path)}")
+      assert_includes discovered(directory), '| 100 |'
+    end
+  end
+
   def test_both_host_contexts_require_an_explicit_host
     output, error, status = Open3.capture3({ 'CODEX_THREAD_ID' => SESSION, 'CLAUDE_CODE_SESSION_ID' => SESSION },
                                            COMMAND, 'usage', '--commit', COMMIT, '--contribution', 'implementation')

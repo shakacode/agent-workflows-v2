@@ -10,7 +10,8 @@ You need Git, Ruby 3.4, authenticated [GitHub CLI](https://cli.github.com/),
 and a signed-in Codex app, [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
 or [Claude Code](https://code.claude.com/docs/en/setup).
 Check `git --version`, `ruby --version`, and `gh auth status` in your terminal;
-run `gh auth login` if needed. Terminal users also need `codex --version` to work.
+run `gh auth login` if needed. Codex terminal users also need `codex --version` to work;
+Claude Code users need `claude --version`.
 The skill uses no development gems. Keep your application's own Ruby version.
 
 Your repository's `AGENTS.md` should name setup, validation, and review commands,

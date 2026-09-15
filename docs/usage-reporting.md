@@ -68,8 +68,8 @@ time, and total historical consumption are not inferred from these tokens.
 
 When host discovery is unavailable or several turns/contributors belong to the
 work, the agent may supply repeated `--file PATH` and `--turn ID` options using
-its private source context. Without `--turn`, each file contributes its latest
-turn. For a session dedicated to one task, use `--all-turns` to include planning,
+its private source context. Without `--turn`, each Codex file contributes its latest
+turn, and Claude Code files use the first file's latest turn. For a session dedicated to one task, use `--all-turns` to include planning,
 implementation, user answers, and merge turns together. It cannot be combined with
 `--turn`. A fresh `shaka work` session starts with one task; if it later contains
 unrelated work or inherited history, select relevant turns instead. Never include

@@ -29,9 +29,11 @@ module Shaka
       File.foreach(file, encoding: 'UTF-8') do |line|
         record = JSON.parse(line)
         return record['sessionId'] if record.is_a?(Hash) && record.key?('sessionId')
+      rescue JSON::ParserError, EncodingError
+        next
       end
       nil
-    rescue JSON::ParserError, EncodingError, SystemCallError
+    rescue SystemCallError
       nil
     end
 
@@ -42,17 +44,26 @@ module Shaka
       @versions = []
       @gaps = []
       sources = files.map { |file| read(file) }
-      wanted = wanted_turns(sources, turns)
-      sources.map(&:first).flat_map(&:values).each do |record|
-        count(record) if all_turns || wanted.include?(record['turn_id'])
-      end
+      records = sources.map(&:first).flat_map(&:values)
+      selected(records, wanted_turns(sources, turns), all_turns).each { |record| count(record) }
     end
 
     private
 
     # Without explicit turns, every source uses the first source's latest turn.
     def wanted_turns(sources, turns)
-      (turns.empty? ? [sources.dig(0, 1)] : turns).grep(String)
+      (turns.empty? ? [sources.dig(0, 1)] : turns).select { |turn| turn?(turn) }
+    end
+
+    # Every mode needs an identified turn, as in the Codex reader.
+    def selected(records, wanted, all_turns)
+      identified = records.select { |record| turn?(record['turn_id']) }
+      unreadable if all_turns && identified.size < records.size
+      all_turns ? identified : identified.select { |record| wanted.include?(record['turn_id']) }
+    end
+
+    def turn?(turn)
+      turn.is_a?(String) && !turn.strip.empty?
     end
 
     # Streamed lines repeat a response; the last line carries its final usage.
