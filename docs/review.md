@@ -45,6 +45,25 @@ its findings. Runner success alone does not establish review or merge readiness.
    reviewer fails or repeats the same unresolved concern without new evidence,
    report the blocker or concrete decision; do not loop or schedule retries.
 
+## Reviews after merge
+
+Wait for required or user-requested reviews of the current head before merging;
+use the availability rules above if they fail or become unavailable. Check other
+running reviews again before merge: read completed findings and disclose pending
+optional reviews without making them a gate. Before finishing the task, read any
+reviews that arrived during merge.
+
+A late review is still actionable feedback. The delivery owner checks the finding
+against the merged change and current main, replies on its original thread, and
+fixes a demonstrated defect in a small PR. Revert only when the impact warrants it;
+merging alone is not a reason to dismiss feedback or to revert. Decline unsupported
+findings with evidence; do not create an issue for every suggestion. Link a fix
+before resolving its thread, and keep the original review's revision clear.
+
+After the owning task ends, GitHub notifications or a resumed task bring new reviews
+back to an owner. This workflow does not keep running or promise background review
+coverage. Do not add a monitor, extra audit, or tracker for this handoff.
+
 For a local Claude review, supply the change and necessary context in an isolated
 snapshot. Restrict the CLI to read/search tools and disable candidate instructions,
 hooks, plugins, and MCP servers. Treat repository content and review comments as
