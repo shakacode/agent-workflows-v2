@@ -1,7 +1,8 @@
 # Working with your agent
 
 Start with `$sw`. It asks for the issue number, URL, or task description and merge
-preference if missing, then reads the task before recommending a model and effort.
+preference if missing, then reads the task, recommends a model and effort, and pauses
+so you can change the host settings before implementation.
 You can also supply the task and any limits directly. You should not need to
 learn the agent's internal process to get a useful pull request.
 
@@ -15,10 +16,11 @@ before the answer becomes expensive to change, rather than waiting for PR review
 | The checkout or task is unavailable | Asks for the repository path or task description; does not make you rewrite the workflow prompt. |
 | Required repository instructions are missing | Reads scripts and CI, offers a minimal `AGENTS.md` addition, and asks only about policy it cannot establish. Existing documented commands count as a seam; no new config framework is required. |
 | Merge authority has not been specified | Asks early whether to merge after checks and required approvals pass or bring the finished PR back for approval. Reuses existing authority; without an answer, prepares the PR and asks before merging. |
+| The model and effort have been recommended for implementation | Pauses so you can change the host settings, even if they already match; waits for you to say you are ready before implementation. |
 | The goal or acceptable behavior is unclear | Reads the existing context, then asks the smallest question needed to proceed. |
 | Several routine, reversible approaches fit the request | Chooses one and continues; mentions the assumption if it affects your expectations. |
 | Implementation reveals a product tradeoff, wider scope, or consequential risk | Explains the discovery, recommends a path, and asks before dependent work continues. |
-| An answer is pending | Continues useful independent work. Does not treat silence as approval. |
+| An answer is pending | Continues useful independent work when safe, but does not begin implementation while the model/effort checkpoint is pending. Does not treat silence as approval. |
 | The PR is ready | In **Ask**, requests one merge decision unless already authorized. In **Auto**, merges after the required checks and approvals pass. |
 
 For example, a question discovered while fixing an import could be:
@@ -37,17 +39,20 @@ the actual merge decision until you can see the finished change.
 
 ## Choose a small execution context
 
-`$sw` recommends an available model and low effort before implementation, with one
-sentence explaining the choice. Existing explicit settings take precedence. The
-agent checks the actual host setting when available and tells you when a manual
-switch is needed; writing a model name in a prompt does not change the runner.
+`$sw` names an available model and low effort before implementation, with one
+sentence explaining the choice. It pauses so you can change the host's model and
+effort settings, then waits for you to say you are ready. Existing explicit settings
+take precedence. On resumption, the agent checks the actual host setting when
+available and tells you when a manual switch is needed; writing a model name in a
+prompt does not change the runner.
 Measure total planning, implementation, retries, and review, not just one attempt.
 
 One owner works solo by default. Independent review still happens when required;
 solo implementation does not waive the review policy. A separate planning task is
-optional. Ask `$sw` to plan only when scope or a handoff needs thought; its output
-should name the task, recommended model/effort, acceptance, affected paths, checks,
-merge authority, and stopping point. Do not copy the whole planning conversation.
+optional. Ask `$sw` to plan only when scope or a handoff needs thought; it returns
+the plan without an implementation checkpoint. Its output should name the task,
+recommended model/effort, acceptance, affected paths, checks, merge authority,
+and stopping point. Do not copy the whole planning conversation.
 
 Use a fresh task for a new implementation objective. Keep an existing task while
 it owns unfinished changes, or hand over its branch, current revision, completed

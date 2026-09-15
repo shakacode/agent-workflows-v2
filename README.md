@@ -15,7 +15,8 @@ $sw
 ```
 
 The agent asks for the issue number, URL, or task description and your merge
-preference if unset. It reads the task before recommending a model and effort.
+preference if unset. It reads the task, recommends a specific model and effort,
+then pauses so you can change those settings before implementation.
 You can also include the task directly, such as `$sw Fix the failing search test`.
 
 For a fresh Codex terminal session, start from your repository:

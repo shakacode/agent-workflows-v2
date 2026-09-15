@@ -197,19 +197,21 @@ repository is unclear and reuses answers you have already supplied. For a separa
 eligible Auto trial, answer with its issue number and `Auto`. Review-only or PR-only
 requests keep their stopping point and need no merge choice.
 
-It then reads the task and repository instructions before recommending a model
-and effort, with a short reason. If a switch is needed, use the host controls;
-a prompt cannot change the runner. Missing required repository instructions should
-produce a concrete offer to add the smallest seam. Approve that proposal if needed.
-Once necessary answers and setup are settled, implementation proceeds without
-another startup approval. **Ask** saves the merge decision for the finished PR.
+It then reads the task and repository instructions before naming an available model
+and low effort, with a short reason. The agent pauses here: use the host controls to
+change either setting if you wish, then tell it you are ready. A prompt cannot change
+the runner. Missing required repository instructions should produce a concrete offer
+to add the smallest seam. Approve that proposal if needed. Once you resume and
+necessary setup is settled, implementation proceeds. **Ask** saves the merge decision
+for the finished PR.
 
 <details>
 <summary>Optional startup-only test</summary>
 
 To inspect intake without implementation, send `$sw Stop after the startup
-questions, before editing files.` Then supply the issue when asked. This pause is
-only for testing; normal use needs just `$sw`. Resume when satisfied with the setup.
+questions, before editing files.` Then supply the issue when asked. This extra stop
+is for testing; normal `$sw` already pauses at the model/effort checkpoint and
+resumes implementation only after you say you are ready.
 
 Do not delete a working seam to test missing instructions. Use a disposable
 repository with real build/test scripts but no instructions for running them.
