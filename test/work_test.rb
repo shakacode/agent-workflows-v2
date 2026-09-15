@@ -114,15 +114,26 @@ class WorkTest < Minitest::Test
     [[], ['   '], ['--repo'], ['--unknown']].each do |arguments|
       _output, error, status = launch(*arguments)
       refute status.success?
-      assert_includes error, 'aw work:'
+      assert_includes error, 'sw work:'
       refute File.exist?(@capture)
     end
+  end
+
+  def test_sw_command_uses_the_same_trusted_launcher
+    command = File.join(@source, 'scripts', 'sw')
+    _output, error, status = launch('Fix the test', command: command)
+
+    assert status.success?, error
+    argv = JSON.parse(File.read(@capture)).fetch('argv')
+    assert_includes argv, 'workspace-write'
+    assert_includes argv.last, File.realpath(@command)
+    assert_includes argv.last, File.realpath(File.join(@source, 'SKILL.md'))
   end
 
   def test_help_works_outside_a_repository_without_launching_codex
     output, error, status = launch('--help', directory: @directory)
     assert status.success?, error
-    assert_includes output, 'aw work'
+    assert_includes output, 'sw work'
     assert_includes output, '--repo'
     refute File.exist?(@capture)
   end

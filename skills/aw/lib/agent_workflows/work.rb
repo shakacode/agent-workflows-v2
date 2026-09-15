@@ -22,11 +22,11 @@ module AgentWorkflows
       return 0 if options[:help]
 
       task = arguments.join(' ')
-      raise Error, 'Supply a task URL or description; use aw work --help' if task.strip.empty?
+      raise Error, 'Supply a task URL or description; use sw work --help' if task.strip.empty?
 
       launch(target(options[:repository]), task)
     rescue Error, SystemCallError, OptionParser::ParseError => e
-      warn "aw work: #{e.message}"
+      warn "sw work: #{e.message}"
       1
     end
 
@@ -77,7 +77,7 @@ module AgentWorkflows
     def self.options(arguments)
       options = { repository: Dir.pwd }
       parser = OptionParser.new do |flags|
-        flags.banner = 'Usage: aw work [--repo PATH] TASK_URL_OR_DESCRIPTION'
+        flags.banner = 'Usage: sw work [--repo PATH] TASK_URL_OR_DESCRIPTION'
         flags.on('--repo PATH', 'Override the current checkout') { |value| options[:repository] = value }
         flags.on('-h', '--help') { options[:help] = true }
       end

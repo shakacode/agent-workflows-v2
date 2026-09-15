@@ -1,4 +1,4 @@
-# Agent Workflows V2
+# ShakaCode Workflows
 
 This public pilot implements the small product described in `docs/pilot-plan.md`.
 The maintainer authorized implementation, publication, and merging verified PRs.
@@ -21,9 +21,9 @@ Keep company strategy and private operational data out of product artifacts.
 ## Structure
 
 - `docs/pilot-plan.md` owns product requirements, design, acceptance, and scope.
-- `skills/aw/SKILL.md` is the portable, self-contained entry point.
+- `skills/sw/SKILL.md` is the public entry point; `skills/aw/SKILL.md` owns the shared workflow for both names.
 - Its `scripts/aw` command uses small Ruby modules under its `lib/` directory.
-- `bin/install` links only this skill into an explicitly supplied skills directory.
+- `bin/install` links the public skill and its compatibility entry point into an explicitly supplied skills directory.
 - Markdown explains decisions and invokes commands. Put executable logic in code.
 - Prefer Ruby standard libraries and GitHub CLI. Runtime needs no new gem.
 - Keep the workflow portable. Codex is the first reference host; host-specific

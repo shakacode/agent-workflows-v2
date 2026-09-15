@@ -20,7 +20,7 @@ end
 
 options = {}
 parser = OptionParser.new do |flags|
-  flags.banner = 'Usage: aw (pr|walkthrough|merge) OWNER/REPO NUMBER [options]; aw usage --help; aw work --help'
+  flags.banner = 'Usage: sw (pr|walkthrough|merge) OWNER/REPO NUMBER [options]; sw usage --help; sw work --help'
   flags.on('--head SHA', 'Expected current PR head') { |value| options[:head] = value }
   flags.on('--body-file PATH', 'Walkthrough Markdown file') { |value| options[:body_file] = value }
   flags.on('--walkthrough ID', 'Published COMMENT review ID') { |value| options[:walkthrough] = value }
@@ -47,6 +47,6 @@ begin
            end
   puts JSON.pretty_generate(result)
 rescue OptionParser::ParseError, KeyError, SystemCallError, AgentWorkflows::Error => e
-  warn "aw: #{e.message}"
+  warn "sw: #{e.message}"
   exit 1
 end

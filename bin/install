@@ -20,16 +20,23 @@ begin
   raise OptionParser::InvalidArgument, 'DIR must not be empty' if skills_dir.strip.empty?
   raise OptionParser::InvalidArgument, ARGV.join(' ') unless ARGV.empty?
 
-  source = File.realpath('../skills/aw', __dir__)
-  destination = File.join(File.expand_path(skills_dir), 'aw')
-  if File.symlink?(destination) && File.readlink(destination) == source
-    puts "Already installed: #{destination}"
-  elsif File.exist?(destination) || File.symlink?(destination)
-    abort "Refusing existing destination: #{destination}"
-  else
-    FileUtils.mkdir_p(File.dirname(destination))
-    File.symlink(source, destination)
-    puts "Installed: #{destination} -> #{source}"
+  links = %w[sw aw].map do |name|
+    [File.realpath("../skills/#{name}", __dir__), File.join(File.expand_path(skills_dir), name)]
+  end
+  conflict = links.find do |source, destination|
+    (File.exist?(destination) || File.symlink?(destination)) &&
+      !(File.symlink?(destination) && File.readlink(destination) == source)
+  end
+  abort "Refusing existing destination: #{conflict.last}" if conflict
+
+  links.each do |source, destination|
+    if File.symlink?(destination)
+      puts "Already installed: #{destination}"
+    else
+      FileUtils.mkdir_p(File.dirname(destination))
+      File.symlink(source, destination)
+      puts "Installed: #{destination} -> #{source}"
+    end
   end
 rescue OptionParser::ParseError, SystemCallError => e
   warn e.message
