@@ -14,8 +14,6 @@ After [installation](docs/getting-started.md#use-sw-in-the-codex-app), start in 
 $sw
 ```
 
-`$aw` and the `aw` command remain compatibility aliases.
-
 The agent asks for the issue number, URL, or task description and your merge
 preference if unset. It reads the task before recommending a model and effort.
 You can also include the task directly, such as `$sw Fix the failing search test`.

@@ -5,7 +5,7 @@ The agent runs the trusted installed helper and includes its output in the PR,
 or the final response when there is no PR:
 
 ```bash
-aw usage --commit FULL_COMMIT_SHA --contribution implementation
+sw usage --commit FULL_COMMIT_SHA --contribution implementation
 ```
 
 Contribution categories are `implementation`, `review`, `integration`, and
