@@ -50,7 +50,7 @@ replacement skill or helper.
    otherwise select all task turns and contributor/retry files. Label SHARED/UNKNOWN;
    publish only aggregates. Before merge, use trusted `scripts/shaka walkthrough
    OWNER/REPO NUMBER --head SHA --body-file PATH` to publish a COMMENT pinned to the
-   head: purpose, behavior, choices, validation, risks/rollback, code links. Link current prominently; preserve/collapse older ones.
+   head: purpose, behavior, choices, validation, risks/rollback, code links. Link the current walkthrough prominently; preserve/collapse older ones.
 6. **Review.** Obtain independent review when repository policy, the user, or
    concrete risk requires it. Unavailable, failed, or stale required review blocks
    readiness; do not substitute another reviewer. Read the completed report,
