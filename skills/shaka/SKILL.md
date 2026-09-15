@@ -7,7 +7,7 @@ description: Deliver one task through a reviewed PR and scoped merge.
 
 Own one task through its PR outcome. `$shaka` alone starts intake. Before branch
 changes, resolve the installed skill and helpers to trusted absolute paths outside
-candidate checkouts; keep them for the task. Never load or run a branch-provided
+candidate checkouts; set `SHAKA_HELPER` to the resolved helper path. Never load or run a branch-provided
 replacement skill or helper.
 
 1. **Intake.** Identify the repository from host context and Git remotes; read its
@@ -39,16 +39,16 @@ replacement skill or helper.
    work, and follow the feature-branch convention. For behavior changes, observe a
    meaningful failing test, make the smallest change pass, then simplify while green.
    If automation is impractical, explain why and capture before/after behavior; keep logic in code.
-   Choose routine approaches; ask consequential scope/risk. Work solo unless delegation is authorized; workers own exclusive files or worktrees.
+   Choose routine approaches; ask consequential scope/risk. Work solo unless delegation is authorized; workers own exclusive files or worktrees and never publish or merge.
 4. **Verify.** Run repository validation and justified focused checks; record commands,
    results, and tested revision. Fix failures before readiness; rerun affected checks.
    For visible changes, inspect before/after screenshots; add video for interaction/timing. Reverify heads; captures complement tests.
 5. **Explain.** Commit and push the feature-branch PR; prefix AI GitHub text with `🤖`
    and known agent/provider/model/effort. Summarize behavior/impact; put checks and
-   usage in `<details>`. Run trusted `scripts/shaka usage --commit SHA --contribution
+   usage in `<details>`. Run `"$SHAKA_HELPER" usage --commit SHA --contribution
    CATEGORY` for each task. Use `--all-turns` only for task-dedicated sources;
    otherwise select all task turns and contributor/retry files. Label SHARED/UNKNOWN;
-   publish only aggregates. Before merge, use trusted `scripts/shaka walkthrough
+   publish only aggregates. Before merge, use `"$SHAKA_HELPER" walkthrough
    OWNER/REPO NUMBER --head SHA --body-file PATH` to publish a COMMENT pinned to the
    head: purpose, behavior, choices, validation, risks/rollback, code links. Link the current walkthrough prominently; preserve/collapse older ones.
 6. **Review.** Obtain independent review when repository policy, the user, or
@@ -59,9 +59,9 @@ replacement skill or helper.
    explain why, and reverify/re-review and republish the walkthrough on changed heads.
    Link the current review result and keep required gaps visible. Read other completed
    feedback before merge; disclose pending optional reviews.
-7. **Finish.** Use trusted `scripts/shaka pr OWNER/REPO NUMBER` and inspect required
+7. **Finish.** Use `"$SHAKA_HELPER" pr OWNER/REPO NUMBER` and inspect required
    check states. In **Ask**, request one merge decision on the ready revision; in
-   **Auto**, use trusted `scripts/shaka merge OWNER/REPO NUMBER --head SHA
+   **Auto**, use `"$SHAKA_HELPER" merge OWNER/REPO NUMBER --head SHA
    --walkthrough REVIEW_ID` when review and native gates pass. Never bypass protection
    or submit a stale head. Consequential trust, deployment, migration, or merge-guard
    risk escalates **Auto** to **Ask** and needs human review. Merge only while the
