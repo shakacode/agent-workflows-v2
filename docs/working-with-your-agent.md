@@ -12,6 +12,7 @@ before the answer becomes expensive to change, rather than waiting for PR review
 | Situation | What the agent does |
 | --- | --- |
 | The checkout or task is unavailable | Asks for the repository path or task description; does not make you rewrite the workflow prompt. |
+| Required repository instructions are missing | Reads scripts and CI, offers a minimal `AGENTS.md` addition, and asks only about policy it cannot establish. Existing documented commands count as a seam; no new config framework is required. |
 | Merge authority has not been specified | Asks early whether to merge after checks and required approvals pass or bring the finished PR back for approval. Reuses existing authority; without an answer, prepares the PR and asks before merging. |
 | The goal or acceptable behavior is unclear | Reads the existing context, then asks the smallest question needed to proceed. |
 | Several routine, reversible approaches fit the request | Chooses one and continues; mentions the assumption if it affects your expectations. |
@@ -32,6 +33,33 @@ An answer remains part of the existing task or PR, subject to its privacy, so th
 agent can use it later without asking again. A merge choice applies to this task
 unless you explicitly give it broader scope. Choosing **Ask** at the start leaves
 the actual merge decision until you can see the finished change.
+
+## Choose a small execution context
+
+`$aw` recommends an available model and low effort before implementation, with one
+sentence explaining the choice. Existing explicit settings take precedence. The
+agent checks the actual host setting when available and tells you when a manual
+switch is needed; writing a model name in a prompt does not change the runner.
+Escalation needs a concrete reasoning difficulty, not slow CI or missing credentials.
+Measure total planning, implementation, retries, and review, not just one attempt.
+
+One owner works solo by default. Independent review still happens when required;
+solo implementation does not waive the review policy. A separate planning task is
+optional. Ask `$aw` to plan only when scope or a handoff needs thought; its output
+should name the task, recommended model/effort, acceptance, affected paths, checks,
+merge authority, and stopping point. Do not copy the whole planning conversation.
+
+Use a fresh task for a new implementation objective. Keep an existing task while
+it owns unfinished changes, or hand over its branch, current revision, completed
+checks, remaining work, and authority before another task takes ownership. Recheck
+live state on resume; a summary is not fresh merge evidence. No second writer is
+needed. Keep product decisions in the existing plan and work state in the PR.
+
+Task names identify the repository, verified issue/PR, and outcome. For example,
+`sample-app issue #42 — fix search timeout` becomes
+`sample-app issue #42 / PR #57 — fix search timeout` when that PR is created.
+Use the native rename capability and preserve user-chosen titles. A title is for
+finding the task; it does not establish merge authority or ownership by itself.
 
 ## When a task needs several PRs
 
@@ -71,7 +99,7 @@ limitations that change the conclusion must also stay visible.
 Start GitHub descriptions, comments, and reviews with a short attribution line,
 including when posting through a maintainer's account. For example:
 
-> 🤖 Codex · OpenAI · gpt-6-astra · xhigh
+> 🤖 Codex · OpenAI · gpt-5.6-sol · low
 
 Use the actual agent/provider and known model/effort; label unavailable values
 UNKNOWN. The line identifies the writer, not every contributing reviewer. Detailed

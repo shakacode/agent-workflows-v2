@@ -172,6 +172,51 @@ merge. **Ask** requests one merge decision; **Auto** needs no second decision on
 the required approvals are satisfied. See [working with your agent](working-with-your-agent.md)
 for questions, writing preferences, and security boundaries.
 
+## Try the guided flow
+
+In a fresh task for your chosen repository, select an available model and **low**
+effort in your host. Use a small issue you own; avoid opening a second owner for
+work already in progress. Start with:
+
+```text
+$aw Work on <issue URL>. Stop after the startup questions, before editing files.
+```
+
+Expect a short model/effort recommendation, the resolved repository and task, and
+a merge question if authority is unset. Missing required repository instructions
+should produce a concrete offer to add the smallest seam. Existing instructions
+should be reused. Do not delete a working seam to test the missing-seam case;
+use a disposable repository with real documented build/test commands.
+
+If the proposed setup is correct, answer in the same task:
+
+```text
+Use the recommended model at low effort. Add the proposed repository instructions
+if needed, then implement the task. Bring the verified PR back for my merge approval.
+```
+
+To test Auto on a separate eligible task, choose instead:
+
+```text
+Merge this task's PR when its checks and required approvals pass.
+```
+
+Check that the agent honors your choice, keeps a useful task title, publishes one
+current walkthrough, handles review findings, and reports available usage. Ask must
+stop for the finished PR's approval; Auto must preserve the same required gates.
+Record confusing questions or missed behavior in the existing pilot issue, without
+private task content. These prompts are manual acceptance cases, not proof they pass.
+
+For a larger task, an optional first prompt is:
+
+```text
+$aw Plan only for <task URL>. Recommend the smallest first PR and model/effort.
+Return a short prompt for a fresh implementation task. Do not edit or publish.
+```
+
+No separate planning skill is required. Use the resulting prompt in a new task
+with its recommended host settings, carrying only the relevant plan and evidence.
+
 ## Upgrade or remove
 
 Upgrade the trusted source, review its changes, then start a new Codex task:

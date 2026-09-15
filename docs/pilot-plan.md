@@ -430,3 +430,36 @@ revision. No issue state migration, production data change, or V1 replacement
 is required. Public source publication and reviewed, verified pilot PR merges
 are authorized. The maintainer also requested `$aw` in the Codex app; installation
 of that one user skill is authorized. Registry releases remain out of scope.
+
+### Priorities for retiring ordinary V1 use
+
+Use this plan and existing issue #1 for V2 acceptance. Reconcile V1 decisions with
+[the simplification tracker](https://github.com/shakacode/agent-workflows/issues/822)
+and [the product reset](https://github.com/shakacode/agent-workflows/issues/850).
+Do not create another migration tracker or require the V1 backlog to be cleared.
+
+| Order | User outcome | Evidence before moving on |
+| --- | --- | --- |
+| 1 | Simple startup: model/low-effort recommendation, existing seam reuse or minimal setup offer, scoped Ask/Auto choice, useful task names. | Maintainer runs the getting-started manual prompts in fresh tasks, with existing and missing seams. Actual host settings and missing capabilities are visible. |
+| 2 | Reliably finish ordinary work across different repositories. | Finish the existing pilots, including UI evidence, review recovery and each consumer's native merge requirements. Compare developer interventions and total available usage for like work; no savings claim while attribution is incomplete. |
+| 3 | Make V2 the ordinary workflow and retain only valuable gaps. | Switch consumers individually, document rollback and remaining limitations, then update installation/docs to make V2 the default. Keep V1 available until affected consumers have a working replacement. |
+
+The initial feature disposition below is a recommendation, not an exhaustive
+inventory or permission to close V1 items. For the broader inventory, group existing
+skills, open PRs and issues by user outcome. For each group record its source link,
+current V2 equivalent, observed missing behavior, priority, and acceptance in this
+plan. Use **keep, simplify, defer, or retire**; port behavior rather than machinery.
+
+| Feature | Disposition |
+| --- | --- |
+| Seam, scoped merge authority, current-head checks, trusted execution | Keep; requirements already owned above. Close demonstrated consumer gaps first. |
+| TDD, visual evidence, AI review handling, readable walkthroughs and usage | Keep and test on the existing pilots; avoid additional universal audits. |
+| Searchable task names | Simplify [V1 PR #841](https://github.com/shakacode/agent-workflows/pull/841): native rename, verified issue/PR and outcome, preserve user titles. No title schema or coordination dependency. |
+| Planning and resume | Simplify: optional short handoff, one delivery owner and preserved evidence. Fresh tasks for new objectives; no whole-history copy by default. |
+| Claude Code/Cursor delivery and documentation website | Follow the existing host and website rollout sections; verify host behavior before promising parity. |
+| Fleet coordination, native stacks, autonomous merge control plane | Defer behind an explicit advanced boundary; no ordinary-task dependency. |
+
+Retiring V1 means ending its use for replaced workflows. Archiving its repository,
+closing issues/PRs, removing other users' installations, and retiring unreplaced
+release/domain workflows require separate explicit decisions. Comparative savings,
+complete feature coverage, and the final retirement date remain UNKNOWN.

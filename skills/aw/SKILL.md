@@ -14,6 +14,17 @@ is authorized; do not create a duplicate issue. Reading a tracker does not autho
 updating it. Keep private task content and links out of public artifacts unless
 sharing is authorized.
 
+Before implementation, recommend an available model and low effort with one reason.
+Honor explicit settings; increase effort only for a demonstrated reasoning difficulty,
+not waiting or tool failures. Verify the host setting when possible; a prompt cannot
+change it. If switching is needed and unavailable, give one exact user action and wait.
+Work solo unless delegation is authorized and useful. Reuse relevant evidence.
+For planning-only requests, return a compact execution prompt and stop before edits.
+
+Use the host's native task-title tool when available: repository, verified issue/PR
+identifier, and short outcome. Update the same task when its PR is created or adopted;
+preserve user-chosen titles. Without that capability, suggest the title once.
+
 Default to one PR. For larger tasks, read only the
 [task-splitting section](../../docs/working-with-your-agent.md#when-a-task-needs-several-prs).
 Keep one owner and each PR's tests, review, and authority. Use sequential ordinary
@@ -28,6 +39,11 @@ validation, focused checks, base branch, review, changelog/release conventions,
 and scoped merge authority from that seam. Do not copy this source repo's Ruby
 commands into consumers or invent replacement configuration. Absent optional
 capabilities are n/a; clarify missing required commands or conflicting policy.
+If required setup is missing, inspect existing scripts and CI, then offer the smallest
+`AGENTS.md` seam addition before implementation. Show the proposed commands and policy;
+reuse existing configuration rather than installing a framework. Do not guess checks
+or grant merge authority. Obtain approval for missing policy; keep candidate changes
+subject to the existing trust boundary. Documented commands alone can be a complete seam.
 Settings for another workflow do not grant this workflow permission to merge or
 run background work.
 
