@@ -1,6 +1,6 @@
 # Review and handle findings
 
-Use the reviewer named in the repository's trusted `AGENTS.md` seam. An existing
+Use the reviewer named in the repository's trusted `AGENTS.md`. An existing
 Claude GitHub workflow can supply independent review; do not routinely add a second
 local reviewer. The user can request a deeper Claude Code CLI review, or concrete
 risk can justify one. Installing the skill does not install a GitHub Action or its
@@ -31,15 +31,15 @@ its findings. Runner success alone does not establish review or merge readiness.
    comments, submitted reviews, and inline threads, following pagination. Confirm
    that the reviewer actually completed: a green job, empty comment, skipped run,
    quota error, or `is_error: true` does not establish a successful review.
-2. Check each finding against the code and requirements. Reproduce consequential
+2. Check each finding against the code and requirements. Reproduce important
    defects, fix them with focused tests, and explain the result on the original
    thread. Briefly explain declined findings; do not implement speculative requests
    or create follow-up issues merely because a bot suggested them.
-3. After changes, run the affected checks and the seam's validation. Obtain review
+3. After changes, run the affected checks and the repository's validation. Obtain review
    of the fix and affected behavior on the new commit, using the existing workflow
    or its documented re-review mechanism. A stale finding may still apply; check it
    before resolving the thread. Do not call an unreviewed fix independently reviewed.
-4. Stop when consequential findings are addressed and the required review has
+4. Stop when material findings are addressed and the required review has
    completed for the current change. Refresh GitHub checks and required approvals,
    update the walkthrough, and follow the task's existing merge authority. If a
    reviewer fails or repeats the same unresolved concern without new evidence,
