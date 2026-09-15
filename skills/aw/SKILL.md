@@ -5,13 +5,17 @@ description: Deliver one ordinary task through verified GitHub PRs, splitting on
 
 # Work one task
 
-Own one task through its requested PR outcome. `$aw` alone starts intake: resolve
-the checkout from host context and Git remotes, then read trusted repository
-instructions. If the task is missing, ask for an issue number, URL, or description;
-combine this with the merge question below when authority is unset. If scope is
-unknown, make merging conditional; skip that question for known review-only or
-PR-only work. Reuse known answers. Resolve a bare issue number against the verified repository; ask for the
-repository path if missing or ambiguous. Obtain the task before implementation.
+Own one task through its requested PR outcome. `$aw` alone starts intake. Use host
+context and Git remotes to identify the checkout and read trusted instructions.
+Ask for a missing issue number, URL, or description; combine this with the merge
+question below if authority is unset. Make merging conditional on task scope;
+skip that question for known review-only or PR-only work. Reuse known answers.
+
+Resolve bare issue numbers against the verified repository. After intake, confirm
+the task matches the checkout; if different, resolve the target checkout, reread its
+trusted instructions, and reassess repository-scoped authority. Ask for the path
+whenever the target checkout is missing or ambiguous, regardless of task format.
+Obtain the task and resolve its checkout before implementation.
 
 Read the task using an available connection; if inaccessible, ask for its description
 and acceptance criteria. Keep requirements in the original tracker and delivery state
