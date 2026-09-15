@@ -476,7 +476,7 @@ Do not create another migration tracker or require the V1 backlog to be cleared.
 
 | Order | User outcome | Evidence before moving on |
 | --- | --- | --- |
-| 1 | Simple startup: model/low-effort recommendation, existing seam reuse or minimal setup offer, scoped Ask/Auto choice, useful task names. | Maintainer runs the getting-started manual prompts in fresh tasks, with existing and missing seams. Actual host settings and missing capabilities are visible. |
+| 1 | Simple startup: named model/low-effort recommendation and pause to change host settings, existing seam reuse or minimal setup offer, scoped Ask/Auto choice, useful task names. | Maintainer runs the getting-started manual prompts in fresh tasks, with existing and missing seams. Actual host settings after resumption and missing capabilities are visible. |
 | 2 | Reliably finish ordinary work across different repositories. | Finish the existing pilots, including UI evidence, review recovery and each consumer's native merge requirements. Compare developer interventions and total available usage for like work; no savings claim while attribution is incomplete. |
 | 3 | Make V2 the ordinary workflow and retain only valuable gaps. | Switch consumers individually, document rollback and remaining limitations, then update installation/docs to make V2 the default. Keep V1 available until affected consumers have a working replacement. |
 
