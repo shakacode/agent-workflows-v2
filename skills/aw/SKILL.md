@@ -14,11 +14,10 @@ is authorized; do not create a duplicate issue. Reading a tracker does not autho
 updating it. Keep private task content and links out of public artifacts unless
 sharing is authorized.
 
-Default to one PR. For a larger task, recommend the smallest useful split, retain
-one owner, and follow [task splitting](../../docs/working-with-your-agent.md#when-a-task-needs-several-prs).
-Keep tests with their behavior. Apply verification, review, and authority to each
-PR. Native stacks end at a reviewed handoff; do not merge them through `aw merge`
-or substitute another tool for its unsupported stack merge path.
+Default to one PR. For larger tasks, read only the
+[task-splitting section](../../docs/working-with-your-agent.md#when-a-task-needs-several-prs).
+Keep one owner and each PR's tests, review, and authority. Use sequential ordinary
+PRs for dependencies; native stacks are outside this pilot. Do not create or merge them.
 
 ## Use the repository seam
 
@@ -45,6 +44,10 @@ replacement skill or helper.
 Write plain English: explain the outcome and why, using established project terms.
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
+Prefix AI-authored GitHub descriptions, comments, and reviews with `🤖` and the
+agent/provider; include known model and configured effort, marking unknowns honestly.
+Give PR descriptions short headings and specific names; link the current walkthrough.
+Put supporting checks, review history, rollback, and usage in details; keep blockers visible.
 Run the trusted `scripts/aw usage --commit SHA --contribution CATEGORY`
 for each task. Use `--all-turns` only when the selected session contains solely
 this task; otherwise retain earlier relevant turn reports alongside this one.
@@ -86,9 +89,9 @@ Record commands, results, and tested revision; fix
 failures and reverify changed heads. Use the seam's independent reviewer when
 policy, the user, or concrete risk requires review. Reuse an existing GitHub review
 (such as Claude); read its actual comments, inline threads, and completion evidence.
-State review status in the PR summary and final response, outside details: completed
-(with reviewer, revision, and result link), unavailable (reason), pending, or not
-requested (why). A green job alone proves no review. Required or user-requested
+Link the current review result from the PR summary and final response. Keep required
+review status and gaps visible; put optional reviewer history in details.
+A green job alone proves no review. Required or user-requested
 review that is unavailable, failed, or stale blocks readiness/merge; never silently
 omit it or substitute a reviewer. Follow [review handling](../../docs/review.md)
 for findings and re-review; resolve consequential feedback before merging.
@@ -105,8 +108,9 @@ scripts/aw merge OWNER/REPO NUMBER --head SHA --walkthrough REVIEW_ID
 
 Before merge, publish a COMMENT walkthrough: purpose, behavior, key choices, short
 validation summary, risks/rollback, and commit-pinned links to the changed code.
-Keep that explanation visible and supporting evidence expandable. Reuse it for the
-same revision; update after changes. COMMENT is neither approval nor another user gate.
+Keep one current walkthrough visible. Reuse it for the same revision; after publishing
+for a new head, collapse your superseded walkthroughs with a link to the new one.
+Preserve their original revision/evidence and human edits. COMMENT is not approval.
 
 ## Merge or hand off
 

@@ -7,15 +7,17 @@ risk can justify one. Installing the skill does not install a GitHub Action or i
 credentials. This V2 source repository now has its own Claude Code Review workflow;
 consumer repositories keep their own reviewer configuration.
 
-Always put review status in the PR summary and final response, outside collapsed
-evidence. Name the reviewer, reviewed revision, and result link when completed.
+Link the current review result from the PR summary and final response. One short
+status is enough: name the reviewer and revision, with details at the result link.
 For example: **Adversarial review: unavailable — Claude CLI could not authenticate.**
 Say **pending** while running, and **not requested** with the reason when review is
 not required. A skipped, failed, missing, or stale review is never a successful one.
 If the user or repository requires it, keep the PR unready for merge until that
 review completes or the authority that set it explicitly changes the requirement:
 the requesting user controls their request; maintainers control repository policy. Do not
-silently substitute a different reviewer. Disclose optional gaps too.
+silently substitute a different reviewer. Put optional reviewer history and gaps in
+details; required or requested review gaps stay visible. Avoid copying the review
+timeline into the PR description.
 
 The GitHub action intentionally skips changes to its own workflow. Its job summary
 must say **UNAVAILABLE**, with a warning; that runner result is not a completed
