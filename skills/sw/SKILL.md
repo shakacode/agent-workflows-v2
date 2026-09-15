@@ -26,14 +26,15 @@ task content and links out of public artifacts unless sharing is authorized.
 After reading the task and before implementation, name a specific available model
 and low effort with one reason tied to its scope and risk. Honor explicit settings;
 increase effort only for a demonstrated reasoning difficulty, not waiting or tool
-failures. Pause after the recommendation, even if the current settings already match,
-so the user can change the host's actual model and effort settings. Do not begin
-implementation until the user says they are ready. On resumption, verify the settings
-when possible; a prompt cannot change them.
+failures. For planning-only requests, return a compact execution prompt and stop
+before edits without the implementation checkpoint. For tasks that will implement
+in this session, pause after the recommendation, even if the current settings already
+match, so the user can change the host's actual model and effort settings. Do not
+begin implementation until the user says they are ready. On resumption, verify the
+settings when possible; a prompt cannot change them.
 If the chosen settings differ and switching is unavailable, give one exact user
 action and wait.
 Work solo unless delegation is authorized and useful. Reuse relevant evidence.
-For planning-only requests, return a compact execution prompt and stop before edits.
 
 Use the host's native task-title tool when available: repository, verified issue/PR
 identifier, and short outcome. Update the same task when its PR is created or adopted;
