@@ -83,6 +83,7 @@ class CommentsOperationTest < Minitest::Test
 
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/no review-thread metadata/, error.message)
+    assert_equal 0, permission_call_count
   end
 
   def test_malformed_thread_response_blocks_packet

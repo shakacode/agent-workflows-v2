@@ -108,10 +108,12 @@ class CommentsTest < Minitest::Test
     refute_includes JSON.generate(result), withheld['body']
   end
 
-  def test_reply_inherits_parent_thread_when_not_in_graphql_first_page
-    reply = comment(id: 41, author: 'maintainer', body: 'Follow up')
-            .merge('node_id' => 'RC_41', 'in_reply_to_id' => 40, 'path' => 'app.rb')
-    result = packet(inline: [reply], threads: [thread(id: 'T1', resolved: true, comments: [40])],
+  def test_reply_inherits_root_thread_after_graphql_truncates_replies
+    reply = comment(id: 140, author: 'maintainer', body: 'Follow up')
+            .merge('node_id' => 'RC_140', 'in_reply_to_id' => 40, 'path' => 'app.rb')
+    first_hundred = (40..139).to_a
+    result = packet(inline: [reply],
+                    threads: [thread(id: 'T1', resolved: true, comments: first_hundred, more: true)],
                     permissions: [permission('maintainer', 'write')])
 
     assert_equal 'T1', result['inline_comments'].first['thread_id']

@@ -83,10 +83,10 @@ module CommentsFixture
     response({ 'data' => { 'repository' => { 'pullRequest' => { 'reviewThreads' => connection } } } })
   end
 
-  def thread(id:, resolved:, comments:)
+  def thread(id:, resolved:, comments:, more: false)
     { 'id' => id, 'isResolved' => resolved,
       'comments' => { 'nodes' => comments.map { |comment_id| { 'fullDatabaseId' => comment_id.to_s } },
-                      'pageInfo' => { 'hasNextPage' => false } } }
+                      'pageInfo' => { 'hasNextPage' => more } } }
   end
 
   def two_thread_pages
