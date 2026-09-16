@@ -12,13 +12,13 @@ module CommentsFixture
   end
 
   def packet(issue: [], reviews: [], inline: [], threads: [], **options)
-    private_repo = options.fetch(:private_repo, false)
+    visibility = fixture_visibility(options)
     threads = default_threads(inline) if threads.empty?
     pages = options.fetch(:thread_pages) { [thread_response(threads)] }
-    github = client(snapshot_response, response({ 'private' => private_repo }),
+    github = client(snapshot_response, repository_response(visibility),
                     *comment_responses(issue, reviews, inline), *pages,
-                    *prefilter_pages(private_repo, options, issue + reviews + inline), *options.fetch(:permissions, []),
-                    *finish_context(private_repo))
+                    *prefilter_pages(visibility, options, issue + reviews + inline), *options.fetch(:permissions, []),
+                    *finish_context(visibility))
     Shaka::Comments.new(github).call(expected_head: HEAD)
   end
 
@@ -26,8 +26,16 @@ module CommentsFixture
     inline.map { |item| thread(id: "T#{item['id']}", resolved: false, comments: [item['id']]) }
   end
 
-  def finish_context(private_repo)
-    [snapshot_response, response({ 'private' => private_repo })]
+  def finish_context(visibility)
+    [snapshot_response, repository_response(visibility)]
+  end
+
+  def fixture_visibility(options)
+    options.fetch(:visibility) { options.fetch(:private_repo, false) ? 'private' : 'public' }
+  end
+
+  def repository_response(visibility)
+    response({ 'private' => visibility == 'private', 'visibility' => visibility })
   end
 
   def comment_responses(issue, reviews, inline)
@@ -41,8 +49,8 @@ module CommentsFixture
     end.uniq
   end
 
-  def prefilter_pages(private_repo, options, items)
-    return [] if private_repo
+  def prefilter_pages(visibility, options, items)
+    return [] unless visibility == 'public'
 
     logins = authors(items).select { |login| login.is_a?(String) && login.match?(Shaka::CommentWriters::LOGIN) }
     return [] if logins.length <= Shaka::CommentWriters::DIRECT_LIMIT
@@ -60,9 +68,9 @@ module CommentsFixture
   end
 
   def issue_packet(comments:, permissions: [])
-    github = client(response({ 'number' => 42 }), response({ 'private' => false }),
-                    response([comments]), *prefilter_pages(false, {}, comments), *permissions,
-                    response({ 'private' => false }))
+    github = client(response({ 'number' => 42 }), repository_response('public'),
+                    response([comments]), *prefilter_pages('public', {}, comments), *permissions,
+                    repository_response('public'))
     Shaka::Comments.new(github).call(issue_only: true)
   end
 

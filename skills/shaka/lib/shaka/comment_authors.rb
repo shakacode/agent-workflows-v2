@@ -10,15 +10,15 @@ module Shaka
     KINDS = { 'issue_comments' => 'issue_comment', 'review_summaries' => 'review_summary',
               'inline_comments' => 'inline_comment' }.freeze
 
-    def initialize(github, private_repo:)
+    def initialize(github, public_repo:)
       @github = github
-      @private_repo = private_repo
+      @public_repo = public_repo
     end
 
     def screen(items, thread_index: {})
       items.fetch('inline_comments', []).each { |item| thread_metadata(item, thread_index) }
       logins = items.values.flatten.filter_map { |item| author(item) if human?(item) }
-      permissions = @private_repo ? {} : CommentWriters.new(@github).permissions(logins)
+      permissions = @public_repo ? CommentWriters.new(@github).permissions(logins) : {}
       excluded = []
       kept = items.to_h do |key, rows|
         [key, filter(rows, KINDS.fetch(key), permissions, excluded, thread_index)]
@@ -42,7 +42,7 @@ module Shaka
       items.filter_map do |item|
         login = author(item)
         thread = thread_metadata(item, thread_index) if kind == 'inline_comment'
-        if @private_repo || (human?(item) && TRUSTED_PERMISSIONS.include?(permissions[login]))
+        if !@public_repo || (human?(item) && TRUSTED_PERMISSIONS.include?(permissions[login]))
           kept_record(item, kind, login, thread)
         else
           excluded << excluded_record(item, kind, login, thread, permissions[login])

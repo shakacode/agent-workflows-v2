@@ -15,7 +15,7 @@ class CommentsOperationTest < Minitest::Test
   end
 
   def test_changed_head_blocks_comment_packet
-    github = client(snapshot_response, response({ 'private' => false }), response([[]]),
+    github = client(snapshot_response, repository_response('public'), response([[]]),
                     response([[]]), response([[]]), thread_response([]),
                     snapshot_response(head: 'b' * 40))
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
@@ -38,9 +38,9 @@ class CommentsOperationTest < Minitest::Test
 
   def test_visibility_change_blocks_unscreened_packet
     outside = comment(id: 11, author: 'outside', body: 'Private before, public afterward')
-    github = client(snapshot_response, response({ 'private' => true }), response([[outside]]),
+    github = client(snapshot_response, repository_response('private'), response([[outside]]),
                     response([[]]), response([[]]), thread_response([]), snapshot_response,
-                    response({ 'private' => false }))
+                    repository_response('public'))
 
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
     assert_match(/visibility changed/, error.message)
@@ -62,7 +62,7 @@ class CommentsOperationTest < Minitest::Test
   end
 
   def test_malformed_pages_block_comment_packet
-    github = client(snapshot_response, response({ 'private' => false }), response({ 'message' => 'bad' }))
+    github = client(snapshot_response, repository_response('public'), response({ 'message' => 'bad' }))
     assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
   end
 
@@ -78,7 +78,7 @@ class CommentsOperationTest < Minitest::Test
 
   def test_unmapped_inline_comment_blocks_packet
     inline = comment(id: 52, author: 'outside', body: 'Unmapped')
-    github = client(snapshot_response, response({ 'private' => false }), response([[]]),
+    github = client(snapshot_response, repository_response('public'), response([[]]),
                     response([[]]), response([[inline]]), thread_response([]))
 
     error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
@@ -87,7 +87,7 @@ class CommentsOperationTest < Minitest::Test
   end
 
   def test_malformed_thread_response_blocks_packet
-    github = client(snapshot_response, response({ 'private' => false }), response([[]]),
+    github = client(snapshot_response, repository_response('public'), response([[]]),
                     response([[]]), response([[]]),
                     response({ 'data' => { 'repository' => 'bad' } }))
 

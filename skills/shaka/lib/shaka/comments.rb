@@ -13,12 +13,12 @@ module Shaka
 
     def call(issue_only: false, expected_head: nil)
       head = issue_only ? issue_head(expected_head) : pr_head(expected_head)
-      private_repo = repository_private?
+      visibility = repository_visibility
       items = fetch_items(issue_only:)
       threads, index = issue_only ? [[], {}] : CommentThreads.new(@github).call
-      screened = CommentAuthors.new(@github, private_repo:).screen(items, thread_index: index)
-      verify_context(head, private_repo)
-      { 'visibility' => private_repo ? 'private' : 'public', 'head' => head,
+      screened = CommentAuthors.new(@github, public_repo: visibility == 'public').screen(items, thread_index: index)
+      verify_context(head, visibility)
+      { 'visibility' => visibility, 'head' => head,
         'review_threads' => threads }.merge(screened)
     end
 
@@ -49,16 +49,17 @@ module Shaka
       pull['headRefOid']
     end
 
-    def verify_context(head, private_repo)
+    def verify_context(head, visibility)
       raise Error, 'PR head changed or closed during comment read.' if head && open_head != head
-      raise Error, 'Repository visibility changed during comment read.' unless repository_private? == private_repo
+      raise Error, 'Repository visibility changed during comment read.' unless repository_visibility == visibility
     end
 
-    def repository_private?
+    def repository_visibility
       metadata = @github.api("repos/#{@github.repository}")
-      raise Error, 'Repository visibility is unavailable.' unless [true, false].include?(metadata['private'])
+      visibility = metadata['visibility']
+      raise Error, 'Repository visibility is unavailable.' unless %w[public private internal].include?(visibility)
 
-      metadata['private']
+      visibility
     end
 
     def fetch_items(issue_only:)
