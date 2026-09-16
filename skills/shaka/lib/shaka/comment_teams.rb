@@ -43,7 +43,7 @@ module Shaka
       pairs.each do |login, owner, slug|
         next if result[:trusted].include?(login)
 
-        state = active_member?(owner, slug, login)
+        state = membership_state(owner, slug, login)
         result[:trusted].add(login) if state == true
         result[:unavailable].add(login) if state.nil?
       end
@@ -92,11 +92,14 @@ module Shaka
       login.downcase if member['type'] == 'User' && login.is_a?(String) && login.match?(GitHubLogin::PATTERN)
     end
 
-    def active_member?(owner, slug, login)
+    def membership_state(owner, slug, login)
       result = @github.api("orgs/#{owner}/teams/#{slug}/memberships/#{login}")
       url = result['url']
-      result['state'] == 'active' && url.is_a?(String) &&
-        url.downcase.end_with?("/memberships/#{login.downcase}")
+      state = result['state']
+      return nil unless %w[active pending].include?(state) && url.is_a?(String) &&
+                        url.downcase.end_with?("/memberships/#{login.downcase}")
+
+      state == 'active'
     rescue Error => e
       return false if e.http_status == 404 && team_members_readable?(owner, slug)
 

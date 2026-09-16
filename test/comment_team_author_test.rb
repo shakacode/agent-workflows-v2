@@ -44,6 +44,15 @@ class CommentTeamAuthorTest < Minitest::Test
     refute_includes JSON.generate(result), outsider['body']
   end
 
+  def test_malformed_successful_membership_is_withheld_and_flagged
+    member = comment(id: 1, author: 'member', body: 'Material feedback')
+    config = empty_trust_config.merge(teams: [%w[owner maintainers]])
+    malformed = response({ 'state' => 'active', 'url' => 'https://api.github.com/teams/7/memberships/stranger' })
+    result = packet(issue: [member], trust_config: config,
+                    permissions: [permission('member', 'read'), malformed])
+    assert_unavailable_member(result, member)
+  end
+
   def test_failed_confirmation_of_listed_team_member_is_withheld_and_flagged
     outsiders = (1..33).map { |id| comment(id: id, author: "outside#{id}", body: 'Noise') }
     member = comment(id: 34, author: 'member', body: 'Do not release without active proof')

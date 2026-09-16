@@ -13,7 +13,7 @@ class CommentTeamsTest < Minitest::Test
     github = client(active('member'), active('pending', state: 'pending'), active('other', url_login: 'stranger'))
     result = Shaka::CommentTeams.new(github).trusted(%w[member pending other], [%w[owner maintainers]])
 
-    assert_equal Set['member'], result[:trusted]
+    assert_equal({ trusted: Set['member'], unavailable: Set['other'] }, result)
     assert_equal 3, @calls.length
     assert(@calls.all? { |argv, _| argv.join(' ').include?('/teams/maintainers/memberships/') })
   end
