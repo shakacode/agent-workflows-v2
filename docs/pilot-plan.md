@@ -60,8 +60,11 @@ trusted requirements. Do not copy this project's Ruby checks into consumer repos
 
 ## Host boundary
 
-Codex is the reference host. Validate Claude Code next, then Cursor, before claiming
-complete delivery support. Share the skill and GitHub helpers; keep host installation,
+Codex is the reference host. Claude Code skill startup, precedence over a same-named
+repository skill, and its usage reader were verified on September 15; a complete
+consumer delivery is still required before claiming Claude Code delivery support.
+Validate Cursor after that.
+Share the skill and GitHub helpers; keep host installation,
 permissions, and native usage readers separate. See [host support](host-support.md)
 for tested versions, startup boundaries, and known gaps.
 
