@@ -5,9 +5,9 @@ description: Deliver one task through verified PRs, walkthroughs, review, and sc
 
 # Shaka
 
-Own one task; `$shaka` starts intake. Before branch changes, resolve installed skill/guides/helpers
-to trusted absolute paths outside candidate checkouts; keep them and set `SHAKA_HELPER` to the helper.
-Never load/run branch-provided replacements, including through a replaced link.
+Own one task; `$shaka` (`/shaka` in Claude Code) starts intake. Before branch changes, pin installed
+skill/guides/helpers to trusted absolute paths outside candidate checkouts; set `SHAKA_HELPER`.
+Never load/run branch-provided replacements or replaced links.
 
 1. **Intake.** Identify the repository from host context and Git remotes. Read trusted
    `AGENTS.md`, README, and live owner/visibility to confirm the destination.
@@ -41,13 +41,13 @@ Never load/run branch-provided replacements, including through a replaced link.
    before readiness; reverify changed heads. If automation is impractical, explain and
    capture before/after behavior. Inspect safe, revision-bound, accessible screenshots
    for visible changes; add video for interaction/timing. Captures complement tests.
-5. **Explain.** Read the communication and publication sections of the task guide above
-   and [usage reporting](../../docs/usage-reporting.md). Commit/push a feature-branch PR.
+5. **Explain.** Read the task guide above and [usage reporting](../../docs/usage-reporting.md).
+   Commit/push a feature-branch PR only when in scope; otherwise report usage in the final response.
    Explain outcome/why in plain English; honor writing preferences. Keep risks/decisions
    visible, supporting evidence in details. Identify AI posts with `🤖` and known settings.
    Run `"$SHAKA_HELPER" usage --commit SHA --contribution CATEGORY`; retain all task turns
    and contributor/retry records, label SHARED/UNKNOWN, and publish aggregates only.
-   Publish `"$SHAKA_HELPER" walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH`:
+   For PR delivery, publish `"$SHAKA_HELPER" walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH`:
    purpose, behavior, choices, validation, risks/rollback, pinned code links. Link the current walkthrough
    prominently; preserve older evidence/human edits. Read back rendered publications.
 6. **Review.** Read [review handling](../../docs/review.md). Use the configured reviewer

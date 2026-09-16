@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 require 'json'
+require_relative 'response_count'
 
 module Shaka
   # Retains only usage metadata; transcripts and cumulative counters are discarded.
   class CodexUsage
+    include ResponseCount
+
+    HOST = 'Codex'
+    NOTE = 'Cached input is part of input; reasoning output is part of output.'
+    LATEST_SCOPE = 'latest turn only per source; earlier turns excluded'
+
     attr_reader :responses, :versions, :gaps
 
     def initialize(files, turns, all_turns: false)
@@ -76,18 +83,6 @@ module Shaka
         'timestamp' => record['timestamp'],
         'configuration' => [@provider, settings['model'], 'UNKNOWN', settings['effort']]
       )
-    end
-
-    def count(record)
-      identity = record['response_id']
-      return @gaps << 'Unreadable or unidentifiable records' unless identity.is_a?(String) && !identity.empty?
-
-      previous = @responses[identity]
-      if previous && previous != record
-        previous.merge!('usage' => {}, 'configuration' => [nil] * 4, 'timestamp' => nil, 'turn_id' => nil)
-        @gaps << 'Conflicting response copies'
-      end
-      @responses[identity] ||= record
     end
 
     def parse(line)
