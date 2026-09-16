@@ -17,7 +17,7 @@ module PublicationFixtures
     [html, 'private stderr must not be disclosed', STATUS.new(0)]
   end
 
-  def sent_body(index = 2) = JSON.parse(@calls[index].last)['body']
+  def sent_body(index = 3) = JSON.parse(@calls[index].last)['body']
 
   def viewer_response(login = 'shaka-bot') = response({ 'login' => login })
 
@@ -37,7 +37,8 @@ class GitHubDescriptionTest < Minitest::Test
 
   def test_description_keeps_content_other_authors_appended
     existing = "old\n\n<!-- coderabbit -->\nSummary by CodeRabbit"
-    github = client(pull_response(existing), html_response('<p>ok</p>'), pull_response("#{MANAGED}\n\n#{existing}"))
+    github = client(pull_response(existing), html_response('<p>ok</p>'), pull_response(existing),
+                    pull_response("#{MANAGED}\n\n#{existing}"))
     github.description(body: BODY)
     sent = sent_body
     assert_equal "#{MANAGED}\n\n#{existing}", sent
@@ -47,7 +48,8 @@ class GitHubDescriptionTest < Minitest::Test
   def test_republishing_replaces_only_the_managed_region
     existing = "#{MANAGED}\n\nSummary by CodeRabbit"
     updated = "<!-- shaka:begin -->\nNew text.\n<!-- shaka:end -->\n\nSummary by CodeRabbit"
-    github = client(pull_response(existing), html_response('<p>ok</p>'), pull_response(updated))
+    github = client(pull_response(existing), html_response('<p>ok</p>'), pull_response(existing),
+                    pull_response(updated))
     github.description(body: "New text.\n")
     assert_equal updated, sent_body
     assert_equal 1, sent_body.scan('<!-- shaka:begin -->').size
@@ -61,8 +63,15 @@ class GitHubDescriptionTest < Minitest::Test
     assert_equal 1, @calls.size
   end
 
+  def test_an_edit_that_lands_while_the_update_is_prepared_is_not_erased
+    github = client(pull_response('original'), html_response('<p>ok</p>'), pull_response('someone edited'))
+    error = assert_raises(Shaka::Error) { github.description(body: BODY) }
+    assert_includes error.message, 'changed while'
+    assert_equal 3, @calls.size, 'the update must not be written after a concurrent edit'
+  end
+
   def test_stored_body_that_does_not_match_the_submission_is_reported
-    github = client(pull_response(''), html_response('<p>ok</p>'), pull_response('something else'))
+    github = client(pull_response(''), html_response('<p>ok</p>'), pull_response(''), pull_response('something else'))
     assert_raises(Shaka::Error) { github.description(body: BODY) }
   end
 
@@ -76,7 +85,8 @@ class GitHubDescriptionTest < Minitest::Test
   def test_a_rendered_table_passes_the_readback
     table = "#{BODY}\n| A | B |\n| --- | --- |\n| 1 | 2 |\n"
     managed = "<!-- shaka:begin -->\n#{table}<!-- shaka:end -->"
-    github = client(pull_response(''), html_response('<table><tr><td>1</td></tr></table>'), pull_response(managed))
+    github = client(pull_response(''), html_response('<table><tr><td>1</td></tr></table>'), pull_response(''),
+                    pull_response(managed))
     assert_equal managed, github.description(body: table)['body']
   end
 
@@ -142,12 +152,14 @@ class GitHubReplyTest < Minitest::Test
   def test_a_separator_row_inside_a_code_fence_is_not_expected_to_render
     documented = "#{BODY}\n```\n| A | B |\n| --- | --- |\n```\n"
     managed = "<!-- shaka:begin -->\n#{documented}<!-- shaka:end -->"
-    github = client(pull_response(''), html_response('<pre>| --- | --- |</pre>'), pull_response(managed))
+    github = client(pull_response(''), html_response('<pre>| --- | --- |</pre>'), pull_response(''),
+                    pull_response(managed))
     assert_equal managed, github.description(body: documented)['body']
   end
 
   def test_escape_sequences_inside_rendered_code_are_allowed
-    github = client(pull_response(''), html_response('<p>Use <code>\\n</code> here.</p>'), pull_response(MANAGED))
+    github = client(pull_response(''), html_response('<p>Use <code>\\n</code> here.</p>'), pull_response(''),
+                    pull_response(MANAGED))
     assert_equal MANAGED, github.description(body: BODY)['body']
   end
 

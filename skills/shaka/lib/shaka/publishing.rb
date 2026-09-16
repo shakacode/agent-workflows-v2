@@ -14,8 +14,10 @@ module Shaka
     SEPARATOR = /\A\s*\|[\s|:-]*-{3}[\s|:-]*\|\s*\z/
 
     def description(body:)
-      merged = merge(pull['body'].to_s, publishable(body))
+      existing = pull['body'].to_s
+      merged = merge(existing, publishable(body))
       verify_rendering(merged)
+      check_unchanged(existing)
       confirmed(api(pull_path, method: 'PATCH', fields: { body: merged }), merged)
     end
 
@@ -72,6 +74,15 @@ module Shaka
       check_region(existing, opens, closes)
       prefix, rest = existing.split(OPEN_MARK, 2)
       "#{prefix}#{managed}#{rest.split(CLOSE_MARK, 2).last}"
+    end
+
+    # This update rewrites the whole body, so an edit that landed while it was prepared
+    # would be erased. Re-reading narrows that window; it does not close it, because
+    # GitHub offers no compare-and-swap for a pull request body.
+    def check_unchanged(existing)
+      return if pull['body'].to_s == existing
+
+      raise Error, 'The description changed while this update was prepared; publish again from the current body.'
     end
 
     # Rewriting an ambiguous region would delete whatever sits between the wrong markers.

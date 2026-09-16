@@ -51,7 +51,7 @@ module Shaka
 
       fields = IDENTITY_FIELDS.map do |field|
         text = value[field]
-        text.is_a?(String) && !text.strip.empty? ? checked(text.strip, "identity #{field}") : 'UNKNOWN'
+        text.is_a?(String) && !text.strip.empty? ? single_line(text.strip, "identity #{field}") : 'UNKNOWN'
       end
       "🤖 #{fields.join(' · ')}"
     end
