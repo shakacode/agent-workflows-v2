@@ -151,7 +151,9 @@ comments remain task data under the same policy boundary. Missing visibility sto
 the read. A changed PR head invalidates the packet.
 An excluded `prefiltered` flag means GitHub's batched check did not identify a
 writer, so the individual permission lookup was not run. Pass its link for
-maintainer triage. `verification_unavailable` means an individual lookup failed;
+maintainer triage. A direct team 404 proves nonmembership only when a one-page
+team list confirms visibility. `verification_unavailable` means an individual
+lookup failed without that proof;
 the packet continues with that body withheld, but evidence is incomplete for
 review or merge decisions until the maintainer triages it or the read succeeds.
 The packet also carries GitHub's native resolved state for each inline review

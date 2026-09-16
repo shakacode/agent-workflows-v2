@@ -15,8 +15,8 @@ class CommentsOperationTest < Minitest::Test
   end
 
   def test_changed_head_blocks_comment_packet
-    github = client(snapshot_response, repository_response('public'), response([[]]),
-                    response([[]]), response([[]]), thread_response([]),
+    github = client(snapshot_response, repository_response('public'), response([]),
+                    response([]), response([]), thread_response([]),
                     snapshot_response(head: 'b' * 40))
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
     assert_match(/head changed/, error.message)
@@ -38,8 +38,8 @@ class CommentsOperationTest < Minitest::Test
 
   def test_visibility_change_blocks_unscreened_packet
     outside = comment(id: 11, author: 'outside', body: 'Private before, public afterward')
-    github = client(snapshot_response, repository_response('private'), response([[outside]]),
-                    response([[]]), response([[]]), thread_response([]), snapshot_response,
+    github = client(snapshot_response, repository_response('private'), response([outside]),
+                    response([]), response([]), thread_response([]), snapshot_response,
                     repository_response('public'))
 
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
@@ -66,6 +66,27 @@ class CommentsOperationTest < Minitest::Test
     assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
   end
 
+  def test_comment_spam_stops_at_page_bound_before_author_screening
+    rows = Array.new(100) { |id| comment(id: id + 1, author: 'outsider', body: 'Noise') }
+    pages = Array.new(11) { response(rows) }
+    github = client(snapshot_response, repository_response('public'), *pages)
+
+    error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
+    assert_match(/GitHub comment list exceeds 10 pages/, error.message)
+    assert_equal 13, @calls.length
+  end
+
+  def test_review_thread_pages_stop_before_unbounded_loop
+    pages = (1..10).map do |page|
+      thread_response([thread(id: "T#{page}", resolved: false, comments: [page])],
+                      more: true, cursor: "cursor#{page}")
+    end
+
+    error = assert_raises(Shaka::Error) { packet(thread_pages: pages) }
+    assert_match(/Review-thread list exceeds 10 pages/, error.message)
+    assert_equal 15, @calls.length
+  end
+
   def test_thread_pages_are_joined_before_screening
     inline = comment(id: 51, author: 'maintainer', body: 'Second page')
              .merge('node_id' => 'RC_51', 'path' => 'app.rb')
@@ -78,8 +99,8 @@ class CommentsOperationTest < Minitest::Test
 
   def test_unmapped_inline_comment_blocks_packet
     inline = comment(id: 52, author: 'outside', body: 'Unmapped')
-    github = client(snapshot_response, repository_response('public'), response([[]]),
-                    response([[]]), response([[inline]]), thread_response([]))
+    github = client(snapshot_response, repository_response('public'), response([]),
+                    response([]), response([inline]), thread_response([]))
 
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
     assert_match(/no review-thread metadata/, error.message)
@@ -87,8 +108,8 @@ class CommentsOperationTest < Minitest::Test
   end
 
   def test_malformed_thread_response_blocks_packet
-    github = client(snapshot_response, repository_response('public'), response([[]]),
-                    response([[]]), response([[]]),
+    github = client(snapshot_response, repository_response('public'), response([]),
+                    response([]), response([]),
                     response({ 'data' => { 'repository' => 'bad' } }))
 
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }

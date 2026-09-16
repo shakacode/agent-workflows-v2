@@ -2,12 +2,14 @@
 
 require_relative 'error'
 require_relative 'comment_authors'
+require_relative 'bounded_list'
 require_relative 'comment_threads'
 require_relative 'comment_trust_config'
 
 module Shaka
   # Reads one issue or PR discussion at a stable visibility and PR head.
   class Comments
+    MAX_COMMENT_PAGES = 10
     def initialize(github, trust_config: nil, machine_path: CommentTrustConfig::MACHINE_PATH)
       @github = github
       @trust_config = trust_config
@@ -116,12 +118,7 @@ module Shaka
     end
 
     def fetch_page(path)
-      pages = @github.paginated(path)
-      unless pages.is_a?(Array) && pages.all? { |page| page.is_a?(Array) && page.all?(Hash) }
-        raise Error, 'GitHub comment response must contain arrays of objects.'
-      end
-
-      pages.flatten(1)
+      BoundedList.new(@github, max_pages: MAX_COMMENT_PAGES, label: 'GitHub comment list').call(path)
     end
   end
 end

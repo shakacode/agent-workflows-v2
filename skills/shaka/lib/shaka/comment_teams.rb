@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'error'
+require_relative 'bounded_list'
 require_relative 'github_login'
 
 module Shaka
@@ -8,11 +9,11 @@ module Shaka
   class CommentTeams
     DIRECT_PAIR_LIMIT = 8
     MAX_TEAMS = 20
-    TEAM_PAGE_SIZE = 100
     MAX_TEAM_PAGES = 10
 
     def initialize(github)
       @github = github
+      @readable_teams = {}
     end
 
     def trusted(logins, teams)
@@ -62,21 +63,9 @@ module Shaka
     end
 
     def listed_members(owner, slug)
-      logins = Set.new
-      (1..(MAX_TEAM_PAGES + 1)).each do |page|
-        rows = team_page(owner, slug, page)
-        logins.merge(rows.filter_map { |member| member_login(member) })
-        break if rows.length < TEAM_PAGE_SIZE
-      end
-      logins
-    end
-
-    def team_page(owner, slug, page)
-      rows = @github.api_list("orgs/#{owner}/teams/#{slug}/members?per_page=#{TEAM_PAGE_SIZE}&page=#{page}")
-      raise Error, 'Team-member list is malformed.' unless rows.length <= TEAM_PAGE_SIZE && rows.all?(Hash)
-      raise Error, 'Team-member list exceeds the page limit.' if page > MAX_TEAM_PAGES && !rows.empty?
-
-      rows
+      path = "orgs/#{owner}/teams/#{slug}/members"
+      BoundedList.new(@github, max_pages: MAX_TEAM_PAGES, label: 'Team-member list')
+                 .call(path).filter_map { |member| member_login(member) }.to_set
     end
 
     def member_login(member)
@@ -89,8 +78,20 @@ module Shaka
       url = result['url']
       result['state'] == 'active' && url.is_a?(String) &&
         url.downcase.end_with?("/memberships/#{login.downcase}")
-    rescue Error
+    rescue Error => e
+      return false if e.http_status == 404 && team_members_readable?(owner, slug)
+
       nil
+    end
+
+    def team_members_readable?(owner, slug)
+      key = [owner, slug]
+      return @readable_teams[key] if @readable_teams.key?(key)
+
+      path = "orgs/#{owner}/teams/#{slug}/members?per_page=1&page=1"
+      @readable_teams[key] = @github.api_list(path).all?(Hash)
+    rescue Error
+      @readable_teams[key] = false
     end
   end
 end

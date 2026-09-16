@@ -54,7 +54,7 @@ module CommentsFixture
   end
 
   def comment_responses(issue, reviews, inline)
-    [response([issue]), response([reviews]), response([inline])]
+    [response(issue), response(reviews), response(inline)]
   end
 
   def authors(items)
@@ -84,7 +84,7 @@ module CommentsFixture
 
   def issue_packet(comments:, permissions: [])
     github = client(response({ 'number' => 42 }), repository_response('public'),
-                    response([comments]), *prefilter_pages('public', {}, comments), *permissions,
+                    response(comments), *prefilter_pages('public', {}, comments), *permissions,
                     repository_response('public'))
     Shaka::Comments.new(github, trust_config: empty_trust_config).call(issue_only: true)
   end

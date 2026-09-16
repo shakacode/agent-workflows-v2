@@ -41,8 +41,8 @@ class CommentWritersTest < Minitest::Test
 
   def test_unavailable_batched_writer_evidence_blocks_public_packet
     commenters = (1..9).map { |id| comment(id: id, author: "person#{id}", body: 'Check this') }
-    github = client(snapshot_response, repository_response('public'), response([commenters]),
-                    response([[]]), response([[]]), thread_response([]), response({}, status: 4))
+    github = client(snapshot_response, repository_response('public'), response(commenters),
+                    response([]), response([]), thread_response([]), response({}, status: 4))
 
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
     assert_match(/writer evidence is unavailable/, error.message)

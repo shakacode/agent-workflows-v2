@@ -23,7 +23,7 @@ class CommentConfigScreeningTest < Minitest::Test
 
   def configured_client(bot, member)
     responses = [snapshot_response, repository_response('public'), default_ref, repo_config]
-    responses += [response([[bot, member]]), response([[]]), response([[]]), thread_response([])]
+    responses += [response([bot, member]), response([]), response([]), thread_response([])]
     responses += [permission('member', 'read'), team_membership]
     client(*responses, snapshot_response, default_ref, repository_response('public'))
   end

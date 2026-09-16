@@ -213,6 +213,12 @@ matched authors receive a final active-membership check.
 More than 20 applicable configured teams stops the read before team API calls.
 Each team listing is capped at 1,000 members and 11 page requests; a larger
 listing stops instead of returning incomplete membership evidence.
+For direct checks, a 404 counts as nonmembership only after a one-page team
+listing confirms that the team is visible to the token; otherwise the excluded
+comment is marked as unavailable evidence.
+Public comment lists are capped at 1,000 interactions per GitHub comment type;
+native review threads are capped at 1,000. Larger discussions stop explicitly
+before returning a partial packet.
 
 A private or internal repo can still contain imported text, outside contributions,
 or unsafe dependencies. The comment-author screen applies only to public repos.

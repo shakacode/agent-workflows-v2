@@ -24,7 +24,7 @@ class CommentConfigIntegrationTest < Minitest::Test
   end
 
   def pr_pages(trusted)
-    [response([[trusted]]), response([[]]), response([[]]), thread_response([])]
+    [response([trusted]), response([]), response([]), thread_response([])]
   end
 
   def pr_client(trusted, final_base: default_base, new_blob: nil)
@@ -36,7 +36,7 @@ class CommentConfigIntegrationTest < Minitest::Test
 
   def issue_client(trusted)
     client(response({ 'number' => 42 }), repository_response('public'), default_base,
-           base_blob("trusted_users: [maintainer]\n"), response([[trusted]]),
+           base_blob("trusted_users: [maintainer]\n"), response([trusted]),
            default_base, repository_response('public'))
   end
 

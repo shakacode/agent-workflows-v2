@@ -22,8 +22,8 @@ class CommentVisibilityTest < Minitest::Test
 
   def test_internal_to_public_visibility_change_discards_packet
     internal = comment(id: 16, author: 'enterprise-reader', body: 'Read before visibility changed')
-    github = client(snapshot_response, repository_response('internal'), response([[internal]]),
-                    response([[]]), response([[]]), thread_response([]), snapshot_response,
+    github = client(snapshot_response, repository_response('internal'), response([internal]),
+                    response([]), response([]), thread_response([]), snapshot_response,
                     repository_response('public'))
 
     error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }

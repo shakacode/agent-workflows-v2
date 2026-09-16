@@ -50,6 +50,26 @@ class CommentTeamsTest < Minitest::Test
     assert_equal Set['person'], result[:unavailable]
   end
 
+  def test_visible_team_makes_404_definitive_and_reuses_access_probe
+    missing = response({ 'message' => 'Not Found' }, status: 1, http_status: 404)
+    github = client(missing, response([]), missing)
+    result = Shaka::CommentTeams.new(github).trusted(%w[outside1 outside2], [%w[owner maintainers]])
+
+    assert_empty result[:trusted]
+    assert_empty result[:unavailable]
+    assert_equal 3, @calls.length
+    assert_equal 'orgs/owner/teams/maintainers/members?per_page=1&page=1', @calls[1].first[2]
+  end
+
+  def test_hidden_team_keeps_404_verification_unavailable
+    missing = response({ 'message' => 'Not Found' }, status: 1, http_status: 404)
+    github = client(missing, missing)
+    result = Shaka::CommentTeams.new(github).trusted(['person'], [%w[owner maintainers]])
+
+    assert_empty result[:trusted]
+    assert_equal Set['person'], result[:unavailable]
+  end
+
   def test_unavailable_confirmation_of_listed_member_is_visible
     listed = response([{ 'login' => 'member', 'type' => 'User' }])
     github = client(listed, response({ 'message' => 'unavailable' }, status: 1))

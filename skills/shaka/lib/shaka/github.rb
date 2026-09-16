@@ -75,8 +75,6 @@ module Shaka
 
     def api_list(path) = api(path, expected: Array)
 
-    def paginated(path) = execute(['gh', 'api', '--paginate', '--slurp', path])
-
     def graphql(query, variables = {})
       response = api('graphql', method: 'POST', fields: { query: query, variables: variables })
       raise Error, 'GraphQL failed or returned missing data.' if response['errors'] || !response['data'].is_a?(Hash)
@@ -113,10 +111,10 @@ module Shaka
     end
 
     def execute(argv, input: '', accepted: [0])
-      stdout, _stderr, status = @runner.call(argv, stdin_data: input)
+      stdout, stderr, status = @runner.call(argv, stdin_data: input)
       detail = argv[1] == 'api' ? argv.drop(2).find { |arg| !arg.start_with?('-') } : argv[2]
       unless accepted.include?(status.exitstatus)
-        raise Error, "gh #{argv[1]} #{detail} failed (exit #{status.exitstatus})."
+        raise Error.from_gh("gh #{argv[1]} #{detail} failed (exit #{status.exitstatus}).", stderr)
       end
 
       parse_json(stdout)

@@ -5,6 +5,7 @@ require_relative 'error'
 module Shaka
   # Joins GitHub's native review-thread state to REST inline comments by ID.
   class CommentThreads
+    MAX_THREAD_PAGES = 10
     QUERY = <<~GRAPHQL
       query($owner: String!, $name: String!, $number: Int!, $cursor: String) {
         repository(owner: $owner, name: $name) {
@@ -32,14 +33,14 @@ module Shaka
       cursor = nil
       threads = []
       index = {}
-      loop do
+      (1..MAX_THREAD_PAGES).each do
         rows, page = fetch_page(cursor)
         rows.each { |row| add_thread(row, threads, index) }
-        break unless page['hasNextPage']
+        return [threads, index] unless page['hasNextPage']
 
         cursor = advance_cursor(cursor, page)
       end
-      [threads, index]
+      raise Error, "Review-thread list exceeds #{MAX_THREAD_PAGES} pages."
     end
 
     private
