@@ -1,284 +1,136 @@
 # Install and complete your first task
 
-This guide installs `$shaka` in the Codex app or starts a fresh Codex CLI session.
-Claude Code and Cursor support remain planned. You do not need to know the previous
-workflow pack.
+Shaka guides an agent from a task description to a tested, reviewed GitHub PR.
+Start with a small change in a repository you trust, such as fixing a search test
+or correcting a broken link in a documentation site.
 
-Use this pilot for ordinary changes in a trusted checkout. This recipe does not
-establish isolation for executing untrusted contributor code.
+## Prerequisites
 
-## 1. Install the prerequisites
+You need Git, Ruby 3.4, authenticated [GitHub CLI](https://cli.github.com/),
+and a signed-in Codex app, [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
+or [Claude Code](https://code.claude.com/docs/en/setup).
+Check `git --version`, `ruby --version`, and `gh auth status` in your terminal;
+run `gh auth login` if needed. Codex terminal users also need `codex --version` to work;
+Claude Code users need `claude --version`.
+The skill uses no development gems. Keep your application's own Ruby version.
 
-Install [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
-[Git](https://git-scm.com/downloads), [Ruby 3.4](https://www.ruby-lang.org/en/documentation/installation/),
-and [GitHub CLI](https://cli.github.com/). Sign in to Codex and authorize GitHub CLI
-for the repository you will work in. Check your terminal:
+Your repository's `AGENTS.md` should name setup, validation, and review commands,
+the base branch, and who may authorize merging. Shaka reads the scripts and offers
+a small addition if required instructions are missing. Existing instructions count.
+To merge, GitHub must enforce required checks for the acting account, allow squash
+merges, and satisfy required approvals. Otherwise, Shaka explains the blocker on the PR.
 
-```bash
-codex --version
-git --version
-ruby --version
-gh auth status
-```
+## Install in the Codex app
 
-If GitHub CLI is not signed in, run `gh auth login`. The helper process needs Ruby
-3.4 available; keep your application's own Ruby/toolchain settings unchanged.
-You do not need Bundler or this project's development gems to use the skill.
-If a version manager selects a different Ruby inside your app, launch from outside
-that checkout with `shaka work --repo /path/to/app`, or invoke `scripts/shaka` with the
-absolute path to your Ruby 3.4 executable. Do not change the application's Ruby
-version just to start the workflow.
-
-## 2. Get the trusted workflow source
+Keep this trusted source checkout outside the repositories you will edit.
+If it already exists, follow **Upgrade** below. First, get the source:
 
 ```bash
 mkdir -p "$HOME/agent-tools"
 git clone https://github.com/shakacode/shaka.git "$HOME/agent-tools/shaka"
-git -C "$HOME/agent-tools/shaka" log -1 --oneline
 ```
 
-Review the source you will run. Keep this checkout separate from the application
-you want to change. If it already exists, use the upgrade instructions below.
-
-## 3. Install outside your repositories
-
-<a id="use-shaka-in-the-codex-app"></a>
-
-### Use $shaka in the Codex app
-
-After completing steps 1–2, install into Codex's user skills directory:
+Inspect the cloned `bin/install` and `skills/shaka/` source. Then, with Ruby 3.4
+available, install the skill:
 
 ```bash
 "$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-In your repository's Codex task, send:
+<a id="use-shaka-in-the-codex-app"></a>
 
-```text
-$shaka
+Open a Codex task in the repository you want to change. The skill should appear on
+the next turn; restart Codex if it does not. Installation preserves other skills
+and settings. The task uses the app's existing permissions; this installation does
+not create a sandbox for untrusted contributor code.
+
+<a id="use-shaka-in-claude-code"></a>
+
+## Install in Claude Code
+
+After cloning the source as above, install into Claude Code's user skills directory:
+
+```bash
+"$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.claude/skills"
 ```
 
-The agent asks for the issue number, URL, or task description and your merge
-preference if unset. You can include the task directly, such as `$shaka Fix the failing
-search test`, to skip the task question. The skill should appear on the next turn; if it does
-not, restart Codex. The app uses that task's existing permissions. Installing a
-skill does not change its sandbox; use the terminal launcher below when you want
-its tested startup boundary. Keep the trusted source outside the repository you
-are changing.
+Start Claude Code in the repository you want to change, and use `/shaka` wherever
+this guide shows `$shaka`. Claude Code runs your personal skill instead of a
+same-named skill in a repository's `.claude/skills`, and the skill stops if it was
+loaded from inside the checkout. Keep the trusted source outside any `--add-dir`
+directory. Your usual permission mode applies; installation adds no sandbox.
 
-### Use a fresh Codex terminal session
+## Complete your first task
 
-Use a dedicated directory outside your repositories and global agent profile:
+Send this, replacing the example with your issue number, task URL, or description:
+
+```text
+$shaka Fix the failing search test. Bring the finished PR back for my approval.
+```
+
+An issue number uses the current repository. A URL can identify another one;
+Shaka asks for its checkout if needed. If it cannot read the task, paste the
+requirements. Private task content stays out of public PRs unless you allow sharing.
+
+The agent reads the task, recommends a model and effort, then pauses. Change the
+host settings if you wish and say **ready**. It implements on a branch, runs your
+repo's checks, opens a PR with a walkthrough, and handles review findings. You get
+the PR link, validation result, and any blocker; detailed evidence is on the PR.
+
+The example chooses **Ask**: you make the merge decision after the PR is ready.
+To choose **Auto**, say “Merge when checks and required approvals pass” instead.
+Existing merge authority is reused; review-only and PR-only requests stop there.
+Auto still waits for required approvals and raises risky decisions. If a task stops
+at a blocker, resume it to continue; it does not keep trying in the background.
+
+## Use a fresh terminal session
+
+After cloning the source, install into a dedicated directory outside your repositories:
 
 ```bash
 "$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/agent-tools/shaka-pilot/skills"
-```
-
-The installer creates a `shaka` entry point in that directory and refuses to overwrite
-another skill. Keep the link and source outside candidate repositories. It changes
-no global profile, authentication, hooks, or other skills.
-
-This dedicated directory is for the terminal launcher; it does not register `$shaka`
-in the Codex app. Choose the user-directory installation above for app discovery.
-
-If you used the earlier project-local instructions, remove that old link only if
-it is still a symlink. If Git replaced it with tracked files, do not delete those
-files blindly or start a task using them; resolve the conflicting installation first.
-
-Your existing `AGENTS.md`, `.agents/bin/` commands, and workflow configuration stay
-in place. The agent uses their setup, validation, and review instructions. If those
-commands are undocumented, establish them before implementation; the workflow
-source's `bin/validate` is not a substitute for your application's checks.
-
-Installing this skill does not disable other instructions, skills, or hooks. If
-you already run another workflow pack, use your host's settings to disable
-conflicting workflows for the pilot. A separate checkout alone is not a security
-sandbox or an isolated agent configuration.
-
-## 4. Start your terminal task
-
-For the source installation above, expose its command in this terminal:
-
-```bash
 export PATH="$HOME/agent-tools/shaka-pilot/skills/shaka/scripts:$PATH"
+shaka work --repo /path/to/your/repository "Fix the failing search test. Use Ask."
 ```
 
-Run from anywhere inside the repository you want to change:
+Replace the repository path. This starts interactive Codex with the same task flow.
+If your application's version manager selects another Ruby, run the command from
+outside that checkout with Ruby 3.4 selected. Add the `PATH` line to your shell
+startup file to make `shaka` available in new terminals.
+The launcher uses a separate temporary session and native approval prompts;
+[host support](host-support.md#startup-boundary-and-current-validation) records its tested limits.
+
+## Upgrade
+
+Set `shaka_source` to your existing trusted checkout. Inspect its remote and local
+changes first; it should point to `shakacode/shaka`. Preserve local edits and resolve
+conflicts before switching or pulling.
 
 ```bash
-shaka work "Fix the failing search test"
-```
-
-Supply a GitHub issue, Linear link, or task description as the argument. When
-starting elsewhere, put `--repo /path/to/your/repository` before the task. Use
-`shaka work --help` for the command syntax. A packaged installation already supplies
-`shaka`; see [installing the package](packaging.md).
-
-The launcher identifies your Git checkout and opens native interactive Codex.
-Your account, model, and reasoning settings stay native, and questions appear in
-the same terminal. The agent reads the task and your repository's instructions;
-if a task link is inaccessible, it asks for the missing description. You do not
-need a different prompt for each tracker.
-
-If you have not already specified how to handle merging, it asks a question like:
-
-> For this first task, I recommend bringing the finished PR back for your approval.
-> Would you prefer that, or should I merge it when the checks and required approvals pass?
-
-That choice applies to this task. Existing instructions are reused; no answer means
-the agent can prepare the PR but cannot merge it. Private tracker content stays out
-of public PRs unless you authorize sharing it.
-
-<details>
-<summary>Startup boundary and current validation</summary>
-
-Each launch creates a private temporary session outside the consumer checkout,
-reads the trusted skill by its absolute source path, and directs repository
-commands to the checkout. It adds no skill link to that writable session. The
-launcher rejects canonical or lexical overlaps between writable paths and the
-trusted source or installed command/link parents. If your `TMPDIR` is inside the
-target checkout, choose a temporary directory outside it before launching.
-
-The native shell sandbox permits writes in the session and target checkout,
-overrides extra writable roots, excludes ambient temporary directories, and uses
-approval prompts for this launch. It sets shell `TMPDIR` and zsh `TMPPREFIX`
-inside the session's temporary directory. It leaves authentication and model settings
-alone. Session scratch stays in the system temporary directory after Codex exits;
-the launcher leaves no background process. Codex still shows its native directory
-trust and command-approval prompts; the launcher does not bypass them.
-
-On Codex CLI 0.154.0, separate startup and native sandbox probes kept candidate
-skill metadata out of the initial prompt and denied writes to the trusted source,
-installed link, and link parent while permitting session and checkout writes.
-A live terminal trial verified temporary-file access, protected-file write denial,
-and automatic native usage discovery. A separate native sandbox check reproduced
-and corrected zsh heredoc failures using the session temp prefix. Launcher tests
-verify the executed arguments and path refusals. App startup,
-other host versions, and complete isolation remain unverified. The sandbox does
-not establish that dependencies are trustworthy or remove secrets from published
-text. Do not approve an escape merely to make a check pass.
-
-</details>
-
-## 5. Know what to expect
-
-The agent resolves important questions, implements on a branch, runs your repo's
-checks, opens the PR, explains the change, and handles consequential review findings.
-You receive the outcome and PR link; supporting checks and available usage evidence
-are in expandable details. Usage is reported on every task, with missing data
-marked UNKNOWN. The [native usage reader](usage-reporting.md) collects available
-Codex records automatically; complete per-commit attribution remains unverified.
-
-Merging requires observable native GitHub checks enforced for the acting account.
-If that setup is missing, the agent can hand over the PR with the reason it cannot
-merge. **Ask** requests one merge decision; **Auto** needs no second decision once
-the required approvals are satisfied. See [working with your agent](working-with-your-agent.md)
-for questions, writing preferences, and security boundaries.
-
-## Try the guided flow
-
-In a fresh task for your chosen repository, start with an available model and
-**low** effort. Use a small issue you own; avoid opening a second owner for work
-already in progress. Send:
-
-```text
-$shaka
-```
-
-If the task and merge preference are unknown, expect a question like:
-
-> Which issue number, URL, or task should I work on? If it includes merging, should
-> I bring the finished PR back for your approval (**Ask**), or merge when checks and
-> required approvals pass (**Auto**)? I recommend Ask for your first trial.
-
-For example, answer with your issue number and `Ask`. A number is resolved against
-the current repository; a URL can identify a different one. The agent asks if the
-repository is unclear and reuses answers you have already supplied. For a separate
-eligible Auto trial, answer with its issue number and `Auto`. Review-only or PR-only
-requests keep their stopping point and need no merge choice.
-
-It then reads the task and repository instructions before naming an available model
-and low effort, with a short reason. The agent pauses here: use the host controls to
-change either setting if you wish, then tell it you are ready. A prompt cannot change
-the runner. Missing required repository instructions should produce a concrete offer
-to add the smallest seam. Approve that proposal if needed. Once you resume and
-necessary setup is settled, implementation proceeds. **Ask** saves the merge decision
-for the finished PR.
-
-<details>
-<summary>Optional startup-only test</summary>
-
-To inspect intake without implementation, send `$shaka Stop after the startup
-questions, before editing files.` Then supply the issue when asked. This extra stop
-is for testing; normal `$shaka` already pauses at the model/effort checkpoint and
-resumes implementation only after you say you are ready.
-
-Do not delete a working seam to test missing instructions. Use a disposable
-repository with real build/test scripts but no instructions for running them.
-
-</details>
-
-Check that the agent honors your choice, keeps a useful task title, publishes one
-current walkthrough, handles review findings, and reports available usage. Ask must
-stop for the finished PR's approval; Auto must preserve the same required gates.
-Record confusing questions or missed behavior in [pilot issue #1](https://github.com/shakacode/shaka/issues/1), without
-private task content. These are manual acceptance cases, not proof they pass.
-
-For a larger task, an optional first prompt is:
-
-```text
-$shaka Plan only for <task URL>. Recommend the smallest first PR and model/effort.
-Return a short prompt for a fresh implementation task. Do not edit or publish.
-```
-
-No separate planning skill is required. Use the resulting prompt in a new task
-with its recommended host settings, carrying only the relevant plan and evidence.
-
-## Upgrade or remove
-
-Keep your existing trusted source directory when upgrading. Set `shaka_source`
-to that checkout. Earlier guides used `agent-workflows-v2` and
-`shakacode-workflows`; new installations use `shaka`. GitHub redirects the old
-repository URL, so you do not need to clone again.
-
-```bash
-shaka_source="$HOME/agent-tools/agent-workflows-v2"
+shaka_source="$HOME/agent-tools/shaka"
 git -C "$shaka_source" remote -v
+git -C "$shaka_source" status --short
 git -C "$shaka_source" switch main
 git -C "$shaka_source" pull --ff-only
 "$shaka_source/bin/install" --skills-dir "$HOME/.agents/skills"
 ```
 
-Use the actual directory you installed instead of the example value. Preserve
-local edits; do not force a switch. Confirm its remote is the ShakaCode pilot
-before pulling, then update that remote to `https://github.com/shakacode/shaka.git`
-when convenient. Rerunning the installer adds `$shaka`. The old `sw` and `aw`
-links may become broken when their source files move; inspect and unlink only
-your pilot links. Start a fresh Codex task after upgrading. For a dedicated
-terminal installation, set `shaka_skills_dir` to your existing dedicated skills
-directory, then install and put the renamed command on `PATH`:
+Start a fresh task after upgrading. For a terminal install, pass your dedicated
+skills directory instead; for Claude Code, pass `$HOME/.claude/skills`. Earlier installs used `agent-workflows-v2` or
+`shakacode-workflows` source directories: keep that location and use it above.
+Inspect old `sw` and `aw` symlinks and unlink only those belonging to this installation.
+Replace any old `sw/scripts` shell `PATH` entry with the `shaka/scripts` path above.
+
+## Remove or roll back
+
+Inspect the link with `ls -l "$HOME/.agents/skills/shaka"`. If it points to your
+Shaka installation, remove it:
 
 ```bash
-shaka_skills_dir="$HOME/agent-tools/shaka-pilot/skills"
-"$shaka_source/bin/install" --skills-dir "$shaka_skills_dir"
-export PATH="$shaka_skills_dir/shaka/scripts:$PATH"
-shaka work --help
+test -L "$HOME/.agents/skills/shaka" && unlink "$HOME/.agents/skills/shaka"
 ```
 
-Replace the old `sw/scripts` entry in your shell startup file with this
-`shaka/scripts` path so new terminals can also find the command.
-
-To remove the app installation, first verify each symlink belongs to this pilot.
-Earlier releases installed `sw` and sometimes `aw`; new installations create
-only `shaka`. Then remove only those links:
-
-```bash
-for skill in shaka sw aw; do
-  test -L "$HOME/.agents/skills/$skill" && unlink "$HOME/.agents/skills/$skill"
-done
-```
-
-For a terminal installation, use its skills directory in the same commands.
-Remove verified links before uninstalling a gem or rolling back to a revision
-without those entry points, then run that revision's installer. Do not remove an
-unrelated skill or directory. Other skills and application configuration are unaffected.
+Use your dedicated skills directory for a terminal install and remove its shell
+`PATH` entry. For Claude Code, use `$HOME/.claude/skills`. Inspect and remove any old `sw` or `aw` links individually; preserve
+unrelated skills and real directories. To roll back, remove the verified links,
+check out the prior trusted source revision, and run that revision's installer.

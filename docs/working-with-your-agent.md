@@ -14,12 +14,12 @@ before the answer becomes expensive to change, rather than waiting for PR review
 | Situation | What the agent does |
 | --- | --- |
 | The checkout or task is unavailable | Asks for the repository path or task description; does not make you rewrite the workflow prompt. |
-| Required repository instructions are missing | Reads scripts and CI, offers a minimal `AGENTS.md` addition, and asks only about policy it cannot establish. Existing documented commands count as a seam; no new config framework is required. |
+| Required repository instructions are missing | Reads scripts and CI, offers a minimal `AGENTS.md` addition, and asks only about policy it cannot establish. Existing documented commands are sufficient; no new config framework is required. |
 | Merge authority has not been specified | Asks early whether to merge after checks and required approvals pass or bring the finished PR back for approval. Reuses existing authority; without an answer, prepares the PR and asks before merging. |
 | The model and effort have been recommended for implementation | Pauses so you can change the host settings, even if they already match; waits for you to say you are ready before implementation. |
 | The goal or acceptable behavior is unclear | Reads the existing context, then asks the smallest question needed to proceed. |
 | Several routine, reversible approaches fit the request | Chooses one and continues; mentions the assumption if it affects your expectations. |
-| Implementation reveals a product tradeoff, wider scope, or consequential risk | Explains the discovery, recommends a path, and asks before dependent work continues. |
+| Implementation reveals a product tradeoff, wider scope, or risk | Explains the discovery, recommends a path, and asks before dependent work continues. |
 | An answer is pending | Continues useful independent work when safe, but does not begin implementation while the model/effort checkpoint is pending. Does not treat silence as approval. |
 | The PR is ready | In **Ask**, requests one merge decision unless already authorized. In **Auto**, merges after the required checks and approvals pass. |
 
@@ -76,7 +76,7 @@ with its prerequisites, or wait until the combined change is safe.
 
 The agent recommends a short ordered list: what each PR delivers, its dependency,
 and how to verify it. It can make routine splits within the authorized task;
-changed product scope or consequential partial-release behavior needs a decision.
+changed product scope or risky partial-release behavior needs a decision.
 Keep the same owner and task. Record PR dependencies and remaining work in PR
 descriptions, keeping private context in its original tracker. Link the PRs from
 that work item when authorized. A partial merge does not finish the task or
@@ -184,7 +184,7 @@ Review what will be published and use restricted execution for untrusted changes
 
 A private repo can still contain imported text, outside contributions, or unsafe
 dependencies. There is no blanket “security off for private repos” switch. A repo
-may choose lighter optional review/check requirements through its trusted seam;
+may choose lighter optional review/check requirements through its trusted instructions;
 authorization, credential boundaries, current-commit verification, and required
 GitHub checks still apply. Repository visibility alone never turns those off.
 

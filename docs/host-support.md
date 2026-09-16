@@ -1,9 +1,9 @@
 # Host support
 
-Start with **Codex CLI**, the reference host for this pilot. Follow the
-[getting-started guide](getting-started.md) for installation and your first task.
-Claude Code and Cursor are compatibility targets; neither has a verified V2
-consumer workflow yet.
+Codex CLI is the reference host for this pilot and Claude Code the second host.
+Follow the [getting-started guide](getting-started.md) for installation and your
+first task. Neither Claude Code nor Cursor has a verified complete V2 consumer
+delivery yet.
 
 The hosts share one `shaka` skill and the same Ruby helpers for GitHub
 operations. Your repository keeps its existing `AGENTS.md`, commands, and policy.
@@ -12,16 +12,16 @@ and reading native usage records. It does not create three copies of the workflo
 
 ## What has been verified
 
-These observations were made on September 14, 2026. A successful install or CLI
+These observations were made on September 14 and 15, 2026. A successful install or CLI
 startup does not establish a complete workflow, and workflow success does not
 establish complete usage attribution.
 
-| Capability | Codex CLI 0.154.0 | Claude Code 2.1.267 | Cursor CLI 2026.09.10-fd3934a |
+| Capability | Codex CLI 0.154.0 | Claude Code desktop 2.1.270, CLI 2.1.272 | Cursor CLI 2026.09.10-fd3934a |
 | --- | --- | --- | --- |
-| Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | CLI options inspected; V2 instruction activation unverified. | Dedicated CLI package version/help checked; V2 instruction activation unverified. |
-| OS write boundary | A native workspace sandbox denied writes to the separate trusted source, installed link, and link directory while allowing the session and target checkout. | Native V2 sandbox boundary unverified. | Native V2 sandbox boundary unverified. |
-| Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides through its repository seam; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
-| Usage | Reader matched 14 real CLI responses and repeated-source input without double counting; attribution remains partial. | Complete V2 usage reporting unverified. | Complete V2 token and effort reporting unverified. |
+| Installation and startup | Dedicated skill installation and explicit trusted-file startup checked. | A symlinked personal skill loaded in the desktop app and in `claude -p`; `/shaka` asked for the task and merge preference and stopped before edits. A same-named repository skill did not replace it. | Dedicated CLI package version/help checked; V2 instruction activation unverified. |
+| OS write boundary | A native workspace sandbox denied writes to the separate trusted source, installed link, and link directory while allowing the session and target checkout. | No launcher or sandbox; the user's permission mode applies. Not separately probed. | Native V2 sandbox boundary unverified. |
+| Real workflow | Protected PR operations exercised in V2. A fresh CLI task implemented and verified the Astro website guides using its repository instructions; the owning task handled publication. | Consumer delivery unverified. | Consumer delivery unverified. |
+| Usage | Reader matched 14 real CLI responses and repeated-source input without double counting; attribution remains partial. | Reader matched an independent per-response aggregate for a desktop session with a subagent and two models, and Claude Code's own totals for two CLI runs. | Complete V2 token and effort reporting unverified. |
 
 The Codex write test establishes that particular local boundary. It does not
 establish equivalent behavior in the desktop app, other versions, or other hosts.
@@ -42,19 +42,51 @@ can undermine an otherwise separate installation. See the
 [Codex permissions documentation](https://learn.chatgpt.com/docs/permissions)
 for the host's controls; the getting-started guide owns the tested V2 recipe.
 
-## Claude Code and Cursor
+## Startup boundary and current validation
+
+Each launch creates a private temporary session outside the consumer checkout,
+reads the trusted skill by its absolute source path, and directs repository
+commands to the checkout. It adds no skill link to that writable session. The
+launcher rejects canonical or lexical overlaps between writable paths and the
+trusted source or installed command/link parents. If your `TMPDIR` is inside the
+target checkout, choose a temporary directory outside it before launching.
+
+The native shell sandbox permits writes in the session and target checkout,
+overrides extra writable roots, excludes ambient temporary directories, and uses
+approval prompts for this launch. It sets shell `TMPDIR` and zsh `TMPPREFIX`
+inside the session's temporary directory. It leaves authentication and model settings
+alone. Session scratch stays in the system temporary directory after Codex exits;
+the launcher leaves no background process. Codex still shows its native directory
+trust and command-approval prompts; the launcher does not bypass them.
+
+On Codex CLI 0.154.0, separate startup and native sandbox probes kept candidate
+skill metadata out of the initial prompt and denied writes to the trusted source,
+installed link, and link parent while permitting session and checkout writes.
+A live terminal trial verified temporary-file access, protected-file write denial,
+and automatic native usage discovery. A separate native sandbox check reproduced
+and corrected zsh heredoc failures using the session temp prefix. Launcher tests
+verify the executed arguments and path refusals. App startup,
+other host versions, and complete isolation remain unverified. The sandbox does
+not establish that dependencies are trustworthy or remove secrets from published
+text. Do not approve an escape merely to make a check pass.
+
+## Claude Code
+
+Use the [Claude Code install recipe](getting-started.md#use-shaka-in-claude-code).
+Claude Code runs a personal skill instead of a same-named skill in a repository's
+`.claude/skills`, as its [skill locations](https://code.claude.com/docs/en/skills)
+document; the September 15 trial confirmed this with a canary repository copy.
+There is no `shaka work` launcher for Claude Code. Start `claude` in the repository,
+keep the trusted source outside any `--add-dir` directory, and rely on the permission
+mode you already use. The next required evidence is a complete ordinary consumer PR
+delivered with `/shaka`.
+
+## Cursor
 
 Keep an existing, authenticated host configuration in place when preparing a
 compatibility trial. Check its version and available controls before starting.
-Native `SKILL.md` support is documented for
-[Claude Code](https://code.claude.com/docs/en/skills) and
-[Cursor](https://cursor.com/docs/skills), but shared file format alone does not
-prove V2 activation or safe execution.
-
-Claude Code exposes an appended system-prompt file, additional working directories,
-and per-session settings. Those are candidate setup mechanisms, not a verified
-V2 launch recipe. The next required evidence is a bounded real task that confirms
-trusted instruction loading, the write boundary, and the repository's checks.
+Native `SKILL.md` support is [documented for Cursor](https://cursor.com/docs/skills),
+but shared file format alone does not prove V2 activation or safe execution.
 
 Cursor user skills can be installed at `~/.cursor/skills` with the standard
 installer. A September 14 trial did not find the skill through `~/.agents/skills`,

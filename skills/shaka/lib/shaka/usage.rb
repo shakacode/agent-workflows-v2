@@ -2,10 +2,18 @@
 
 require 'json'
 require 'optparse'
+require_relative 'claude_usage'
+require_relative 'response_count'
 
 module Shaka
   # Retains only usage metadata; transcripts and cumulative counters are discarded.
   class CodexUsage
+    include ResponseCount
+
+    HOST = 'Codex'
+    NOTE = 'Cached input is part of input; reasoning output is part of output.'
+    LATEST_SCOPE = 'latest turn only per source; earlier turns excluded'
+
     attr_reader :responses, :versions, :gaps
 
     def initialize(files, turns, all_turns: false)
@@ -79,18 +87,6 @@ module Shaka
       )
     end
 
-    def count(record)
-      identity = record['response_id']
-      return @gaps << 'Unreadable or unidentifiable records' unless identity.is_a?(String) && !identity.empty?
-
-      previous = @responses[identity]
-      if previous && previous != record
-        previous.merge!('usage' => {}, 'configuration' => [nil] * 4, 'timestamp' => nil, 'turn_id' => nil)
-        @gaps << 'Conflicting response copies'
-      end
-      @responses[identity] ||= record
-    end
-
     def parse(line)
       record = JSON.parse(line)
       return record if record.is_a?(Hash) && record['payload'].is_a?(Hash)
@@ -103,13 +99,15 @@ module Shaka
     end
   end
 
-  # Read-only reporting of Codex's per-response native records.
+  # Read-only reporting of per-response usage records from a supported host.
   class Usage
     FIELDS = %w[input_tokens cached_input_tokens output_tokens reasoning_output_tokens
                 cache_write_input_tokens total_tokens].freeze
+    READERS = { 'codex' => CodexUsage, 'claude-code' => ClaudeUsage }.freeze
+    HOST_CONTEXT = { 'codex' => 'CODEX_THREAD_ID', 'claude-code' => 'CLAUDE_CODE_SESSION_ID' }.freeze
 
     def self.run(arguments)
-      options = { files: [], turns: [] }
+      options = { files: [], turns: [], host: detected_host }
       parser(options).parse!(arguments)
       puts parser(options) if options[:help]
       return 0 if options[:help]
@@ -134,23 +132,32 @@ module Shaka
     end
 
     def self.source_options(flags, options)
+      flags.on('--host NAME', READERS.keys, 'codex or claude-code') { |v| options[:host] = v }
       flags.on('--file PATH', 'Native JSONL; repeat for contributors/resumes') { |v| options[:files] << v }
       flags.on('--all-turns', 'Only for sources dedicated to this task') { options[:all_turns] = true }
       flags.on('--turn ID', 'Select a native turn; repeat for a shared interval') { |v| options[:turns] << v }
     end
 
+    def self.detected_host
+      found = HOST_CONTEXT.select { |_, variable| ENV.key?(variable) }.keys
+      return if found.size > 1
+
+      found.first || 'codex'
+    end
+
     def self.valid_mapping?(options)
       commits = options[:commit].to_s.split(',')
-      !(options[:all_turns] && options[:turns].any?) &&
+      options[:host] && !(options[:all_turns] && options[:turns].any?) &&
         !commits.empty? && commits.all? { |commit| commit.match?(/\A[0-9a-f]{40}\z/) } &&
         %w[implementation review integration shared-planning].include?(options[:contribution])
     end
 
     def initialize(options)
       @options = options
+      reader = READERS.fetch(options[:host])
       @inferred = options[:files].empty?
-      @options[:files] = CodexUsage.discover if @inferred
-      @source = CodexUsage.new(@options[:files], @options[:turns], all_turns: options[:all_turns])
+      @options[:files] = reader.discover if @inferred
+      @source = reader.new(@options[:files], @options[:turns], all_turns: options[:all_turns])
       @responses = @source.responses.values
     end
 
@@ -165,7 +172,8 @@ module Shaka
         #{@options[:commit]} / #{@options[:contribution]}
         SHARED source interval: #{interval}. Snapshot through the last observed response.
         Source selection: #{@inferred ? 'host context' : 'explicit files'}.
-        Codex source versions: #{versions}.
+        #{@source.class::HOST} source versions: #{versions}.
+        #{@source.class::NOTE}
 
         | Provider | Configured model | Routed model | Effort | Input | Cached input | Output | Reasoning output | Cache writes | Native total |
         | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -180,7 +188,7 @@ module Shaka
     def turn_scope
       return 'all turns in selected sources' if @options[:all_turns]
 
-      @options[:turns].empty? ? 'latest turn only per source; earlier turns excluded' : 'explicitly selected turns'
+      @options[:turns].empty? ? @source.class::LATEST_SCOPE : 'explicitly selected turns'
     end
 
     def rows
