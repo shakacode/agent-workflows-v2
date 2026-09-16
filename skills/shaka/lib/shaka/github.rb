@@ -3,22 +3,26 @@
 require 'json'
 require 'open3'
 require_relative 'error'
+require_relative 'publishing'
 
 module Shaka
-  # Reads native PR evidence and publishes reviews bound to its current commit.
-  class GitHub
-    SNAPSHOT_QUERY = <<~GRAPHQL
-      query($owner: String!, $name: String!, $number: Int!) {
-        repository(owner: $owner, name: $name) {
-          pullRequest(number: $number) {
-            id number url state isDraft headRefOid baseRefName
-            mergeStateStatus reviewDecision viewerCanMergeAsAdmin
-            isInMergeQueue isMergeQueueEnabled autoMergeRequest { enabledAt }
-            headRepository { nameWithOwner } baseRepository { nameWithOwner }
-          }
+  # The native pull-request evidence a publication decision depends on.
+  SNAPSHOT_QUERY = <<~GRAPHQL
+    query($owner: String!, $name: String!, $number: Int!) {
+      repository(owner: $owner, name: $name) {
+        pullRequest(number: $number) {
+          id number url state isDraft headRefOid baseRefName
+          mergeStateStatus reviewDecision viewerCanMergeAsAdmin
+          isInMergeQueue isMergeQueueEnabled autoMergeRequest { enabledAt }
+          headRepository { nameWithOwner } baseRepository { nameWithOwner }
         }
       }
-    GRAPHQL
+    }
+  GRAPHQL
+
+  # Reads native PR evidence and publishes reviews bound to its current commit.
+  class GitHub
+    include Publishing
 
     def initialize(repository, number, runner: nil)
       unless repository.is_a?(String) && repository.ascii_only? &&
@@ -59,6 +63,7 @@ module Shaka
       raise Error, 'Walkthrough body must be nonempty.' if body.strip.empty?
 
       verify_head(head)
+      verify_rendering(body)
       created = api(reviews_path, method: 'POST', fields: { event: 'COMMENT', commit_id: head, body: body })
       published = review(created['id'])
       verify_review(published, created['id'], head, body)
@@ -110,13 +115,15 @@ module Shaka
       raise Error, 'Published walkthrough review did not match its commit, body, or COMMENT state.'
     end
 
-    def execute(argv, input: '', accepted: [0])
+    def execute(argv, input: '', accepted: [0]) = parse_json(capture(argv, input: input, accepted: accepted))
+
+    def capture(argv, input: '', accepted: [0])
       stdout, _stderr, status = @runner.call(argv, stdin_data: input)
       unless accepted.include?(status.exitstatus)
         raise Error, "gh #{argv[1, 2].join(' ')} failed (exit #{status.exitstatus})."
       end
 
-      parse_json(stdout)
+      utf8(stdout)
     rescue Errno::ENOENT
       raise Error, 'GitHub CLI is unavailable; install gh and authenticate.'
     end
