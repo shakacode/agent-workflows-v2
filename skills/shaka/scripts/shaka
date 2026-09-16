@@ -22,7 +22,10 @@ end
 COMMANDS = %w[pr description reply walkthrough merge].freeze
 
 def content(path)
-  JSON.parse(File.read(path, encoding: 'UTF-8'))
+  parsed = JSON.parse(File.read(path, encoding: 'UTF-8'))
+  raise Shaka::Error, 'Content file must hold a JSON object.' unless parsed.is_a?(Hash)
+
+  parsed
 rescue JSON::ParserError => e
   raise Shaka::Error, "Content file is not valid JSON: #{e.message}"
 end

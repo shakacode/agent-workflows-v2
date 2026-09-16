@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
+require 'json'
 
 class CliTest < Minitest::Test
   COMMAND = File.expand_path('../skills/shaka/scripts/shaka', __dir__)
@@ -20,11 +21,41 @@ class CliTest < Minitest::Test
     assert_includes error, 'shaka-content.json'
   end
 
+  # A stub gh on PATH records any invocation, so "never contacts GitHub" is actually asserted.
+  def without_github
+    Dir.mktmpdir do |dir|
+      sentinel = File.join(dir, 'called')
+      File.write(File.join(dir, 'gh'), "#!/bin/sh\ntouch #{sentinel}\nexit 1\n")
+      File.chmod(0o755, File.join(dir, 'gh'))
+      yield dir, sentinel
+    end
+  end
+
+  def run_offline(dir, body, *)
+    path = File.join(dir, 'content.json')
+    File.write(path, body)
+    Open3.capture3({ 'PATH' => "#{dir}:#{ENV.fetch('PATH')}" }, COMMAND, *, '--content-file', path)
+  end
+
   def test_a_reply_without_a_key_does_not_call_github
-    _output, error, status = Open3.capture3(COMMAND, 'reply', 'owner/repo', '1',
-                                            '--content-file', '/missing/shaka-content.json')
-    refute status.success?
-    assert_includes error, 'shaka:'
+    without_github do |dir, sentinel|
+      body = JSON.generate({ 'identity' => { 'agent' => 'Codex' }, 'summary' => 'Done.' })
+      _output, error, status = run_offline(dir, body, 'reply', 'owner/repo', '1')
+      refute status.success?
+      assert_includes error, 'key'
+      refute File.exist?(sentinel), 'the reply attempted a GitHub request without a key'
+    end
+  end
+
+  def test_content_that_is_not_a_json_object_is_a_clear_error
+    without_github do |dir, sentinel|
+      _output, error, status = run_offline(dir, '[1, 2, 3]', 'walkthrough', 'owner/repo', '1',
+                                           '--head', 'a' * 40)
+      refute status.success?
+      assert_includes error, 'shaka: '
+      refute_includes error, 'NoMethodError'
+      refute File.exist?(sentinel)
+    end
   end
 
   def test_invalid_operation_exits_without_a_github_call
