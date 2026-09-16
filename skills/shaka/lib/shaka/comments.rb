@@ -3,32 +3,51 @@
 require_relative 'error'
 require_relative 'comment_authors'
 require_relative 'comment_threads'
+require_relative 'comment_trust_config'
 
 module Shaka
   # Reads one issue or PR discussion at a stable visibility and PR head.
   class Comments
-    def initialize(github)
+    def initialize(github, trust_config: nil, machine_path: CommentTrustConfig::MACHINE_PATH)
       @github = github
+      @trust_config = trust_config
+      @machine_path = machine_path
     end
 
     def call(issue_only: false, expected_head: nil)
-      head = issue_only ? issue_head(expected_head) : pr_head(expected_head)
-      visibility = repository_visibility
+      pull, visibility, config, base_oid = read_context(issue_only, expected_head)
       items = fetch_items(issue_only:)
       threads, index = issue_only ? [[], {}] : CommentThreads.new(@github).call
-      screened = CommentAuthors.new(@github, public_repo: visibility == 'public').screen(items, thread_index: index)
-      verify_context(head, visibility)
-      { 'visibility' => visibility, 'head' => head,
-        'review_threads' => threads }.merge(screened)
+      screened = screen(items, visibility, config, index)
+      verify_context(pull && pull['headRefOid'], visibility, base_oid, config)
+      verify_machine_config(config) if visibility == 'public' && !@trust_config
+      packet(pull, visibility, config, threads, screened)
     end
 
     private
 
-    def pr_head(expected)
+    def read_context(issue_only, expected_head)
+      pull = issue_only ? issue_head(expected_head) : pr_snapshot(expected_head)
+      visibility = repository_visibility
+      config, base_oid = visibility == 'public' ? public_config : [nil, nil]
+      [pull, visibility, config, base_oid]
+    end
+
+    def screen(items, visibility, config, index)
+      CommentAuthors.new(@github, public_repo: visibility == 'public', trust_config: config)
+                    .screen(items, thread_index: index)
+    end
+
+    def packet(pull, visibility, config, threads, screened)
+      { 'visibility' => visibility, 'head' => pull && pull['headRefOid'],
+        'review_threads' => threads, 'trust_sources' => config ? config[:sources] : [] }.merge(screened)
+    end
+
+    def pr_snapshot(expected)
       raise Error, 'Expected a full PR head.' unless expected.is_a?(String) && expected.match?(/\A[0-9a-f]{40}\z/)
 
-      head = open_head
-      return head if expected == head
+      pull = open_snapshot
+      return pull if expected == pull['headRefOid']
 
       raise Error, 'Comments are not at the expected head.'
     end
@@ -42,16 +61,39 @@ module Shaka
       nil
     end
 
-    def open_head
+    def open_snapshot
       pull = @github.snapshot
       raise Error, 'PR must be open for a comment read.' unless pull['state'] == 'OPEN'
 
-      pull['headRefOid']
+      pull
     end
 
-    def verify_context(head, visibility)
-      raise Error, 'PR head changed or closed during comment read.' if head && open_head != head
+    def public_config
+      loader = CommentTrustConfig.new(@github, machine_path: @machine_path)
+      base_oid = loader.default_base_oid unless @trust_config
+
+      [@trust_config || loader.load(base_oid: base_oid), base_oid]
+    end
+
+    def verify_context(head, visibility, base_oid, config)
+      verify_pull_context(head) if head
+      verify_default_config(base_oid, config[:sources]) if base_oid
       raise Error, 'Repository visibility changed during comment read.' unless repository_visibility == visibility
+    end
+
+    def verify_pull_context(head)
+      pull = open_snapshot
+      raise Error, 'PR head changed or closed during comment read.' unless pull['headRefOid'] == head
+    end
+
+    def verify_default_config(base_oid, sources)
+      loader = CommentTrustConfig.new(@github, machine_path: @machine_path)
+      current = loader.default_base_oid
+      loader.verify_repository_source(sources, current) unless current == base_oid
+    end
+
+    def verify_machine_config(config)
+      CommentTrustConfig.new(@github, machine_path: @machine_path).verify_machine_source(config[:sources])
     end
 
     def repository_visibility

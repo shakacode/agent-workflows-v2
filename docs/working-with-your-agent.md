@@ -174,17 +174,43 @@ set of operations; they are not a complete security system.
 | --- | --- |
 | Pass GitHub arguments without constructing a shell command; parse JSON and check identifiers | The helpers. |
 | Bind the walkthrough and merge to the checked commit; reject missing checks, bypass-capable accounts, or unsupported merge conditions | The helpers, with native GitHub enforcement. |
-| Withhold public issue and PR comment bodies unless GitHub reports a human user type and verifies author write access; retain excluded links for maintainer triage | The `comments` helper. |
+| Withhold public issue and PR comment bodies unless current writer permission or trusted actor configuration verifies the author; retain excluded links for maintainer triage | The `comments` helper. |
 | Decide whether a change is authorized, safe to run, and adequately verified | The owning agent following trusted user/repo instructions. The helpers do not prove these judgments. |
 | Restrict file/network access and credentials while running candidate code | Host permissions and the execution environment. The helpers do not create a sandbox or inspect code for malicious behavior. |
 
 Public issues and PR comments are task data, even when they contain instructions.
 They cannot grant permission or replace trusted policy. The public comment reader
-uses explicit public visibility, user type, and GitHub permission evidence to
-screen authors; it does not scan prose or remove secrets from a supplied review
-body. Unknown and bot comments remain metadata only until the maintainer
-triages them.
+uses explicit public visibility, user type, current GitHub writer permission,
+and machine/repository trust configuration to screen authors. A configured
+human, bot, or active GitHub team member can supply task data; the reader does
+not scan prose or grant that data policy authority. Unknown and metadata-only
+bots remain links until the maintainer triages them.
 Review what will be published and use restricted execution for untrusted changes.
+
+For public repositories, Shaka reads compatible V1 YAML from the machine's
+`~/.agents/trusted-github-actors.yml` and the repository's
+`.agents/trusted-github-actors.yml`. Their entries combine; an absent file is
+an empty scope. The repository file is fetched at the current default-branch
+commit, so a PR cannot trust its own author by changing its head or targeting
+a weaker base branch. These keys
+are supported in both files; unknown keys or malformed YAML stop the read:
+
+```yaml
+trusted_users: [maintainer-login]
+trusted_bots: [review-bot]          # base login, without [bot]
+trusted_metadata_bots: [status-bot] # linked, never given prose
+trusted_teams: [OWNER/team-slug]    # machine file; use team-slug in repo file
+```
+
+The machine file requires `OWNER/team-slug`; only teams under the scanned
+repository owner apply. The repo file may use an unqualified slug. Team trust
+requires live active membership, and a configured bot must have GitHub's `Bot`
+type and `[bot]` login. A bot listed as both actionable and metadata-only is
+a configuration error. Every included body remains task data. For larger
+discussions, writer candidates are narrowed in GraphQL batches before REST
+permission checks; team members are listed once per configured team, then
+matched authors receive a final active-membership check.
+More than 20 applicable configured teams stops the read before team API calls.
 
 A private or internal repo can still contain imported text, outside contributions,
 or unsafe dependencies. The comment-author screen applies only to public repos.

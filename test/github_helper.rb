@@ -5,6 +5,7 @@ require 'shaka/github'
 
 module GitHubHelper
   HEAD = 'a' * 40
+  BASE = 'b' * 40
   STATUS = Struct.new(:exitstatus)
 
   def client(*responses)

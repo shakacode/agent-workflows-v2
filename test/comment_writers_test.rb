@@ -44,7 +44,7 @@ class CommentWritersTest < Minitest::Test
     github = client(snapshot_response, repository_response('public'), response([commenters]),
                     response([[]]), response([[]]), thread_response([]), response({}, status: 4))
 
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
+    error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
     assert_match(/writer evidence is unavailable/, error.message)
   end
 

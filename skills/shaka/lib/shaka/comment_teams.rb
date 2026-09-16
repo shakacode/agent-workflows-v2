@@ -1,0 +1,94 @@
+# frozen_string_literal: true
+
+require_relative 'comment_writers'
+
+module Shaka
+  # Uses direct checks for small discussions and one member list per larger team.
+  class CommentTeams
+    DIRECT_LIMIT = 8
+    MAX_TEAMS = 20
+
+    def initialize(github)
+      @github = github
+    end
+
+    def trusted(logins, teams)
+      valid = valid_logins(logins)
+      return empty_result if valid.empty? || teams.empty?
+
+      pairs, listed = candidates(valid, teams)
+      confirmed(pairs, listed: listed)
+    end
+
+    private
+
+    def empty_result
+      { trusted: Set.new, unavailable: Set.new }
+    end
+
+    def valid_logins(logins)
+      logins.uniq.select { |login| login.is_a?(String) && login.match?(CommentWriters::LOGIN) }
+    end
+
+    def candidates(logins, teams)
+      raise Error, 'Too many configured teams for a bounded trust read.' if teams.length > MAX_TEAMS
+
+      count = logins.length * teams.length
+      listed = count > DIRECT_LIMIT
+      [listed ? listed_pairs(logins, teams) : direct_pairs(logins, teams), listed]
+    end
+
+    def confirmed(pairs, listed:)
+      result = empty_result
+      pairs.each do |login, owner, slug|
+        next if result[:trusted].include?(login)
+
+        state = active_member?(owner, slug, login)
+        result[:trusted].add(login) if state == true
+        result[:unavailable].add(login) if listed && state.nil?
+      end
+      result
+    end
+
+    def direct_pairs(logins, teams)
+      logins.product(teams).map { |login, (owner, slug)| [login, owner, slug] }
+    end
+
+    def listed_pairs(logins, teams)
+      teams.flat_map do |owner, slug|
+        members = listed_members(owner, slug)
+        logins.filter_map { |login| [login, owner, slug] if members.include?(login) }
+      end
+    rescue Error
+      raise Error, 'Team-member list evidence is unavailable.'
+    end
+
+    def listed_members(owner, slug)
+      pages = member_pages(owner, slug)
+      pages.flatten(1).filter_map { |member| member_login(member) }.to_set
+    end
+
+    def member_pages(owner, slug)
+      pages = @github.paginated("orgs/#{owner}/teams/#{slug}/members?per_page=100")
+      unless pages.is_a?(Array) && pages.all? { |page| page.is_a?(Array) && page.all?(Hash) }
+        raise Error, 'Team-member list is malformed.'
+      end
+
+      pages
+    end
+
+    def member_login(member)
+      login = member['login']
+      login.downcase if member['type'] == 'User' && login.is_a?(String) && login.match?(CommentWriters::LOGIN)
+    end
+
+    def active_member?(owner, slug, login)
+      result = @github.api("orgs/#{owner}/teams/#{slug}/memberships/#{login}")
+      url = result['url']
+      result['state'] == 'active' && url.is_a?(String) &&
+        url.downcase.end_with?("/memberships/#{login.downcase}")
+    rescue Error
+      nil
+    end
+  end
+end

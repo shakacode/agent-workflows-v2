@@ -15,11 +15,26 @@ module CommentsFixture
     visibility = fixture_visibility(options)
     threads = default_threads(inline) if threads.empty?
     pages = options.fetch(:thread_pages) { [thread_response(threads)] }
-    github = client(snapshot_response, repository_response(visibility),
-                    *comment_responses(issue, reviews, inline), *pages,
-                    *prefilter_pages(visibility, options, issue + reviews + inline), *options.fetch(:permissions, []),
-                    *finish_context(visibility))
-    Shaka::Comments.new(github).call(expected_head: HEAD)
+    github = packet_client(visibility, [issue, reviews, inline], pages, options)
+    Shaka::Comments.new(github, trust_config: options.fetch(:trust_config, empty_trust_config))
+                   .call(expected_head: HEAD)
+  end
+
+  def packet_client(visibility, items, pages, options)
+    issue, reviews, inline = items
+    responses = [snapshot_response, repository_response(visibility)]
+    responses += comment_responses(issue, reviews, inline) + pages
+    responses += prefilter_pages(visibility, options, issue + reviews + inline)
+    responses += options.fetch(:permissions, []) + finish_context(visibility)
+    client(*responses)
+  end
+
+  def empty_trust_config
+    { users: Set.new, bots: Set.new, metadata_bots: Set.new, teams: [], sources: [] }
+  end
+
+  def comments_reader(github)
+    Shaka::Comments.new(github, trust_config: empty_trust_config)
   end
 
   def default_threads(inline)
@@ -71,7 +86,7 @@ module CommentsFixture
     github = client(response({ 'number' => 42 }), repository_response('public'),
                     response([comments]), *prefilter_pages('public', {}, comments), *permissions,
                     repository_response('public'))
-    Shaka::Comments.new(github).call(issue_only: true)
+    Shaka::Comments.new(github, trust_config: empty_trust_config).call(issue_only: true)
   end
 
   def bodies(result, key)

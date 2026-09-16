@@ -26,7 +26,7 @@ class CommentVisibilityTest < Minitest::Test
                     response([[]]), response([[]]), thread_response([]), snapshot_response,
                     repository_response('public'))
 
-    error = assert_raises(Shaka::Error) { Shaka::Comments.new(github).call(expected_head: HEAD) }
+    error = assert_raises(Shaka::Error) { comments_reader(github).call(expected_head: HEAD) }
     assert_match(/visibility changed/, error.message)
   end
 end
