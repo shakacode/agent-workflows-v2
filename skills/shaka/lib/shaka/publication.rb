@@ -21,6 +21,18 @@ module Shaka
       text.gsub(/^~~~.*?^~~~/m, '').gsub(/```.*?```/m, '').gsub(/(`+)[^`]*\1/, '')
     end
 
+    # A summary is interpolated into raw HTML, so it must not be able to close its own tag.
+    def summary_text(value, field)
+      single_line(value, field).gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;')
+    end
+
+    def list(value, field)
+      return [] if value.nil?
+      raise Error, "Publication #{field} must be a list." unless value.is_a?(Array)
+
+      value
+    end
+
     def single_line(value, field)
       text = required(value, field)
       raise Error, "Publication #{field} must be a single line." if text.match?(/[\r\n]/)
@@ -67,7 +79,7 @@ module Shaka
     private
 
     def sections
-      Array(@content['sections']).map do |section|
+      PublicationText.list(@content['sections'], 'sections').map do |section|
         heading = PublicationText.single_line(section['heading'], 'section heading')
         "## #{heading}\n\n#{PublicationText.required(section['body'], "section #{heading}")}"
       end
@@ -78,19 +90,19 @@ module Shaka
       return [] if spec.nil?
 
       columns = table_columns(spec)
-      rows = Array(spec['rows']).map { |row| table_row(row, columns.size) }
+      rows = PublicationText.list(spec['rows'], 'table rows').map { |row| table_row(row, columns.size) }
       [[table_line(columns), table_line(['---'] * columns.size), *rows].join("\n")]
     end
 
     def table_columns(spec)
-      columns = spec.is_a?(Hash) ? Array(spec['columns']) : []
+      columns = spec.is_a?(Hash) ? PublicationText.list(spec['columns'], 'table columns') : []
       raise Error, 'Publication table must define at least one column.' if columns.empty?
 
       columns.map { |column| PublicationText.single_line(column, 'table column') }
     end
 
     def table_row(row, width)
-      cells = Array(row)
+      cells = PublicationText.list(row, 'table row')
       raise Error, "Publication table row has #{cells.size} cells; #{width} columns are defined." if cells.size != width
 
       table_line(cells.map { |cell| PublicationText.single_line(cell.to_s, 'table cell') })
@@ -100,8 +112,8 @@ module Shaka
     def table_line(cells) = "| #{cells.map { |cell| cell.gsub('|', '\\|') }.join(' | ')} |"
 
     def details
-      Array(@content['details']).map do |detail|
-        summary = PublicationText.single_line(detail['summary'], 'details summary')
+      PublicationText.list(@content['details'], 'details').map do |detail|
+        summary = PublicationText.summary_text(detail['summary'], 'details summary')
         body = PublicationText.required(detail['body'], "details #{summary}")
         "<details>\n<summary>#{summary}</summary>\n\n#{body}\n\n</details>"
       end

@@ -118,4 +118,20 @@ class PublicationStructureTest < Minitest::Test
     rendered = render('sections' => [{ 'heading' => 'Detail', 'body' => body }])
     assert_includes rendered, 'literal \n here'
   end
+
+  def test_a_details_summary_cannot_close_its_own_disclosure
+    rendered = render('details' => [{ 'summary' => 'Docs for </summary></details> handling', 'body' => 'b' }])
+    assert_includes rendered, '<summary>Docs for &lt;/summary&gt;&lt;/details&gt; handling</summary>'
+    assert_equal 1, rendered.scan('</summary>').size
+    assert_equal 1, rendered.scan('</details>').size
+  end
+
+  def test_collections_that_are_not_lists_are_refused_rather_than_crashing
+    [{ 'sections' => { 'heading' => 'h' } }, { 'sections' => 42 }, { 'details' => 'text' },
+     { 'table' => { 'columns' => 'A', 'rows' => [] } },
+     { 'table' => { 'columns' => %w[A], 'rows' => 'nope' } }].each do |part|
+      error = assert_raises(Shaka::Error) { render(**part) }
+      assert_includes error.message, 'list'
+    end
+  end
 end
