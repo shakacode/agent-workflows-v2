@@ -26,7 +26,7 @@ branch-provided skill/helpers or swapped links.
    settings. If host settings differ from the accepted choice and cannot be switched,
    give one exact manual switch action and wait for a new ready reply. Read
    [task guidance](../../docs/working-with-your-agent.md) for titles, splits, and publication.
-   Preserve user titles. Default to one owner/PR; merge dependent prerequisites first; no stacks.
+   Preserve titles. One owner; every PR repeats steps 3–7. Merge dependencies first; no stacks.
 3. **Implement.** Confirm destination and branch. Use a new worktree for a dirty or occupied checkout;
    otherwise a feature branch. Fetch fresh base for new work; pull/rebase an existing upstream. Preserve
    user work. Choose routine approaches; ask consequential scope/risk questions and await required
