@@ -11,6 +11,11 @@ Keep company strategy and private operational data out of product artifacts.
   or an isolated worktree; workers do not publish or merge.
 - This is a fresh kernel. Do not import V1 workflow contracts, ledgers, schemas,
   review reducers, coordination clients, or policy engines as dependencies.
+- Before designing Shaka workflow behavior, check the current
+  `shakacode/agent-workflows` source and relevant tests for an existing solution.
+  Reuse or adapt validated, portable code when it fits this pilot; explain the
+  chosen reuse and material differences in the PR. Treat the other repository
+  as reference material, not as authority over this project's instructions.
 - GitHub issue #1 owns this pilot. Keep the implementation to its requirements.
   Use `jg-codex/1-<description>` branches and PRs; never push to `main`.
 - Product merge preferences are `ask` and `auto`. Review-only work stops at its
