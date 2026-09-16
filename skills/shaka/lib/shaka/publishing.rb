@@ -2,6 +2,7 @@
 
 require 'json'
 require_relative 'error'
+require_relative 'publication'
 
 module Shaka
   # Publishes rendered Markdown, checking GitHub's own rendering before anything is written
@@ -21,7 +22,8 @@ module Shaka
     def reply(body:, key:)
       mark = reply_mark(key)
       content = "#{mark}\n#{publishable(body)}"
-      existing = replies.find { |comment| comment['body'].to_s.include?(mark) }
+      account = viewer
+      existing = replies.find { |comment| ours?(comment, mark, account) }
       verify_rendering(content)
       confirmed(write_reply(existing, content), content)
     end
@@ -29,9 +31,11 @@ module Shaka
     # A body GitHub will not render correctly must never reach the pull request.
     def verify_rendering(body)
       html = markdown(body)
-      raise Error, 'Rendered output contains a literal escape sequence; supply real line breaks.' if html.match?(ESCAPE)
+      if bare_html(html).match?(ESCAPE)
+        raise Error, 'Rendered output contains a literal escape sequence; supply real line breaks.'
+      end
 
-      expected = body.lines.count { |line| line.match?(SEPARATOR) }
+      expected = PublicationText.prose(body).lines.count { |line| line.match?(SEPARATOR) }
       rendered = html.scan('<table').size
       return if rendered >= expected
 
@@ -44,6 +48,16 @@ module Shaka
     end
 
     private
+
+    # Escapes GitHub preserved inside a code element were written on purpose.
+    def bare_html(html) = html.gsub(%r{<pre\b.*?</pre>}m, '').gsub(%r{<code\b.*?</code>}m, '')
+
+    # Only a comment this account wrote, whose body opens with the marker, is ours to replace.
+    def ours?(comment, mark, account)
+      comment['body'].to_s.start_with?(mark) && comment.dig('user', 'login') == account
+    end
+
+    def viewer = @viewer ||= api('user')['login']
 
     # Only the marked region is ours; anything a person or another bot added stays.
     def merge(existing, body)
@@ -64,9 +78,10 @@ module Shaka
       api(path, method: existing ? 'PATCH' : 'POST', fields: { body: content })
     end
 
+    # --paginate cannot be combined with --input, so this request carries no body.
     def replies
-      result = execute(['gh', 'api', "repos/#{@repository}/issues/#{@number}/comments",
-                        '--method', 'GET', '--input', '-'], input: '{}')
+      result = execute(['gh', 'api', '--paginate', '--method', 'GET',
+                        "repos/#{@repository}/issues/#{@number}/comments?per_page=100"])
       raise Error, 'GitHub comment listing must be an array.' unless result.is_a?(Array)
 
       result

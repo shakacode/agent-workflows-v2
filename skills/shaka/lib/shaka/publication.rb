@@ -16,10 +16,11 @@ module Shaka
       checked(value, field)
     end
 
-    # Escapes inside fenced blocks and code spans are intentional; prose escapes are not.
+    # Fenced blocks and code spans hold intentional examples; only prose is checked.
+    def prose(text) = text.gsub(/```.*?```/m, '').gsub(/`[^`]*`/, '')
+
     def checked(value, field)
-      prose = value.gsub(/```.*?```/m, '').gsub(/`[^`]*`/, '')
-      return value unless prose.match?(ESCAPE)
+      return value unless prose(value).match?(ESCAPE)
 
       raise Error, "Publication #{field} contains a literal escape sequence; supply real line breaks."
     end

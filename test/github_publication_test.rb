@@ -2,8 +2,8 @@
 
 require_relative 'github_helper'
 
-# Publishing a description or reply must read back both the stored body and the rendered output.
-class GitHubPublicationTest < Minitest::Test
+# Fixtures shared by the description and reply surfaces.
+module PublicationFixtures
   include GitHubHelper
 
   BODY = "🤖 Codex · OpenAI · terra · low\n\nA summary.\n"
@@ -19,10 +19,21 @@ class GitHubPublicationTest < Minitest::Test
 
   def sent_body(index = 2) = JSON.parse(@calls[index].last)['body']
 
+  def viewer_response(login = 'shaka-bot') = response({ 'login' => login })
+
+  def keyed(id, body, login = 'shaka-bot')
+    { 'id' => id, 'body' => body, 'user' => { 'login' => login } }
+  end
+
   def sent_method(index = 2)
     argv = @calls[index].first
     argv[argv.index('--method') + 1]
   end
+end
+
+# A description must merge into the existing body and be confirmed once stored.
+class GitHubDescriptionTest < Minitest::Test
+  include PublicationFixtures
 
   def test_description_keeps_content_other_authors_appended
     existing = "old\n\n<!-- coderabbit -->\nSummary by CodeRabbit"
@@ -66,21 +77,26 @@ class GitHubPublicationTest < Minitest::Test
     error = assert_raises(Shaka::Error) { github.description(body: BODY) }
     assert_includes error.message, 'escape sequence'
   end
+end
+
+# A reply must find its own keyed comment and never touch anyone else's.
+class GitHubReplyTest < Minitest::Test
+  include PublicationFixtures
 
   def test_replies_reuse_their_keyed_comment_instead_of_duplicating_it
-    listed = response([{ 'id' => 7, 'body' => "<!-- shaka:reply:fix-1 -->\nold" }])
-    github = client(listed, html_response('<p>ok</p>'),
+    listed = response([keyed(7, "<!-- shaka:reply:fix-1 -->\nold")])
+    github = client(viewer_response, listed, html_response('<p>ok</p>'),
                     response({ 'id' => 7, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'PATCH', sent_method
-    assert_includes @calls[2].first.join(' '), 'issues/comments/7'
+    assert_equal 'PATCH', sent_method(3)
+    assert_includes @calls[3].first.join(' '), 'issues/comments/7'
   end
 
   def test_a_reply_without_an_existing_comment_is_created_once
-    github = client(response([]), html_response('<p>ok</p>'),
+    github = client(viewer_response, response([]), html_response('<p>ok</p>'),
                     response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'POST', sent_method
+    assert_equal 'POST', sent_method(3)
   end
 
   def test_an_invalid_reply_key_never_contacts_github
@@ -88,5 +104,42 @@ class GitHubPublicationTest < Minitest::Test
       assert_raises(Shaka::Error) { client.reply(body: BODY, key: key) }
       assert_empty @calls
     end
+  end
+
+  def test_replies_are_fetched_across_every_page
+    github = client(viewer_response, response([]), html_response('<p>ok</p>'),
+                    response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
+    github.reply(body: BODY, key: 'fix-1')
+    listing = @calls[1].first.join(' ')
+    assert_includes listing, '--paginate'
+    assert_includes listing, 'per_page=100'
+  end
+
+  def test_a_comment_written_by_someone_else_is_never_overwritten
+    listed = response([keyed(7, "<!-- shaka:reply:fix-1 -->\ntheirs", 'a-contributor')])
+    github = client(viewer_response, listed, html_response('<p>ok</p>'),
+                    response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
+    github.reply(body: BODY, key: 'fix-1')
+    assert_equal 'POST', sent_method(3)
+  end
+
+  def test_a_marker_quoted_inside_a_comment_is_never_overwritten
+    listed = response([keyed(7, 'quoting <!-- shaka:reply:fix-1 --> in passing')])
+    github = client(viewer_response, listed, html_response('<p>ok</p>'),
+                    response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
+    github.reply(body: BODY, key: 'fix-1')
+    assert_equal 'POST', sent_method(3)
+  end
+
+  def test_a_separator_row_inside_a_code_fence_is_not_expected_to_render
+    documented = "#{BODY}\n```\n| A | B |\n| --- | --- |\n```\n"
+    managed = "<!-- shaka:begin -->\n#{documented}<!-- shaka:end -->"
+    github = client(pull_response(''), html_response('<pre>| --- | --- |</pre>'), pull_response(managed))
+    assert_equal managed, github.description(body: documented)['body']
+  end
+
+  def test_escape_sequences_inside_rendered_code_are_allowed
+    github = client(pull_response(''), html_response('<p>Use <code>\\n</code> here.</p>'), pull_response(MANAGED))
+    assert_equal MANAGED, github.description(body: BODY)['body']
   end
 end
