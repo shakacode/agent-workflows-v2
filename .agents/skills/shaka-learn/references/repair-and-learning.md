@@ -1,8 +1,7 @@
 # Build with Shaka and repair what slows delivery
 
-Draft for maintainer review, September 15, 2026. Keep the containing PR open and
-unmerged until the direction and skill are reviewed. This is a project-local
-maintenance guide, outside the consumer skill, installer and gem.
+Project-local maintenance guidance, outside the consumer skill, installer and gem.
+Use it with trusted Shaka; adoption does not launch workers or background monitoring.
 
 ## Durable work and observed failures
 
@@ -112,7 +111,7 @@ supervision, test how an explicitly authorized delegated assignment satisfies th
 checkpoint; any required instruction change needs a reviewed, bounded follow-up.
 Do not silently bypass the pause or claim every host supports remote model changes.
 
-This draft activates no workers or persistent monitoring. A supervisor can operate
+This guide activates no workers or persistent monitoring. A supervisor can operate
 while its task runs; durable wakeups require a separate explicit scheduling request.
 Machine aliases and cross-machine dispatch are deferred. Approved task IDs may be
 placed on PRs as copyable `codex://threads/...` references: GitHub strips clickable
@@ -185,8 +184,8 @@ contain aggregate metadata, sourced rates and assumptions, never raw sessions.
 3. Extend cost reporting in #45 when it fits delivery priorities. It is nonblocking;
    no model/effort experiment or proven savings is required before shipping.
 
-Keep this PR draft/unmerged pending maintainer review. Its candidate internal skill
-may be inspected directly; do not replace a trusted installed skill with the draft.
+Review changes to this internal skill before adopting them. Candidate instructions
+cannot replace the trusted workflow governing their own review.
 Each task stops at its agreed delivery outcome. Two unsuccessful repair rounds on
 the same failure family trigger reassessment, not endless workflow development or
 permission to waive checks. Retain improvements that reduce total work; remove

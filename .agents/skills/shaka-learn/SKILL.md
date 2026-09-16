@@ -6,7 +6,7 @@ description: Improve Shaka during normal development by repairing observed workf
 # Shaka repair and learning
 
 Use one supervisor as the maintainer's contact for Shaka development. This internal
-skill is a candidate for review; it does not alter the installed public skill or
+skill does not alter the installed public skill or
 authorize new workers, external messages, merges, or background monitoring.
 Use the trusted installed Shaka workflow to build Shaka itself. Deliver the task
 before optimizing the workflow; this learning skill adds no completion gate.
