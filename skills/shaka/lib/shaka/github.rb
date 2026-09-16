@@ -114,7 +114,7 @@ module Shaka
 
     def execute(argv, input: '', accepted: [0])
       stdout, _stderr, status = @runner.call(argv, stdin_data: input)
-      detail = argv.find { |arg| arg == 'graphql' || arg.start_with?('repos/') } || argv[2]
+      detail = argv[1] == 'api' ? argv.drop(2).find { |arg| !arg.start_with?('-') } : argv[2]
       unless accepted.include?(status.exitstatus)
         raise Error, "gh #{argv[1]} #{detail} failed (exit #{status.exitstatus})."
       end

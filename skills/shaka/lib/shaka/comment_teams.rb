@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'comment_writers'
+require_relative 'error'
+require_relative 'github_login'
 
 module Shaka
   # Uses direct checks for small discussions and one member list per larger team.
   class CommentTeams
-    DIRECT_LIMIT = 8
+    DIRECT_PAIR_LIMIT = 8
     MAX_TEAMS = 20
     TEAM_PAGE_SIZE = 100
     MAX_TEAM_PAGES = 10
@@ -15,7 +16,7 @@ module Shaka
     end
 
     def trusted(logins, teams)
-      valid = valid_logins(logins)
+      valid = GitHubLogin.valid(logins)
       return empty_result if valid.empty? || teams.empty?
 
       confirmed(candidates(valid, teams))
@@ -27,15 +28,11 @@ module Shaka
       { trusted: Set.new, unavailable: Set.new }
     end
 
-    def valid_logins(logins)
-      logins.uniq.select { |login| login.is_a?(String) && login.match?(CommentWriters::LOGIN) }
-    end
-
     def candidates(logins, teams)
       raise Error, 'Too many configured teams for a bounded trust read.' if teams.length > MAX_TEAMS
 
       count = logins.length * teams.length
-      listed = count > DIRECT_LIMIT
+      listed = count > DIRECT_PAIR_LIMIT
       listed ? listed_pairs(logins, teams) : direct_pairs(logins, teams)
     end
 
@@ -84,7 +81,7 @@ module Shaka
 
     def member_login(member)
       login = member['login']
-      login.downcase if member['type'] == 'User' && login.is_a?(String) && login.match?(CommentWriters::LOGIN)
+      login.downcase if member['type'] == 'User' && login.is_a?(String) && login.match?(GitHubLogin::PATTERN)
     end
 
     def active_member?(owner, slug, login)

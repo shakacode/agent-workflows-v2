@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'error'
+require_relative 'github_login'
 
 module Shaka
   # Narrows high-volume public authors in batches before final REST permission checks.
   class CommentWriters
-    LOGIN = /\A[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\z/
+    LOGIN = GitHubLogin::PATTERN
     DIRECT_LIMIT = 8
     BATCH_SIZE = 50
     MAX_AUTHORS = 500
@@ -16,7 +17,7 @@ module Shaka
     end
 
     def permissions(logins)
-      valid = valid_logins(logins)
+      valid = GitHubLogin.valid(logins)
       return {} if valid.empty?
       raise Error, 'Too many public comment authors for a bounded trust read.' if valid.length > MAX_AUTHORS
 
@@ -27,10 +28,6 @@ module Shaka
     end
 
     private
-
-    def valid_logins(logins)
-      logins.uniq.select { |login| login.is_a?(String) && login.match?(LOGIN) }
-    end
 
     def mark_prefiltered(valid, candidates, checked)
       return checked if valid.length <= DIRECT_LIMIT

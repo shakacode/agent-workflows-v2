@@ -3,11 +3,12 @@
 require 'digest'
 require 'yaml'
 require_relative 'error'
+require_relative 'github_login'
 
 module Shaka
   # Parses the compatible V1 YAML fields as data, with strict pilot bounds.
   class CommentTrustSettings
-    LOGIN = /\A[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\z/
+    LOGIN = GitHubLogin::PATTERN
     TEAM_SLUG = /\A[A-Za-z0-9](?:[A-Za-z0-9-]{0,99})\z/
     MAX_BYTES = 65_536
     KEYS = %w[trusted_users trusted_bots trusted_metadata_bots trusted_teams].freeze

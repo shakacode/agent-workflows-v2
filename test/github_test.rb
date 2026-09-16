@@ -60,11 +60,11 @@ class GitHubTest < Minitest::Test
   end
 
   def test_paginated_failure_identifies_endpoint_without_stderr
-    error = assert_raises(Shaka::Error) do
-      client(response({}, status: 4)).paginated('repos/owner/repo/pulls/42/comments')
+    %w[repos/owner/repo/pulls/42/comments orgs/owner/teams/maintainers/members].each do |path|
+      error = assert_raises(Shaka::Error) { client(response({}, status: 4)).paginated(path) }
+      assert_match(/gh api #{Regexp.escape(path)} failed/, error.message)
+      refute_match(/private stderr/, error.message)
     end
-    assert_match(%r{gh api repos/owner/repo/pulls/42/comments failed}, error.message)
-    refute_match(/private stderr/, error.message)
   end
 
   def test_checks_with_empty_failed_output_report_unavailable_evidence
