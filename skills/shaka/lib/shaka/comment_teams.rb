@@ -84,12 +84,19 @@ module Shaka
     def listed_members(owner, slug)
       path = "orgs/#{owner}/teams/#{slug}/members"
       BoundedList.new(@github, max_pages: MAX_TEAM_PAGES, label: 'Team-member list')
-                 .call(path).filter_map { |member| member_login(member) }.to_set
+                 .call(path).to_set { |member| member_login(member) }
     end
 
     def member_login(member)
-      login = member['login']
-      login.downcase if member['type'] == 'User' && login.is_a?(String) && login.match?(GitHubLogin::PATTERN)
+      raise Error, 'Team-member row is malformed.' unless valid_member_row?(member)
+
+      member['login'].downcase
+    end
+
+    def valid_member_row?(member)
+      login = member['login'] if member.is_a?(Hash)
+      member.is_a?(Hash) && member['type'] == 'User' && login.is_a?(String) &&
+        login.match?(GitHubLogin::PATTERN)
     end
 
     def membership_state(owner, slug, login)
@@ -111,7 +118,7 @@ module Shaka
       return @readable_teams[key] if @readable_teams.key?(key)
 
       path = "orgs/#{owner}/teams/#{slug}/members?per_page=1&page=1"
-      @readable_teams[key] = @github.api_list(path).all?(Hash)
+      @readable_teams[key] = @github.api_list(path).all? { |member| valid_member_row?(member) }
     rescue Error
       @readable_teams[key] = false
     end

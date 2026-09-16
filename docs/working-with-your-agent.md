@@ -219,6 +219,8 @@ For direct checks, a 404 counts as nonmembership only after a one-page team
 listing confirms that the team is visible to the token; otherwise the excluded
 comment is marked as unavailable evidence.
 Malformed successful membership responses are also unavailable evidence.
+Malformed team-member roster rows stop listed reads; a malformed one-page roster
+cannot confirm team visibility for a direct 404.
 Public comment lists are capped at 1,000 interactions per GitHub comment type;
 native review threads are capped at 1,000. Larger discussions stop explicitly
 before returning a partial packet.
