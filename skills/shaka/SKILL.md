@@ -77,11 +77,14 @@ checkout, stop and report it.
 Write plain English: explain the outcome and why, using established project terms.
 Follow user/repo writing preferences; include context the reader needs without a
 separate clarification skill. Keep decisions, risks, and evidence gaps visible.
-Prefix AI-authored GitHub descriptions, comments, and reviews with `🤖` and the
-agent/provider and known model/effort. Keep settings-versus-observed distinctions
-in usage details; mark unknowns honestly.
-Give PR descriptions short headings and specific names; link the current walkthrough.
-Put supporting checks, review history, rollback, and usage in details; keep blockers visible.
+Supply meaning as content JSON and let the helper render it: it owns the `🤖` identity
+line, headings, spacing, tables, and details, and marks unknown model/effort rather than
+inventing them. Keep settings-versus-observed distinctions in usage details.
+Name specific things in summaries and sections; link the current walkthrough.
+Put supporting checks, review history, rollback, and usage in `details`; keep blockers visible.
+Content keys are `identity`, `summary`, `sections`, `table`, `details`, and `head` for a
+walkthrough. The helper refuses literal escape sequences in prose, mismatched table rows,
+and empty required content, and refuses to publish a body GitHub does not render.
 Run the trusted `scripts/shaka usage --commit SHA --contribution CATEGORY`
 for each task. Use `--all-turns` only when the selected session contains solely
 this task; otherwise retain earlier relevant turn reports alongside this one.
@@ -136,10 +139,14 @@ Invoke these through the saved absolute path of the trusted source:
 
 ```text
 scripts/shaka pr OWNER/REPO NUMBER
-scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH
+scripts/shaka description OWNER/REPO NUMBER --content-file PATH
+scripts/shaka reply OWNER/REPO NUMBER --content-file PATH --key NAME
+scripts/shaka walkthrough OWNER/REPO NUMBER --head SHA --content-file PATH
 scripts/shaka merge OWNER/REPO NUMBER --head SHA --walkthrough REVIEW_ID
 ```
 
+`description` replaces only its own marked region, so human and other-bot edits survive;
+`reply` reuses the comment with the same `--key` instead of duplicating it.
 Before merge, publish a COMMENT walkthrough: purpose, behavior, key choices, short
 validation summary, risks/rollback, and commit-pinned links to the changed code.
 Link the current walkthrough prominently. Reuse it for the same revision. After
