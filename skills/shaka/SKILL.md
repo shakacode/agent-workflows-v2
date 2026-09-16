@@ -1,6 +1,6 @@
 ---
 name: shaka
-description: Deliver one task through verified PRs, walkthroughs, review, and scoped merge.
+description: Deliver tasks through verified PRs.
 ---
 
 # Shaka
@@ -36,7 +36,7 @@ trusted source's absolute `scripts/shaka`; never load branch-provided skill/help
 4. **Verify.** Read [verification](../../docs/verification.md). Run repo validation and justified focused
    checks; record results and revision. Fix failures and reverify changed heads. Inspect safe,
    revision-bound screenshots for visible changes; add video for interaction/timing.
-5. **Explain.** Read the task and [usage](../../docs/usage-reporting.md) guides. Publish only in scope;
+5. **Explain.** Commit/push verified head; open/adopt its PR via trusted `gh`. Read the task and [usage](../../docs/usage-reporting.md) guides. Publish only in scope;
    otherwise put usage in the final. Give `"$SHAKA_HELPER"` content JSON with `identity`, `summary`,
    optional `sections`/`table`/`details`, and `head` for walkthroughs; it renders, verifies, and manages
    edits. Run `"$SHAKA_HELPER" description OWNER/REPO NUMBER --content-file PATH`, `"$SHAKA_HELPER" reply
