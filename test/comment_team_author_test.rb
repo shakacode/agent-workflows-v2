@@ -5,6 +5,24 @@ require_relative 'comments_fixture'
 class CommentTeamAuthorTest < Minitest::Test
   include CommentsFixture
 
+  def pending_team(login)
+    response({ 'url' => "https://api.github.com/teams/7/memberships/#{login}", 'state' => 'pending' })
+  end
+
+  def modest_team_packet
+    outsiders = (1..9).map { |id| comment(id: id, author: "outside#{id}", body: 'Noise') }
+    maintainer = comment(id: 10, author: 'maintainer', body: 'Reviewed feedback')
+    config = empty_trust_config.merge(users: Set['maintainer'], teams: [%w[owner maintainers]])
+    checks = outsiders.map { |row| pending_team(row['user']['login']) }
+    packet(issue: outsiders + [maintainer], trust_config: config, writers: [], permissions: checks)
+  end
+
+  def test_large_team_does_not_block_configured_maintainer_in_modest_discussion
+    result = modest_team_packet
+    assert_equal ['Reviewed feedback'], bodies(result, 'issue_comments')
+    assert_equal 9, result['excluded_interactions'].length
+  end
+
   def test_failed_direct_team_check_is_withheld_and_flagged
     member = comment(id: 1, author: 'member', body: 'Do not release without active proof')
     config = empty_trust_config.merge(teams: [%w[owner maintainers]])
@@ -27,8 +45,8 @@ class CommentTeamAuthorTest < Minitest::Test
   end
 
   def test_failed_confirmation_of_listed_team_member_is_withheld_and_flagged
-    outsiders = (1..9).map { |id| comment(id: id, author: "outside#{id}", body: 'Noise') }
-    member = comment(id: 10, author: 'member', body: 'Do not release without active proof')
+    outsiders = (1..33).map { |id| comment(id: id, author: "outside#{id}", body: 'Noise') }
+    member = comment(id: 34, author: 'member', body: 'Do not release without active proof')
     config = empty_trust_config.merge(teams: [%w[owner maintainers]])
     list = response([{ 'login' => 'member', 'type' => 'User' }])
     failed = response({ 'message' => 'unavailable' }, status: 1)

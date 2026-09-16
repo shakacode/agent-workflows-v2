@@ -211,8 +211,10 @@ discussions, writer candidates are narrowed in GraphQL batches before REST
 permission checks; team members are listed once per configured team, then
 matched authors receive a final active-membership check.
 More than 20 applicable configured teams stops the read before team API calls.
-Each team listing is capped at 1,000 members and 11 page requests; a larger
-listing stops instead of returning incomplete membership evidence.
+Each team listing is capped at 1,000 members and 11 page requests. Up to 32
+login/team pairs use direct checks; if a larger team's roster exceeds the cap,
+Shaka falls back to at most 100 direct membership checks, then stops rather
+than returning incomplete membership evidence.
 For direct checks, a 404 counts as nonmembership only after a one-page team
 listing confirms that the team is visible to the token; otherwise the excluded
 comment is marked as unavailable evidence.

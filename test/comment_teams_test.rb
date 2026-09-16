@@ -19,7 +19,7 @@ class CommentTeamsTest < Minitest::Test
   end
 
   def test_many_outsiders_use_one_team_list_and_one_rest_confirmation
-    logins = (1..30).map { |id| "outside#{id}" } + ['member']
+    logins = (1..40).map { |id| "outside#{id}" } + ['member']
     members = [{ 'login' => 'member', 'type' => 'User' }]
     github = client(response(members), active('member'))
     result = Shaka::CommentTeams.new(github).trusted(logins, [%w[owner maintainers]])
@@ -36,7 +36,7 @@ class CommentTeamsTest < Minitest::Test
 
   def test_mismatched_list_login_never_reaches_membership_api
     github = client(response([{ 'login' => 'stranger', 'type' => 'User' }]))
-    result = Shaka::CommentTeams.new(github).trusted((1..9).map { |id| "person#{id}" },
+    result = Shaka::CommentTeams.new(github).trusted((1..33).map { |id| "person#{id}" },
                                                      [%w[owner maintainers]])
 
     assert_empty result[:trusted]
@@ -73,7 +73,7 @@ class CommentTeamsTest < Minitest::Test
   def test_unavailable_confirmation_of_listed_member_is_visible
     listed = response([{ 'login' => 'member', 'type' => 'User' }])
     github = client(listed, response({ 'message' => 'unavailable' }, status: 1))
-    logins = (1..9).map { |id| "person#{id}" } + ['member']
+    logins = (1..33).map { |id| "person#{id}" } + ['member']
     result = Shaka::CommentTeams.new(github).trusted(logins, [%w[owner maintainers]])
 
     assert_empty result[:trusted]
@@ -83,7 +83,7 @@ class CommentTeamsTest < Minitest::Test
   def test_unavailable_list_stops_instead_of_claiming_complete_evidence
     github = client(response({ 'message' => 'unavailable' }))
     error = assert_raises(Shaka::Error) do
-      Shaka::CommentTeams.new(github).trusted((1..9).map { |id| "person#{id}" },
+      Shaka::CommentTeams.new(github).trusted((1..33).map { |id| "person#{id}" },
                                               [%w[owner maintainers]])
     end
 
@@ -106,19 +106,5 @@ class CommentTeamsTest < Minitest::Test
 
     assert_raises(Shaka::Error) { Shaka::CommentTeams.new(github).trusted(['person'], teams) }
     assert_empty @calls
-  end
-
-  def test_member_listing_stops_after_bounded_pages
-    members = Array.new(100) { |id| { 'login' => "person#{id}", 'type' => 'User' } }
-    responses = Array.new(11) { response(members) }
-    github = client(*responses)
-    logins = (1..9).map { |id| "outside#{id}" }
-
-    error = assert_raises(Shaka::Error) do
-      Shaka::CommentTeams.new(github).trusted(logins, [%w[owner maintainers]])
-    end
-
-    assert_match(/list evidence is unavailable/, error.message)
-    assert_equal 11, @calls.length
   end
 end

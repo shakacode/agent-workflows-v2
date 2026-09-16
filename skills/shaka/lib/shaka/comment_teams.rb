@@ -7,9 +7,10 @@ require_relative 'github_login'
 module Shaka
   # Uses direct checks for small discussions and one member list per larger team.
   class CommentTeams
-    DIRECT_PAIR_LIMIT = 8
+    DIRECT_PAIR_LIMIT = 32
     MAX_TEAMS = 20
     MAX_TEAM_PAGES = 10
+    MAX_FALLBACK_PAIRS = 100
 
     def initialize(github)
       @github = github
@@ -20,7 +21,10 @@ module Shaka
       valid = GitHubLogin.valid(logins)
       return empty_result if valid.empty? || teams.empty?
 
-      confirmed(candidates(valid, teams))
+      @fallback_count = 0
+      return listed_confirmed(valid, teams) if listed?(valid, teams)
+
+      confirmed(direct_pairs(valid, teams))
     end
 
     private
@@ -29,16 +33,13 @@ module Shaka
       { trusted: Set.new, unavailable: Set.new }
     end
 
-    def candidates(logins, teams)
+    def listed?(logins, teams)
       raise Error, 'Too many configured teams for a bounded trust read.' if teams.length > MAX_TEAMS
 
-      count = logins.length * teams.length
-      listed = count > DIRECT_PAIR_LIMIT
-      listed ? listed_pairs(logins, teams) : direct_pairs(logins, teams)
+      logins.length * teams.length > DIRECT_PAIR_LIMIT
     end
 
-    def confirmed(pairs)
-      result = empty_result
+    def confirmed(pairs, result = empty_result)
       pairs.each do |login, owner, slug|
         next if result[:trusted].include?(login)
 
@@ -53,13 +54,31 @@ module Shaka
       logins.product(teams).map { |login, (owner, slug)| [login, owner, slug] }
     end
 
-    def listed_pairs(logins, teams)
-      teams.flat_map do |owner, slug|
-        members = listed_members(owner, slug)
-        logins.filter_map { |login| [login, owner, slug] if members.include?(login) }
+    def listed_confirmed(logins, teams)
+      result = empty_result
+      teams.each do |owner, slug|
+        unresolved = logins.reject { |login| result[:trusted].include?(login) }
+        break if unresolved.empty?
+
+        confirmed(team_candidates(unresolved, owner, slug), result)
       end
-    rescue Error
-      raise Error, 'Team-member list evidence is unavailable.'
+      result
+    rescue Error => e
+      raise Error, "Team-member list evidence is unavailable: #{e.message}"
+    end
+
+    def team_candidates(logins, owner, slug)
+      members = listed_members(owner, slug)
+      logins.filter_map { |login| [login, owner, slug] if members.include?(login) }
+    rescue BoundedList::LimitError
+      fallback_pairs(logins, owner, slug)
+    end
+
+    def fallback_pairs(logins, owner, slug)
+      @fallback_count += logins.length
+      raise Error, 'Direct team fallback exceeds 100 checks.' if @fallback_count > MAX_FALLBACK_PAIRS
+
+      logins.map { |login| [login, owner, slug] }
     end
 
     def listed_members(owner, slug)

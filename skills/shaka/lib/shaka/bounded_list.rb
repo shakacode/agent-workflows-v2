@@ -6,6 +6,7 @@ module Shaka
   # Fetches REST list pages with an explicit request and item limit.
   class BoundedList
     PAGE_SIZE = 100
+    class LimitError < Error; end
 
     def initialize(github, max_pages:, label:)
       @github = github
@@ -28,7 +29,7 @@ module Shaka
     def fetch_page(path, page)
       rows = @github.api_list("#{path}?per_page=#{PAGE_SIZE}&page=#{page}")
       raise Error, "#{@label} response is malformed." unless rows.length <= PAGE_SIZE && rows.all?(Hash)
-      raise Error, "#{@label} exceeds #{@max_pages} pages." if page > @max_pages && !rows.empty?
+      raise LimitError, "#{@label} exceeds #{@max_pages} pages." if page > @max_pages && !rows.empty?
 
       rows
     end
