@@ -7,6 +7,8 @@ require_relative 'error'
 module Shaka
   # Reads native PR evidence and publishes reviews bound to its current commit.
   class GitHub
+    attr_reader :repository, :number
+
     SNAPSHOT_QUERY = <<~GRAPHQL
       query($owner: String!, $name: String!, $number: Int!) {
         repository(owner: $owner, name: $name) {
@@ -50,9 +52,7 @@ module Shaka
       raise Error, 'Required-check evidence is unavailable; confirm native required checks and GitHub access.'
     end
 
-    def review(id)
-      api("#{reviews_path}/#{positive_integer(id)}")
-    end
+    def review(id) = api("#{reviews_path}/#{positive_integer(id)}")
 
     def walkthrough(head:, body:)
       body = utf8(body)
@@ -66,12 +66,14 @@ module Shaka
       published
     end
 
-    def api(path, method: 'GET', fields: {})
+    def api(path, method: 'GET', fields: {}, expected: Hash)
       result = execute(['gh', 'api', path, '--method', method, '--input', '-'], input: JSON.generate(fields))
-      raise Error, 'GitHub API response must be an object.' unless result.is_a?(Hash)
+      raise Error, 'GitHub API response has an unexpected type.' unless result.is_a?(expected)
 
       result
     end
+
+    def api_list(path) = api(path, expected: Array)
 
     def graphql(query, variables = {})
       response = api('graphql', method: 'POST', fields: { query: query, variables: variables })
@@ -83,9 +85,7 @@ module Shaka
     private
 
     def positive_integer(value)
-      unless value.to_s.ascii_only? && value.to_s.match?(/\A[1-9]\d*\z/)
-        raise Error, 'Expected a positive integer identifier.'
-      end
+      raise Error, 'Expected positive integer.' unless value.to_s.ascii_only? && value.to_s.match?(/\A[1-9]\d*\z/)
 
       value.to_i
     end
@@ -111,9 +111,10 @@ module Shaka
     end
 
     def execute(argv, input: '', accepted: [0])
-      stdout, _stderr, status = @runner.call(argv, stdin_data: input)
+      stdout, stderr, status = @runner.call(argv, stdin_data: input)
+      detail = argv[1] == 'api' ? argv.drop(2).find { |arg| !arg.start_with?('-') } : argv[2]
       unless accepted.include?(status.exitstatus)
-        raise Error, "gh #{argv[1, 2].join(' ')} failed (exit #{status.exitstatus})."
+        raise Error.from_gh("gh #{argv[1]} #{detail} failed (exit #{status.exitstatus}).", stderr)
       end
 
       parse_json(stdout)
