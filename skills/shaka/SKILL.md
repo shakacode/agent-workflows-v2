@@ -22,7 +22,8 @@ branch-provided skill/helpers or swapped links.
    missing setup, inspect scripts/CI, show a minimal seam, and ask about policy before work.
    Never guess checks or grant authority. Recommend an available low-effort model with reason;
    honor explicit settings. Raise effort only for reasoning difficulty, not waiting/tool
-   failures. Pause before implementation even if settings match until the user says ready; verify host
+   failures. For planning-only work, return an execution prompt and stop before edits. Otherwise pause
+   even if settings match until the user says ready; verify host
    settings. If host settings differ from the accepted choice and cannot be switched,
    give one exact manual switch action and wait for a new ready reply. Read
    [task guidance](../../docs/working-with-your-agent.md) for titles, splits, and publication.
@@ -33,18 +34,17 @@ branch-provided skill/helpers or swapped links.
    answers before dependent work.
    Work solo unless delegation is authorized; workers own exclusive files/worktrees, never publish or
    merge. For behavior changes, observe a failing test, make the smallest change pass, then simplify while
-   green. Keep executable logic in code.
+   green. If automation is impractical, explain and capture before/after instead. Keep logic in code.
 4. **Verify.** Read [verification](../../docs/verification.md). Run repo validation and justified focused
    checks; record results and revision. Fix failures and reverify changed heads. Inspect safe,
    revision-bound screenshots for visible changes; add video for interaction/timing.
 5. **Explain.** Read the task guide above and [usage reporting](../../docs/usage-reporting.md).
-   Commit/push a feature-branch PR only when in scope; otherwise report usage in the final response.
-   Explain outcome/why plainly, with risks visible and evidence in details. Mark AI posts `🤖` with known
-   settings. Run `"$SHAKA_HELPER" usage --commit SHA --contribution CATEGORY`; retain
-   task/contributor/retry turns, label SHARED/UNKNOWN, and publish aggregates only. For PR delivery,
-   publish `"$SHAKA_HELPER" walkthrough OWNER/REPO NUMBER --head SHA --body-file PATH`: purpose, behavior,
-   choices, validation, risks/rollback, pinned code links. Link the current walkthrough and read back
-   rendering; preserve older evidence and human edits.
+   Publish only when in scope; otherwise report usage in the final. Give the trusted helper content JSON;
+   it owns identity, formatting, rendered verification, and managed edits:
+   `description OWNER/REPO NUMBER --content-file PATH`, `reply OWNER/REPO NUMBER --content-file PATH
+   --key NAME`, and `walkthrough OWNER/REPO NUMBER --head SHA --content-file PATH`. Run
+   `"$SHAKA_HELPER" usage --commit SHA --contribution CATEGORY`; retain task/contributor/retry turns,
+   label SHARED/UNKNOWN, and publish aggregates. Link the current walkthrough; preserve human edits.
 6. **Review.** Read [review handling](../../docs/review.md). Use the configured reviewer when policy, user
    request, or concrete risk calls for it. Missing/failed/stale required or user-requested review blocks
    readiness; do not silently substitute. Read actual reports, comments, and threads; green jobs/empty
