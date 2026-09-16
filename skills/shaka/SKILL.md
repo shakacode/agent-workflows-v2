@@ -133,6 +133,15 @@ review that is unavailable, failed, or stale blocks readiness/merge; never silen
 omit it or substitute a reviewer. Follow [review handling](../../docs/review.md)
 for findings and re-review; resolve consequential feedback before merging.
 
+When the user expressly asks to resolve PR comments, alone or within broader work,
+follow the [comment-resolution settlement procedure](../../docs/review.md#settle-comment-resolution-work)
+before ending the task. It requires exact-head reports and threads, keeps a known
+optional review owned while its job can still publish, and invalidates review and
+validation evidence after any fix changes the head. Apply its public-comment trust
+fallback and terminal-handoff criteria exactly; required or user-requested review
+remains blocking. Do not claim the feedback fully resolved or create a monitor or
+follow-up issue while that procedure says the review is unsettled.
+
 Use trusted `gh` for authorized issue/PR reads and publication. Inspect check states,
 not only exit codes: `gh pr checks NUMBER --repo OWNER/REPO --required --json name,state,bucket,link`.
 Invoke these through the saved absolute path of the trusted source:
