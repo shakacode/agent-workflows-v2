@@ -35,6 +35,16 @@ in the tested Codex records; do not add them again. Cache writes and the native
 total remain separate fields. Routed model stays UNKNOWN because these tested
 local records do not establish the model that executed each response.
 
+The report also shows two **configured-model scenarios** for supported OpenAI
+models: Standard Codex credits and Standard API-equivalent USD. Rates and source
+dates appear with each report. The estimate prices each unique response before
+summing, so model switches and requests crossing the API context threshold are
+handled separately. Cached input is removed from ordinary input. For the API
+scenario, cache writes are removed too and priced at the published write rate;
+the Codex credit estimate is UNKNOWN when writes are present because the credit
+rate card does not publish their price. Missing counters or unsupported models
+also yield UNKNOWN. Effort changes are reported but have no price multiplier.
+
 ## What the Claude Code reader includes
 
 The reader uses `CLAUDE_CODE_SESSION_ID` to find that session's transcript beneath
@@ -63,8 +73,10 @@ CLI `0.154.0` records. The fresh CLI consumer trial matched 14 responses to an
 independent aggregate; repeating its source left the report unchanged. Unsupported
 or unreadable records and missing fields produce UNKNOWN. Reports are PARTIAL
 snapshots: active work, external reviewers, tool-model calls, and other agents
-may add usage that is absent from the selected sources. Dollar cost, human active
-time, and total historical consumption are not inferred from these tokens.
+may add usage that is absent from the selected sources. Routed model, billing mode,
+service tier, account terms, and actual provider charges are not established by
+these tokens. API-equivalent USD is a scenario, not a subscription invoice.
+Human active time and total historical consumption are not inferred.
 
 When host discovery is unavailable or several turns/contributors belong to the
 work, the agent may supply repeated `--file PATH` and `--turn ID` options using
