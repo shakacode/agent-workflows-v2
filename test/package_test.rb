@@ -4,6 +4,7 @@ require_relative 'test_helper'
 require 'fileutils'
 require 'rbconfig'
 require 'bundler'
+require 'rubygems/package'
 
 class PackageTest < Minitest::Test
   ROOT = File.expand_path('..', __dir__)
@@ -28,6 +29,17 @@ class PackageTest < Minitest::Test
     run_gem('uninstall', 'shaka', '--all', '--executables', '--ignore-dependencies')
     refute File.exist?(File.join(@home, 'bin', 'shaka'))
     refute File.exist?(source)
+  end
+
+  def test_built_gem_distributes_the_declared_license
+    archive = File.join(@directory, 'licensed.gem')
+    run_gem('build', 'shaka.gemspec', '--output', archive, chdir: ROOT)
+    package = Gem::Package.new(archive)
+    assert_equal ['MIT'], package.spec.licenses
+    package.extract_files(File.join(@directory, 'unpacked'))
+    license = File.join(@directory, 'unpacked', 'LICENSE')
+    assert File.file?(license), 'The distributed gem must include its license'
+    assert_equal File.read(File.join(ROOT, 'LICENSE')), File.read(license)
   end
 
   private
