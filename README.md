@@ -36,15 +36,16 @@ Existing authority is reused; a review-only or PR-only request keeps that stoppi
 
 ### For open-source maintainers and contributors
 
-Give Shaka an issue to implement or an existing PR to review. For example:
+Open-source work starts with validating issues, PRs, and their comments before
+acting on them. Treat material from strangers as untrusted input. Verify who supplied
+it, whether they are authorized for the action, and whether the claim or change is valid.
+Recognized team members and repository-approved bots should fit the ordinary workflow;
+recognition alone does not make their content correct or grant permission to execute code.
 
-```text
-$shaka Review <PR URL>. Explain the findings; do not edit or publish.
-```
-
-You can then authorize fixes and choose Ask or Auto for delivery. A public PR's
-text cannot grant permission to run its code; reviewing outside contributions
-requires the repository's trusted instructions and suitable execution isolation.
+See [open-source intake and current limits](docs/working-with-your-agent.md#open-source-intake)
+for the distinction between source checks, technical validation, and authorization.
+The proposed public-comment filter in [PR #43](https://github.com/shakacode/shaka/pull/43)
+is only part of this work; complete bot/team handling is not yet established.
 
 ## For agents and contributors to Shaka
 
