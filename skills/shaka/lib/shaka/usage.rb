@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'optparse'
 require_relative 'claude_usage'
 require_relative 'codex_usage'
 require_relative 'cost_estimate'
-require_relative 'response_count'
 
 module Shaka
   # Read-only reporting of per-response usage records from a supported host.
