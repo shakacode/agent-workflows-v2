@@ -19,13 +19,14 @@ branch-provided skill/helpers or swapped links.
    unset, ask early; default to **Ask**. Reuse answers and authority. Review-only/PR-only work keeps its stopping point.
 2. **Plan.** Read the repo's setup, validation, focused checks, base, review, and release policy. Preserve
    its `AGENTS.md`/`.agents/` seam; do not copy Shaka source repo Ruby commands into consumers. For
-   missing setup, inspect scripts/CI and show a minimal seam addition; ask about missing/conflicting
-   policy before work. Never guess checks or grant authority. Recommend an available model and low effort
-   with a reason; honor explicit settings. Raise effort only for reasoning difficulty, not waiting/tool
+   missing setup, inspect scripts/CI, show a minimal seam, and ask about policy before work.
+   Never guess checks or grant authority. Recommend an available low-effort model with reason;
+   honor explicit settings. Raise effort only for reasoning difficulty, not waiting/tool
    failures. Pause before implementation even if settings match until the user says ready; verify host
-   settings. Read [task guidance](../../docs/working-with-your-agent.md) for titles, questions, splits,
-   publication, and planning-only stops. Preserve user titles. One owner/PR is default; dependent PRs wait for prerequisites,
-   with no native stacks.
+   settings. If host settings differ from the accepted choice and cannot be switched,
+   give one exact manual switch action and wait for a new ready reply. Read
+   [task guidance](../../docs/working-with-your-agent.md) for titles, splits, and publication.
+   Preserve user titles. Default to one owner/PR; merge dependent prerequisites first; no stacks.
 3. **Implement.** Confirm destination and branch. Use a new worktree for a dirty or occupied checkout;
    otherwise a feature branch. Fetch fresh base for new work; pull/rebase an existing upstream. Preserve
    user work. Choose routine approaches; ask consequential scope/risk questions and await required
@@ -50,7 +51,8 @@ branch-provided skill/helpers or swapped links.
    comments prove no review. Collect current-head findings into one repair batch; fix demonstrated defects
    and explain fixes/declines on original threads. Reverify, republish the walkthrough, and re-review
    changed heads. After two rounds on a finding family, reassess design or mechanism before more patches.
-   Link the current review; disclose completed and pending optional feedback.
+   Link the current review; disclose optional feedback. After final review, refresh
+   usage for affected SHAs/turns per its guide; replace overlapping snapshots.
 7. **Finish.** Reassess scope/authority. Uncertain authority or consequential risk switches **Auto** to
    **Ask** for a human decision; safety failures block. Trust/auth/permission, release/deployment,
    destructive migration, and merge-guard changes need human review. In **Ask**, reuse approval for
