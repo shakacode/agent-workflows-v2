@@ -211,6 +211,8 @@ discussions, writer candidates are narrowed in GraphQL batches before REST
 permission checks; team members are listed once per configured team, then
 matched authors receive a final active-membership check.
 More than 20 applicable configured teams stops the read before team API calls.
+Each team listing is capped at 1,000 members and 11 page requests; a larger
+listing stops instead of returning incomplete membership evidence.
 
 A private or internal repo can still contain imported text, outside contributions,
 or unsafe dependencies. The comment-author screen applies only to public repos.

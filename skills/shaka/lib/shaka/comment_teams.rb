@@ -7,6 +7,8 @@ module Shaka
   class CommentTeams
     DIRECT_LIMIT = 8
     MAX_TEAMS = 20
+    TEAM_PAGE_SIZE = 100
+    MAX_TEAM_PAGES = 10
 
     def initialize(github)
       @github = github
@@ -16,8 +18,7 @@ module Shaka
       valid = valid_logins(logins)
       return empty_result if valid.empty? || teams.empty?
 
-      pairs, listed = candidates(valid, teams)
-      confirmed(pairs, listed: listed)
+      confirmed(candidates(valid, teams))
     end
 
     private
@@ -35,17 +36,17 @@ module Shaka
 
       count = logins.length * teams.length
       listed = count > DIRECT_LIMIT
-      [listed ? listed_pairs(logins, teams) : direct_pairs(logins, teams), listed]
+      listed ? listed_pairs(logins, teams) : direct_pairs(logins, teams)
     end
 
-    def confirmed(pairs, listed:)
+    def confirmed(pairs)
       result = empty_result
       pairs.each do |login, owner, slug|
         next if result[:trusted].include?(login)
 
         state = active_member?(owner, slug, login)
         result[:trusted].add(login) if state == true
-        result[:unavailable].add(login) if listed && state.nil?
+        result[:unavailable].add(login) if state.nil?
       end
       result
     end
@@ -64,17 +65,21 @@ module Shaka
     end
 
     def listed_members(owner, slug)
-      pages = member_pages(owner, slug)
-      pages.flatten(1).filter_map { |member| member_login(member) }.to_set
+      logins = Set.new
+      (1..(MAX_TEAM_PAGES + 1)).each do |page|
+        rows = team_page(owner, slug, page)
+        logins.merge(rows.filter_map { |member| member_login(member) })
+        break if rows.length < TEAM_PAGE_SIZE
+      end
+      logins
     end
 
-    def member_pages(owner, slug)
-      pages = @github.paginated("orgs/#{owner}/teams/#{slug}/members?per_page=100")
-      unless pages.is_a?(Array) && pages.all? { |page| page.is_a?(Array) && page.all?(Hash) }
-        raise Error, 'Team-member list is malformed.'
-      end
+    def team_page(owner, slug, page)
+      rows = @github.api_list("orgs/#{owner}/teams/#{slug}/members?per_page=#{TEAM_PAGE_SIZE}&page=#{page}")
+      raise Error, 'Team-member list is malformed.' unless rows.length <= TEAM_PAGE_SIZE && rows.all?(Hash)
+      raise Error, 'Team-member list exceeds the page limit.' if page > MAX_TEAM_PAGES && !rows.empty?
 
-      pages
+      rows
     end
 
     def member_login(member)

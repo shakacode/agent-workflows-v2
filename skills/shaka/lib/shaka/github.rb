@@ -66,12 +66,14 @@ module Shaka
       published
     end
 
-    def api(path, method: 'GET', fields: {})
+    def api(path, method: 'GET', fields: {}, expected: Hash)
       result = execute(['gh', 'api', path, '--method', method, '--input', '-'], input: JSON.generate(fields))
-      raise Error, 'GitHub API response must be an object.' unless result.is_a?(Hash)
+      raise Error, 'GitHub API response has an unexpected type.' unless result.is_a?(expected)
 
       result
     end
+
+    def api_list(path) = api(path, expected: Array)
 
     def paginated(path) = execute(['gh', 'api', '--paginate', '--slurp', path])
 
