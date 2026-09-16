@@ -104,8 +104,9 @@ unchanged. The current helper performs immediate squash merges while the task is
 Use [usage reporting](usage-reporting.md) for commit/contribution mappings, shared
 intervals, native token categories, and missing-data labels. Include available retries
 and contributors, preserve original mappings after squash, and publish aggregate
-metadata only. Do not infer routed models from configured settings, invent dollar
-costs, or interrupt each commit for accounting. Compare a small sample of similar
+metadata only. Do not infer routed models from configured settings, present estimated
+API-equivalent dollars as actual charges, or interrupt each commit for accounting.
+Compare a small sample of similar
 accepted changes; describe its uncertainty before making savings claims.
 
 ## Scope and rollback

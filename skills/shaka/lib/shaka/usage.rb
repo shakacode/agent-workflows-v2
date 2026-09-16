@@ -3,6 +3,7 @@
 require 'json'
 require 'optparse'
 require_relative 'claude_usage'
+require_relative 'cost_estimate'
 require_relative 'response_count'
 
 module Shaka
@@ -180,6 +181,7 @@ module Shaka
         #{rows}
 
         </details>
+        #{CostEstimate.new(@responses).report}
       MARKDOWN
     end
 
