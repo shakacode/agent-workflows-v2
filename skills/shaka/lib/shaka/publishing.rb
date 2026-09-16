@@ -22,6 +22,7 @@ module Shaka
     def reply(body:, key:)
       mark = reply_mark(key)
       content = "#{mark}\n#{publishable(body)}"
+      pull
       account = viewer
       existing = replies.find { |comment| ours?(comment, mark, account) }
       verify_rendering(content)
@@ -63,10 +64,21 @@ module Shaka
     def merge(existing, body)
       managed = "#{OPEN_MARK}\n#{body}#{CLOSE_MARK}"
       return managed if existing.strip.empty?
-      return "#{managed}\n\n#{existing}" unless existing.include?(OPEN_MARK) && existing.include?(CLOSE_MARK)
 
+      opens = existing.scan(OPEN_MARK).size
+      closes = existing.scan(CLOSE_MARK).size
+      return "#{managed}\n\n#{existing}" if opens.zero? && closes.zero?
+
+      check_region(existing, opens, closes)
       prefix, rest = existing.split(OPEN_MARK, 2)
       "#{prefix}#{managed}#{rest.split(CLOSE_MARK, 2).last}"
+    end
+
+    # Rewriting an ambiguous region would delete whatever sits between the wrong markers.
+    def check_region(existing, opens, closes)
+      return if opens == 1 && closes == 1 && existing.index(OPEN_MARK) < existing.index(CLOSE_MARK)
+
+      raise Error, 'The description has an ambiguous or malformed managed region; repair it before publishing.'
     end
 
     def write_reply(existing, content)

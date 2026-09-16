@@ -53,6 +53,14 @@ class GitHubDescriptionTest < Minitest::Test
     assert_equal 1, sent_body.scan('<!-- shaka:begin -->').size
   end
 
+  def test_an_ambiguous_managed_region_is_refused_rather_than_truncating_the_body
+    quoted = "Docs quoting <!-- shaka:begin --> in prose.\n\n#{MANAGED}\n\nkeep me"
+    github = client(pull_response(quoted))
+    error = assert_raises(Shaka::Error) { github.description(body: BODY) }
+    assert_includes error.message, 'ambiguous'
+    assert_equal 1, @calls.size
+  end
+
   def test_stored_body_that_does_not_match_the_submission_is_reported
     github = client(pull_response(''), html_response('<p>ok</p>'), pull_response('something else'))
     assert_raises(Shaka::Error) { github.description(body: BODY) }
@@ -85,18 +93,18 @@ class GitHubReplyTest < Minitest::Test
 
   def test_replies_reuse_their_keyed_comment_instead_of_duplicating_it
     listed = response([keyed(7, "<!-- shaka:reply:fix-1 -->\nold")])
-    github = client(viewer_response, listed, html_response('<p>ok</p>'),
+    github = client(pull_response(''), viewer_response, listed, html_response('<p>ok</p>'),
                     response({ 'id' => 7, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'PATCH', sent_method(3)
-    assert_includes @calls[3].first.join(' '), 'issues/comments/7'
+    assert_equal 'PATCH', sent_method(4)
+    assert_includes @calls[4].first.join(' '), 'issues/comments/7'
   end
 
   def test_a_reply_without_an_existing_comment_is_created_once
-    github = client(viewer_response, response([]), html_response('<p>ok</p>'),
+    github = client(pull_response(''), viewer_response, response([]), html_response('<p>ok</p>'),
                     response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'POST', sent_method(3)
+    assert_equal 'POST', sent_method(4)
   end
 
   def test_an_invalid_reply_key_never_contacts_github
@@ -107,28 +115,28 @@ class GitHubReplyTest < Minitest::Test
   end
 
   def test_replies_are_fetched_across_every_page
-    github = client(viewer_response, response([]), html_response('<p>ok</p>'),
+    github = client(pull_response(''), viewer_response, response([]), html_response('<p>ok</p>'),
                     response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    listing = @calls[1].first.join(' ')
+    listing = @calls[2].first.join(' ')
     assert_includes listing, '--paginate'
     assert_includes listing, 'per_page=100'
   end
 
   def test_a_comment_written_by_someone_else_is_never_overwritten
     listed = response([keyed(7, "<!-- shaka:reply:fix-1 -->\ntheirs", 'a-contributor')])
-    github = client(viewer_response, listed, html_response('<p>ok</p>'),
+    github = client(pull_response(''), viewer_response, listed, html_response('<p>ok</p>'),
                     response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'POST', sent_method(3)
+    assert_equal 'POST', sent_method(4)
   end
 
   def test_a_marker_quoted_inside_a_comment_is_never_overwritten
     listed = response([keyed(7, 'quoting <!-- shaka:reply:fix-1 --> in passing')])
-    github = client(viewer_response, listed, html_response('<p>ok</p>'),
+    github = client(pull_response(''), viewer_response, listed, html_response('<p>ok</p>'),
                     response({ 'id' => 9, 'body' => "<!-- shaka:reply:fix-1 -->\n#{BODY}" }))
     github.reply(body: BODY, key: 'fix-1')
-    assert_equal 'POST', sent_method(3)
+    assert_equal 'POST', sent_method(4)
   end
 
   def test_a_separator_row_inside_a_code_fence_is_not_expected_to_render
@@ -141,5 +149,11 @@ class GitHubReplyTest < Minitest::Test
   def test_escape_sequences_inside_rendered_code_are_allowed
     github = client(pull_response(''), html_response('<p>Use <code>\\n</code> here.</p>'), pull_response(MANAGED))
     assert_equal MANAGED, github.description(body: BODY)['body']
+  end
+
+  def test_a_number_that_is_not_a_pull_request_is_refused_before_any_comment_is_touched
+    github = client(response({}, status: 1))
+    assert_raises(Shaka::Error) { github.reply(body: BODY, key: 'fix-1') }
+    assert_equal 1, @calls.size
   end
 end

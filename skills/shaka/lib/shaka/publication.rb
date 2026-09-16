@@ -17,7 +17,16 @@ module Shaka
     end
 
     # Fenced blocks and code spans hold intentional examples; only prose is checked.
-    def prose(text) = text.gsub(/```.*?```/m, '').gsub(/`[^`]*`/, '')
+    def prose(text)
+      text.gsub(/^~~~.*?^~~~/m, '').gsub(/```.*?```/m, '').gsub(/(`+)[^`]*\1/, '')
+    end
+
+    def single_line(value, field)
+      text = required(value, field)
+      raise Error, "Publication #{field} must be a single line." if text.match?(/[\r\n]/)
+
+      text
+    end
 
     def checked(value, field)
       return value unless prose(value).match?(ESCAPE)
@@ -59,7 +68,7 @@ module Shaka
 
     def sections
       Array(@content['sections']).map do |section|
-        heading = PublicationText.required(section['heading'], 'section heading')
+        heading = PublicationText.single_line(section['heading'], 'section heading')
         "## #{heading}\n\n#{PublicationText.required(section['body'], "section #{heading}")}"
       end
     end
@@ -77,14 +86,14 @@ module Shaka
       columns = spec.is_a?(Hash) ? Array(spec['columns']) : []
       raise Error, 'Publication table must define at least one column.' if columns.empty?
 
-      columns.map { |column| PublicationText.required(column, 'table column') }
+      columns.map { |column| PublicationText.single_line(column, 'table column') }
     end
 
     def table_row(row, width)
       cells = Array(row)
       raise Error, "Publication table row has #{cells.size} cells; #{width} columns are defined." if cells.size != width
 
-      table_line(cells.map { |cell| PublicationText.checked(cell.to_s, 'table cell') })
+      table_line(cells.map { |cell| PublicationText.single_line(cell.to_s, 'table cell') })
     end
 
     # Escaping pipes keeps a cell from silently adding a column.
@@ -92,7 +101,7 @@ module Shaka
 
     def details
       Array(@content['details']).map do |detail|
-        summary = PublicationText.required(detail['summary'], 'details summary')
+        summary = PublicationText.single_line(detail['summary'], 'details summary')
         body = PublicationText.required(detail['body'], "details #{summary}")
         "<details>\n<summary>#{summary}</summary>\n\n#{body}\n\n</details>"
       end

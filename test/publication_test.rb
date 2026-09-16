@@ -97,4 +97,25 @@ class PublicationStructureTest < Minitest::Test
     assert_includes rendered, 'a' * 40
     assert_includes rendered, 'not an approval'
   end
+
+  def test_a_real_newline_in_a_cell_cannot_split_the_row
+    content = { 'identity' => IDENTITY, 'summary' => 'A summary.',
+                'table' => { 'columns' => %w[A B], 'rows' => [%W[one\ntwo three]] } }
+    error = assert_raises(Shaka::Error) { Shaka::Publication.description(content) }
+    assert_includes error.message, 'single line'
+  end
+
+  def test_a_real_newline_in_a_heading_column_or_details_summary_is_refused
+    [{ 'sections' => [{ 'heading' => "A\nB", 'body' => 'Why.' }] },
+     { 'table' => { 'columns' => ["A\nB"], 'rows' => [] } },
+     { 'details' => [{ 'summary' => "A\nB", 'body' => 'Why.' }] }].each do |part|
+      assert_raises(Shaka::Error) { render(**part) }
+    end
+  end
+
+  def test_tilde_fences_and_multi_backtick_spans_count_as_code
+    body = "~~~\nliteral \\n here\n~~~\n\nand ``a \\n b`` inline."
+    rendered = render('sections' => [{ 'heading' => 'Detail', 'body' => body }])
+    assert_includes rendered, 'literal \n here'
+  end
 end
