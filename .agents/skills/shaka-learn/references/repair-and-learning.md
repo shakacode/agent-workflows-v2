@@ -1,8 +1,8 @@
-# Shaka repair, cost and supervision trial
+# Build with Shaka and repair what slows delivery
 
 Draft for maintainer review, September 15, 2026. Keep the containing PR open and
 unmerged until the direction and skill are reviewed. This is a project-local
-maintenance experiment, outside the consumer skill, installer and gem.
+maintenance guide, outside the consumer skill, installer and gem.
 
 ## Durable work and observed failures
 
@@ -36,6 +36,26 @@ build/recurring cost, simpler alternative, acceptance evidence and deletion poin
 For #44, one cohesive renderer replaces model-authored layout; #45 extends an
 existing usage reader. Neither justifies a general schema, new telemetry service,
 model-routing service, dashboard or growing inventory of policy checks.
+
+## Use Shaka here without making improvement the task
+
+Use the trusted installed Shaka workflow for development of Shaka itself, including
+its tests, review and publication. Keep the workflow revision stable during a task.
+Fix an immediate safety or delivery blocker when necessary; otherwise finish the
+bounded change and batch workflow improvements afterward. Do not automatically
+adopt the candidate workflow being edited as the instructions governing that work.
+
+Dogfooding here reveals integration problems, but Shaka's instruction/trust design
+is an atypical development workload. Learn about ordinary model performance from
+useful feature and bug-fix work in consumer repositories as well. No duplicate
+implementation, model bake-off, savings study or cost-report completeness is a
+prerequisite for delivering work in either place. Preserve required safety gates.
+
+Ruby owns mechanical formatting and publication. Writing, documentation and skills
+still need judgment and real-reader evidence; word counts and rigid templates must
+not replace clarity or accuracy. Use stronger reasoning when the task warrants it,
+not merely to satisfy a lowest-token target. The supervisor's priority is finishing
+accepted work and absorbing corrections, not continuously optimizing the agents.
 
 ## Supervisor as the default project contact
 
@@ -99,33 +119,25 @@ placed on PRs as copyable `codex://threads/...` references: GitHub strips clicka
 custom-protocol anchors. IDs do not publish transcripts; never create share links
 or expose unrelated task identifiers as a side effect.
 
-## Model AND effort experiment
+## Model and effort choices during delivery
 
-Treat the configuration as a pair: model, reasoning effort. Use a fixed skill and
-helper revision, comparable task type/difficulty and the same acceptance standard.
-Record execution settings as observed; keep configured/routed distinctions.
+Default ordinary features and bug fixes to Terra/medium, honoring explicit settings.
+Record model and reasoning effort together from existing native evidence. Escalate
+for a demonstrated reasoning difficulty or consequential risk. The maintainer's
+Astra/xhigh review of #38 is a separate critical case, not an ordinary default.
 
-1. Replay the same publication failures without live writes at Terra/low and
-   Terra/medium, with a fresh task/context per run. Include one unaffected example.
-2. Use the better candidate on three small real deliveries. Match scope; avoid
-   claiming that success on different tasks establishes a causal improvement.
-3. If reasoning still fails, compare a stronger available model at the same effort
-   on the failure case. Change one variable at a time before testing combinations.
-4. Compare supervisor overhead too. Terra/medium is an initial supervisor candidate,
-   not an established optimum. Use stronger reasoning for bounded critical decisions
-   when justified. The maintainer's Astra/xhigh #38 review is a separate risk case.
+Do not schedule Terra/low-versus-medium trials now. Reconsider settings only when
+observed cost, latency or correction burden justifies the investigation. If a
+comparison is later useful, hold skill revision, acceptance and task scope steady
+and change one variable at a time. Do not infer causal savings from unrelated tasks
+or delay useful delivery while looking for an optimal configuration.
 
-Success means no maintainer formatting rescue, correct accepted behavior and fewer
-total corrections/costs. Report inconclusive outcomes honestly. Small samples cannot
-establish equal model quality. Deterministic replay proves mechanical behavior;
-fresh task trials test skill decisions; real deliveries test integration. A short
-skill and a green unit suite do not establish all three.
-
-Keep a compact result on the existing PR/issue: task and skill revision; model/effort
-for each role; accepted outcome; repairs and human corrections; cost and coverage;
-elapsed time and known waiting. Human active minutes remain UNKNOWN unless supplied.
-No new measurement infrastructure is needed. Retain useful corrections; revert
-ones that increase total work or delete them when the helper removes their purpose.
+Use existing PRs and native records to observe correctness, human corrections,
+repairs, model/effort costs including supervision, and elapsed time. Missing data
+stays UNKNOWN and nonblocking. Human active minutes need a maintainer estimate.
+No mandatory per-task retrospective or new measurement infrastructure is needed.
+A green unit suite establishes mechanics; fresh-task behavior and real deliveries
+establish different outcomes. Keep these claims separate and fix observed misses.
 
 ## Price usage rather than comparing raw totals
 
@@ -166,13 +178,17 @@ contain aggregate metadata, sourced rates and assumptions, never raw sessions.
 
 ## Sequence and stopping point
 
-1. Review this draft skill/plan and finish #38/#43 in their existing tasks.
-2. Implement #44's bounded publisher correction; replay the failures with Terra.
-3. Implement #45 after the usage changes settle; run the small model/effort trial
-   with one supervisor as the maintainer's contact and record the outcome on #1.
+1. Continue using trusted Shaka for useful work here and in consumer repositories.
+   Finish #38/#43 in their existing tasks with their required verification.
+2. Implement #44's bounded publisher correction because it addresses demonstrated
+   maintainer rework; validate the failure cases and use it on subsequent work.
+3. Extend cost reporting in #45 when it fits delivery priorities. It is nonblocking;
+   no model/effort experiment or proven savings is required before shipping.
 
 Keep this PR draft/unmerged pending maintainer review. Its candidate internal skill
 may be inspected directly; do not replace a trusted installed skill with the draft.
-The first trial stops after three accepted deliveries or the repeated-failure limit,
-then decides keep/revise/revert. Do not expand into automatic routing, fleet services,
-new consumer obligations or broad V1 migration without demonstrated need.
+Each task stops at its agreed delivery outcome. Two unsuccessful repair rounds on
+the same failure family trigger reassessment, not endless workflow development or
+permission to waive checks. Retain improvements that reduce total work; remove
+ones that add friction. No automatic routing, fleet service or broad V1 migration
+follows from using Shaka to build itself.

@@ -1,6 +1,6 @@
 ---
 name: shaka-learn
-description: Improve Shaka from observed delivery failures, compare model and effort costs, and run its project-local supervisor trial. Use for Shaka maintenance and evaluation, not ordinary consumer PRs.
+description: Improve Shaka during normal development by repairing observed workflow failures and supervising authorized work. Use for Shaka maintenance, not as an extra gate on ordinary consumer PRs.
 ---
 
 # Shaka repair and learning
@@ -8,8 +8,10 @@ description: Improve Shaka from observed delivery failures, compare model and ef
 Use one supervisor as the maintainer's contact for Shaka development. This internal
 skill is a candidate for review; it does not alter the installed public skill or
 authorize new workers, external messages, merges, or background monitoring.
-Read the [trial and cost guide](references/repair-and-learning.md) when planning
-an experiment or acting as the appointed supervisor. Keep outcomes on the existing
+Use the trusted installed Shaka workflow to build Shaka itself. Deliver the task
+before optimizing the workflow; this learning skill adds no completion gate.
+Read the [delivery and cost guide](references/repair-and-learning.md) when a workflow
+failure needs repair or when acting as the appointed supervisor. Keep outcomes on the existing
 issue/PR; #1 owns acceptance and #36 owns scope. Do not create another tracker.
 
 ## Repair a demonstrated failure
@@ -27,10 +29,11 @@ issue/PR; #1 owns acceptance and #36 owns scope. Do not create another tracker.
 4. Replay the original miss and an unaffected case. For skill decisions, use
    observable task actions and published artifacts; wording/size tests and an
    agent saying it complied do not establish behavior. Mark simulations as such.
-5. Try a few comparable real tasks with recorded skill revision, model AND effort.
-   Count supervision, review, repairs and human rescue. Keep, revise or revert
-   based on accepted correctness and total cost/attention/time; delete unsuccessful
-   added rules. Significant lessons go on the existing work item.
+5. Observe subsequent useful deliveries, recording skill revision, model AND effort
+   from existing evidence. Include supervision, review, repairs and human rescue.
+   Batch nonblocking improvements after delivery; missing cost data or a model
+   comparison never blocks shipping. Keep, revise or revert based on outcomes.
+   Significant lessons go on the existing work item.
 
 ## Supervise authorized workers
 
@@ -47,11 +50,12 @@ independent review; supervision neither substitutes for it nor adds another huma
 approval. Consolidate corrections into one message. Keep the maintainer's updates
 to outcomes, blockers and decisions with a recommendation.
 
-Start ordinary worker trials at Terra/low unless instructed otherwise. Compare
-Terra/medium on matched work before assuming a different model is needed. Escalate
+Default ordinary development to Terra/medium unless instructed otherwise. Do not
+repeat work to benchmark effort levels; investigate settings only after an observed
+cost, latency or quality problem makes it useful. Escalate
 for demonstrated reasoning difficulty or consequential risk, never for malformed
 Markdown, CI waiting or API failures. Keep the user's Astra/xhigh review of #38
-separate from ordinary-task comparisons. No recursive supervisors or automatic
+separate from ordinary development defaults. No recursive supervisors or automatic
 follow-up issues; no recurring monitoring unless explicitly requested.
 
 Price disjoint token categories using the applicable sourced rates, recording
