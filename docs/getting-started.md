@@ -7,9 +7,11 @@ or correcting a broken link in a documentation site.
 ## Prerequisites
 
 You need Git, Ruby 3.4, authenticated [GitHub CLI](https://cli.github.com/),
-and a signed-in Codex app or [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started).
+and a signed-in Codex app, [Codex CLI](https://learn.chatgpt.com/docs/codex/cli#getting-started),
+or [Claude Code](https://code.claude.com/docs/en/setup).
 Check `git --version`, `ruby --version`, and `gh auth status` in your terminal;
-run `gh auth login` if needed. Terminal users also need `codex --version` to work.
+run `gh auth login` if needed. Codex terminal users also need `codex --version` to work;
+Claude Code users need `claude --version`.
 The skill uses no development gems. Keep your application's own Ruby version.
 
 Your repository's `AGENTS.md` should name setup, validation, and review commands,
@@ -41,6 +43,22 @@ Open a Codex task in the repository you want to change. The skill should appear 
 the next turn; restart Codex if it does not. Installation preserves other skills
 and settings. The task uses the app's existing permissions; this installation does
 not create a sandbox for untrusted contributor code.
+
+<a id="use-shaka-in-claude-code"></a>
+
+## Install in Claude Code
+
+After cloning the source as above, install into Claude Code's user skills directory:
+
+```bash
+"$HOME/agent-tools/shaka/bin/install" --skills-dir "$HOME/.claude/skills"
+```
+
+Start Claude Code in the repository you want to change, and use `/shaka` wherever
+this guide shows `$shaka`. Claude Code runs your personal skill instead of a
+same-named skill in a repository's `.claude/skills`, and the skill stops if it was
+loaded from inside the checkout. Keep the trusted source outside any `--add-dir`
+directory. Your usual permission mode applies; installation adds no sandbox.
 
 ## Complete your first task
 
@@ -98,7 +116,7 @@ git -C "$shaka_source" pull --ff-only
 ```
 
 Start a fresh task after upgrading. For a terminal install, pass your dedicated
-skills directory instead. Earlier installs used `agent-workflows-v2` or
+skills directory instead; for Claude Code, pass `$HOME/.claude/skills`. Earlier installs used `agent-workflows-v2` or
 `shakacode-workflows` source directories: keep that location and use it above.
 Inspect old `sw` and `aw` symlinks and unlink only those belonging to this installation.
 Replace any old `sw/scripts` shell `PATH` entry with the `shaka/scripts` path above.
@@ -113,6 +131,6 @@ test -L "$HOME/.agents/skills/shaka" && unlink "$HOME/.agents/skills/shaka"
 ```
 
 Use your dedicated skills directory for a terminal install and remove its shell
-`PATH` entry. Inspect and remove any old `sw` or `aw` links individually; preserve
+`PATH` entry. For Claude Code, use `$HOME/.claude/skills`. Inspect and remove any old `sw` or `aw` links individually; preserve
 unrelated skills and real directories. To roll back, remove the verified links,
 check out the prior trusted source revision, and run that revision's installer.

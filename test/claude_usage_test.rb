@@ -1,0 +1,155 @@
+# frozen_string_literal: true
+
+require_relative 'test_helper'
+require 'fileutils'
+require 'json'
+
+module ClaudeUsageFixture
+  COMMAND = File.expand_path('../skills/shaka/scripts/shaka', __dir__)
+  COMMIT = 'a' * 40
+  SESSION = '00000000-0000-4000-8000-000000000002'
+  NO_HOST = { 'CODEX_THREAD_ID' => nil, 'CLAUDE_CODE_SESSION_ID' => nil }.freeze
+
+  private
+
+  def prompt(turn, text = 'SENSITIVE-PROMPT')
+    { type: 'user', sessionId: SESSION, promptId: turn, message: { role: 'user', content: text } }
+  end
+
+  def reply(id, input, output: 20, model: 'claude-test')
+    { type: 'assistant', sessionId: SESSION, version: '2.1.270', effort: 'high', timestamp: '2026-09-14T12:00:00Z',
+      message: { id: id, model: model, content: [{ type: 'text', text: 'SENSITIVE-OUTPUT' }],
+                 usage: { input_tokens: input, cache_read_input_tokens: 40, cache_creation_input_tokens: 7,
+                          output_tokens: output, output_tokens_details: { thinking_tokens: 5 } } } }
+  end
+
+  def transcript(directory, name, records)
+    path = File.join(directory, 'projects', 'repo', name)
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write(path, "#{records.map { |record| JSON.generate(record) }.join("\n")}\n")
+    path
+  end
+
+  def report(*, environment: {})
+    output, error, status = Open3.capture3(NO_HOST.merge(environment), COMMAND, 'usage', '--commit', COMMIT,
+                                           '--contribution', 'implementation', *)
+    assert status.success?, error
+    output
+  end
+
+  def discovered(directory)
+    report(environment: { 'CLAUDE_CODE_SESSION_ID' => SESSION, 'CLAUDE_CONFIG_DIR' => directory })
+  end
+end
+
+class ClaudeUsageTest < Minitest::Test
+  include ClaudeUsageFixture
+
+  def test_counts_the_final_streamed_usage_of_each_response_in_the_latest_turn
+    Dir.mktmpdir do |directory|
+      file = transcript(directory, 'session.jsonl', [prompt('old'), reply('m0', 900), prompt('new'),
+                                                     reply('m1', 100, output: 2), reply('m1', 100), reply('m2', 200)])
+      output = report('--host', 'claude-code', '--file', file)
+      assert_includes output, '| anthropic | UNKNOWN | claude-test | high | 300 | 80 | 40 | 10 | 14 | UNKNOWN |'
+      assert_includes output, '2 responses'
+      assert_includes output, 'Claude Code source versions: 2.1.270'
+      assert_includes output, 'Anthropic input excludes cached input and cache writes'
+      refute_match(/900|SENSITIVE/, output)
+    end
+  end
+
+  def test_discovers_the_session_with_only_the_subagents_of_its_latest_turn
+    Dir.mktmpdir do |directory|
+      transcript(directory, "#{SESSION}.jsonl", [prompt('old'), reply('m0', 900), prompt('new'), reply('m1', 100)])
+      transcript(directory, "#{SESSION}/subagents/agent-new.jsonl", [prompt('new'), reply('s1', 200)])
+      transcript(directory, "#{SESSION}/subagents/agent-old.jsonl", [prompt('old'), reply('s0', 800)])
+      output = discovered(directory)
+      assert_includes output, '| 300 | 80 | 40 | 10 | 14 | UNKNOWN |'
+      assert_includes output, 'latest turn of the session'
+      refute_includes output, SESSION
+    end
+  end
+
+  def test_selects_all_turns_or_explicit_turns
+    Dir.mktmpdir do |directory|
+      file = transcript(directory, 'session.jsonl', [prompt('old'), reply('m0', 900), prompt('new'), reply('m1', 100)])
+      assert_includes report('--host', 'claude-code', '--file', file, '--all-turns'), '| 1000 |'
+      assert_includes report('--host', 'claude-code', '--file', file, '--turn', 'old'), '| 900 |'
+    end
+  end
+
+  def test_repeated_sources_count_once_and_conflicting_copies_are_unknown
+    Dir.mktmpdir do |directory|
+      first = transcript(directory, 'first.jsonl', [prompt('new'), reply('m1', 100)])
+      second = transcript(directory, 'second.jsonl', [prompt('new'), reply('m1', 999)])
+      assert_includes report('--host', 'claude-code', '--file', first, '--file', first), '| 100 |'
+      output = report('--host', 'claude-code', '--file', first, '--file', second)
+      assert_includes output, 'Conflicting response copies'
+      refute_includes output, '| 100 |'
+    end
+  end
+end
+
+class ClaudeUsageFailuresTest < Minitest::Test
+  include ClaudeUsageFixture
+
+  def test_another_session_or_a_transcript_without_prompt_ids_is_unknown
+    Dir.mktmpdir do |directory|
+      other = { type: 'user', sessionId: 'other', promptId: 'new' }
+      transcript(directory, "#{SESSION}.jsonl", [other, reply('m1', 100)])
+      assert_includes discovered(directory), 'Responses: UNKNOWN'
+      file = transcript(directory, 'old-format.jsonl', [{ type: 'user' }, reply('m1', 100)])
+      assert_includes report('--host', 'claude-code', '--file', file), 'Responses: UNKNOWN'
+    end
+  end
+
+  def test_malformed_values_stay_unknown_without_leaking
+    Dir.mktmpdir do |directory|
+      bad = reply('m1', 100, model: '<b>SENSITIVE</b>')
+      bad[:message][:usage] = 'SENSITIVE'
+      file = transcript(directory, 'session.jsonl', [prompt('new'), bad])
+      File.write(file, '{"SENSITIVE-TRUNCATED', mode: 'a')
+      output = report('--host', 'claude-code', '--file', file)
+      assert_includes output, '| anthropic | UNKNOWN | UNKNOWN | high | UNKNOWN |'
+      assert_includes output, 'Unreadable or unidentifiable records'
+      refute_includes output, 'SENSITIVE'
+    end
+  end
+
+  def test_reads_utf8_under_a_c_locale_and_reports_invalid_bytes_as_unreadable
+    Dir.mktmpdir do |directory|
+      file = transcript(directory, 'session.jsonl', [prompt('new', 'Café — SENSITIVE'), reply('m1', 100)])
+      File.write(file, "\xFF\n".b, mode: 'ab')
+      output = report('--host', 'claude-code', '--file', file, environment: { 'LC_ALL' => 'C', 'LANG' => 'C' })
+      assert_includes output, '| 100 |'
+      assert_includes output, 'Unreadable or unidentifiable records'
+    end
+  end
+
+  def test_all_turns_excludes_and_discloses_responses_without_a_turn
+    Dir.mktmpdir do |directory|
+      file = transcript(directory, 'session.jsonl', [reply('m0', 900), { type: 'user', promptId: '  ' },
+                                                     reply('m1', 800), prompt('new'), reply('m2', 100)])
+      output = report('--host', 'claude-code', '--file', file, '--all-turns')
+      assert_includes output, '| 100 |'
+      assert_includes output.split('<details>').first, 'Unreadable or unidentifiable records'
+      refute_match(/900|800/, output)
+    end
+  end
+
+  def test_discovery_skips_an_unreadable_line_before_the_session_id
+    Dir.mktmpdir do |directory|
+      path = transcript(directory, "#{SESSION}.jsonl", [prompt('new'), reply('m1', 100)])
+      File.write(path, "{broken\n#{File.read(path)}")
+      assert_includes discovered(directory), '| 100 |'
+    end
+  end
+
+  def test_both_host_contexts_require_an_explicit_host
+    output, error, status = Open3.capture3({ 'CODEX_THREAD_ID' => SESSION, 'CLAUDE_CODE_SESSION_ID' => SESSION },
+                                           COMMAND, 'usage', '--commit', COMMIT, '--contribution', 'implementation')
+    refute status.success?
+    assert_empty output
+    assert_includes error, 'shaka usage:'
+  end
+end

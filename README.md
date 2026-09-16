@@ -20,7 +20,8 @@ risky changes still need a human decision.
 
 [Install Shaka and complete your first task →](docs/getting-started.md)
 
-Codex is the reference host; [Claude Code and Cursor delivery is unverified](docs/host-support.md).
+In Claude Code, send `/shaka`. Codex is the reference host; [Claude Code consumer delivery
+and Cursor are unverified](docs/host-support.md).
 Public pilot: [requirements](docs/pilot-plan.md) · [progress](https://github.com/shakacode/shaka/issues/1).
 
 License: [decision pending](https://github.com/shakacode/shaka/issues/30).
